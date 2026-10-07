@@ -3,6 +3,14 @@
 **Version:** 1.0
 **Stage:** P02 — Requirements Engineering
 **Type:** Generation Prompt
+**Input Artifacts:**
+
+* `artifacts/01_discovery/PRODUCT_VISION.md`
+* `artifacts/01_discovery/PRODUCT_VISION_VALIDATION.md`
+* `prompts/system/SYSTEM_PROMPT.md`
+
+**Output Artifact:** `artifacts/02_requirements/REQUIREMENTS.md`  
+**Validator:** P02 Requirements Validator  
 **Previous Stage:** P01 — Product Discovery
 **Next Stage:** P03 — Planning
 
