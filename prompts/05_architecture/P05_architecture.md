@@ -1,462 +1,570 @@
 # P05 — Software Architecture
 
-**Version:** 1.0
+**Version:** 2.0
 **Stage:** P05 — Architecture
-**Type:** Generation Prompt
-**Input Artifacts:**
+**Primary output:** `artifacts/05_architecture/ARCHITECTURE.md`
 
-* `artifacts/00_context/PROJECT_CONTEXT.md`
-* `artifacts/00_context/CONTEXT_VALIDATION.md`
-* `artifacts/01_discovery/PRODUCT_VISION.md`
-* `artifacts/01_discovery/PRODUCT_VISION_VALIDATION.md`
-* `artifacts/02_requirements/REQUIREMENTS.md`
-* `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
-* `artifacts/03_planning/PRIORITIZATION.md`
-* `artifacts/04_ux/UX_DESIGN.md`
-* `artifacts/04_ux/UX_VALIDATION.md`
-* `prompts/system/SYSTEM_PROMPT.md`
+## 1. Purpose
 
-**Output Artifact:** `artifacts/05_architecture/ARCHITECTURE.md`
-**Validator:** P05 Architecture Validator
-**Previous Stage:** P04 — UX/UI
-**Next Stage:** P06 — Implementation
+Define a coherent, implementation-ready software architecture for the MVP.
 
----
+The architecture must translate the approved requirements, prioritized scope, and UX specification into a system structure that the development team can implement consistently, including when work is performed in parallel.
 
-# 1. PURPOSE
+The architecture must be:
 
-Transform the validated product, requirements, delivery priorities, and UX artifacts into a coherent, minimal, traceable software architecture for the MVP.
+* **Traceable:** major architectural decisions connect to requirements, backlog items, UX needs, or explicit constraints.
+* **Proportionate:** appropriate for an MVP and its actual scope.
+* **Consistent:** components, responsibilities, interfaces, and data ownership do not contradict one another.
+* **Implementable:** the team can understand the system boundaries, dependencies, and implementation constraints.
+* **Adaptable:** unresolved decisions are visible rather than hidden behind unsupported assumptions.
 
-The architecture must explain:
+This stage defines the architecture, not the implementation. Do not generate application code, complete database schemas, or exhaustive API specifications.
 
-* The system boundary and its external actors or systems.
-* The principal architectural style and why it fits the documented needs.
-* The logical components and their responsibilities and relationships.
-* The important runtime interactions and interfaces.
-* The conceptual data responsibilities and persistence needs.
-* How relevant quality attributes and security concerns shape the design.
-* Which technology and infrastructure decisions are approved, proposed, assumed, or unknown.
-* How architecture elements trace to approved requirements and constraints.
+## 2. Required Inputs
 
-This stage defines the design contract for P06 and an architecture reference for P08. It does not implement the system or replace product requirements.
+Use only the following project artifacts as required inputs:
 
----
+1. `artifacts/02_requirements/REQUIREMENTS.md`
+2. `artifacts/03_planning/PRIORITIZATION.md`
+3. `artifacts/03_planning/product_backlog.json`
+4. `artifacts/04_ux/UX_SPEC.md`
+5. `artifacts/04_ux/UX_SPEC_VALIDATION.md`
 
-# 2. INPUTS
+Do not require the original P02 backlog. The P03 backlog is the authoritative backlog for architecture scope because it reflects the planning and prioritization stage.
 
-## 2.1 Project Context and Validation
+### Input authority
 
-Read `PROJECT_CONTEXT.md` and `CONTEXT_VALIDATION.md` to understand the original problem, users, scope, constraints, known facts, assumptions, risks, and unresolved questions. Preserve important uncertainties and validation findings.
+Use each artifact according to its purpose:
 
-## 2.2 Product Vision and Validation
+* **REQUIREMENTS.md:** source of truth for product requirements, constraints, and quality expectations.
+* **PRIORITIZATION.md:** source of truth for delivery scope, priorities, and planning decisions.
+* **P03 product_backlog.json:** source of truth for backlog item identifiers, current scope classification, priorities, dependencies, and related metadata.
+* **UX_SPEC.md:** source of truth for user flows, information architecture, screen responsibilities, shared components, design tokens, and UX constraints.
+* **UX_SPEC_VALIDATION.md:** source of validation findings, unresolved issues, and readiness concerns that may affect architectural decisions.
 
-Read `PRODUCT_VISION.md` and `PRODUCT_VISION_VALIDATION.md` to understand the validated value proposition, primary user journeys, MVP boundaries, and product-level assumptions.
+If these sources conflict, do not silently reconcile them. Record the conflict, identify the affected artifacts, and determine whether architecture can proceed safely.
 
-## 2.3 Requirements and Prioritization
+Do not treat a proposed technology, assumption, or unresolved UX decision as approved merely because it appears in an artifact.
 
-Read `REQUIREMENTS.md`, its validation report, and `PRIORITIZATION.md` when present. These are the primary sources for functional behavior, quality requirements, acceptance criteria, MVP priority, and delivery constraints.
+## 3. Input Readiness
 
-Do not invent requirements or treat a low-priority/future capability as an MVP driver.
+Before designing the architecture:
 
-## 2.4 UX Artifacts
+1. Verify that all five required inputs are available and readable.
+2. Confirm that the UX validation status and findings are understood.
+3. Identify requirements or backlog items that are blocked, deferred, out of scope, or awaiting decisions.
+4. Identify ambiguities that materially affect system structure, data ownership, integrations, security, or implementation feasibility.
+5. Determine whether the available information is sufficient to produce a useful architecture.
 
-Read `UX_DESIGN.md` and `UX_VALIDATION.md` when present. Use them to understand user flows, roles, information needs, accessibility constraints, and interaction boundaries. Do not redesign the UX in this stage.
+If a required input is missing, do not fabricate its contents. If a material conflict or unresolved decision prevents a reliable architecture, document the issue and mark the deliverable `BLOCKED`.
 
-## 2.5 Global System Prompt
+Minor uncertainties that do not prevent a coherent design may be documented as assumptions, provided their implications are clear.
 
-Read `prompts/system/SYSTEM_PROMPT.md` and follow its source-of-truth, traceability, security, simplicity, human-approval, and change-management rules.
+Do not repeat the full contents of the input artifacts. Extract only what is relevant to architectural decisions.
 
-## 2.6 Repository Source of Truth
+## 4. Role
 
-The current repository artifacts are the source of truth, not undocumented conversation history or assumed future outputs. The P02–P04 paths above are expected references; if their prompts define different output paths, use the paths actually declared there and record the discrepancy. Do not create or infer missing upstream artifacts.
+Act as a senior software architect working with a small development team delivering an MVP.
 
----
+Your responsibility is to establish the system structure, architectural boundaries, data ownership, interfaces, important quality requirements, and technical decisions needed to guide implementation.
 
-# 3. INPUT READINESS
+Think in terms of a system that must work as a whole, not merely a collection of independent features.
 
-Before designing, record which inputs exist, their versions/statuses, and any upstream validation findings that affect architecture.
+Do not assume:
 
-If an artifact is missing, empty, or invalid:
+* A technology stack has been approved unless the inputs explicitly establish it.
+* Team capacity, individual availability, or implementation effort.
+* External services, integrations, hosting platforms, or infrastructure that are not supported by the inputs.
+* That every proposed feature must be implemented in the MVP.
+* That the architecture should use microservices, complex patterns, or additional infrastructure by default.
 
-1. Do not fabricate its contents.
-2. Identify the missing decision or requirement and why architecture depends on it.
-3. Continue only with the portions supported by available evidence.
-4. Mark affected decisions as `UNKNOWN`, `PROPOSAL`, or `ASSUMPTION`.
-5. Set the architecture status to `BLOCKED` when a missing or contradictory input prevents a safe, coherent design. Otherwise use `READY_WITH_ASSUMPTIONS` and list the limitation.
+When a choice remains open, recommend the simplest reasonable option, explain its trade-offs, and label it `PROPOSAL` if approval is required.
 
-Do not claim that upstream validation passed unless its report states that result.
+## 5. Architecture Process
 
----
+### Step 1 — Establish the architectural scope
 
-# 4. ROLE
+Extract the requirements and backlog items that affect the architecture.
 
-Act as a:
+Identify:
 
-> **Senior Software Architect and Architecture Decision Facilitator.**
+* The system's primary capabilities.
+* The users and external actors interacting with it.
+* The requirements with significant architectural implications.
+* The prioritized MVP scope.
+* Supporting capabilities required for the MVP to function.
+* Deferred or out-of-scope capabilities that must not drive unnecessary complexity.
+* Dependencies between features that affect architectural sequencing.
 
-Your responsibility is to produce an implementation-ready architectural description at the appropriate level for an MVP, while keeping significant decisions visible for human review.
+Preserve existing requirement and backlog identifiers. Do not create new product requirements or silently change their scope.
 
-You must:
+If an item is marked `BLOCKED`, `FUTURE_DEFERRED`, `OUT_OF_SCOPE`, or `REQUIRES_DECISION`, respect that classification. Explain any architectural implications without treating the item as approved implementation scope.
 
-* Derive architecture drivers from approved requirements and constraints.
-* Choose the simplest design that satisfies those drivers.
-* Explain meaningful trade-offs and alternatives.
-* Preserve product scope and user intent.
-* Make security, privacy, reliability, and operability concerns explicit where relevant.
-* Maintain traceability and distinguish evidence from judgment.
+### Step 2 — Identify architectural drivers
 
-You are not the product owner and are not authorized to silently approve major technical decisions for the team.
-
----
-
-# 5. CORE PRINCIPLE
-
-The central question is:
-
-> **What is the simplest coherent architecture that can satisfy the approved MVP requirements and constraints, and what decisions still require human confirmation?**
-
-The expected relationship is:
-
-```text
-Validated Product and Requirements
-		  ↓
-	Architecture Drivers
-		  ↓
-      Components / Data / Interfaces
-		  ↓
-    Security and Quality Attributes
-		  ↓
-	Implementation Contract
-```
-
-An architecture diagram or technology list without traceable rationale is not a sufficient architecture.
-
----
-
-# 6. ARCHITECTURE PROCESS
-
-## Step 1 — Establish the Evidence Baseline
-
-Extract the relevant facts and decisions from the inputs. Classify architecture-relevant statements as:
-
-```text
-FACT
-DECISION
-ASSUMPTION
-PROPOSAL
-UNKNOWN
-```
-
-Preserve source identifiers where available (`FR-XXX`, `NFR-XXX`, `US-XXX`, `AC-XXX`, `TASK-XXX`, `ADR-XXX`). Do not invent upstream IDs.
-
-## Step 2 — Identify Architecture Drivers
-
-Select requirements and constraints that materially influence structure, data, interfaces, security, deployment, or quality attributes. For each driver, record its identifier, source, architectural impact, and how the design addresses it.
-
-Do not infer performance, availability, scale, compliance, or recovery targets without evidence. If a target is needed but unknown, record the question and its impact.
-
-## Step 3 — Define System Context and Boundaries
-
-Identify in-scope users/actors, the system boundary, and confirmed external systems. Distinguish confirmed integrations from proposals. Describe what is explicitly outside the system boundary only when supported; otherwise mark it unknown.
-
-## Step 4 — Select and Explain the Architectural Approach
-
-Describe the style and deployment shape needed for the MVP (for example, a modular monolith or independently deployed services) and justify it using requirements, team constraints, delivery risk, and operational cost.
-
-Do not default to microservices, event-driven infrastructure, or cloud services because they are popular. A monolith is a reasonable candidate when it satisfies the requirements, but it is not an automatic decision.
-
-For significant alternatives, describe benefits, costs, and the reason for selecting, deferring, or rejecting each. Mark an unapproved choice as `PROPOSAL`, not `DECISION`.
-
-## Step 5 — Define Components and Responsibilities
-
-Identify the minimum logical components needed to implement approved capabilities. For each component, define:
-
-* Stable architecture ID (`COMP-XXX`).
-* Responsibility and explicit boundary.
-* Requirements or user stories served.
-* Dependencies and interactions with other components.
-* Important data owned or accessed.
-* Whether it is an application module, runtime process, or external system.
-
-Do not create components solely to mirror teams, frameworks, or hypothetical future scale. Do not prescribe classes, file layouts, or detailed code structure.
-
-## Step 6 — Describe Key Interactions and Interfaces
-
-Describe only the interactions needed by approved MVP flows. Specify interface purpose, caller/provider, information exchanged at a conceptual level, and relevant requirements. Where a protocol or API contract is established, reference it; otherwise state that protocol, endpoint paths, and payload schemas remain for a later decision or stage.
-
-Do not invent endpoints, message brokers, integrations, or error contracts. Keep the description architectural rather than a complete API specification.
-
-## Step 7 — Describe the Conceptual Data Architecture
-
-Identify major domain concepts and data ownership only where supported by requirements. For each concept, describe its purpose, owning component, relationships that matter architecturally, and traceability.
-
-This section is a conceptual model, not a finalized relational schema. Do not invent fields, keys, retention periods, legal classifications, or data volumes. Identify likely personal, location, health-related, or otherwise sensitive data only when indicated by inputs or as a clearly labeled risk requiring confirmation.
-
-## Step 8 — Address Quality Attributes and Security
-
-Map relevant quality requirements to architectural tactics and components. Consider only concerns justified by the project, including:
-
-* Security and authorization boundaries.
-* Privacy and data minimization.
-* Availability, reliability, and recovery.
-* Performance and capacity.
+Identify the requirements and constraints that materially influence the design.
+
+Consider, when relevant:
+
+* Functional boundaries.
+* Security, authentication, and authorization.
+* Data integrity and ownership.
+* Privacy and handling of personal information.
+* Reliability and error handling.
 * Maintainability and testability.
-* Accessibility or compatibility constraints when architecturally relevant.
-* Logging, monitoring, and operational support.
+* Performance and scalability proportional to the MVP.
+* Accessibility and usability constraints.
+* Deployment and operational simplicity.
+* External integrations and their failure modes.
 
-For each concern, cite the source and distinguish a specified target from a proposed tactic or unresolved question. Do not claim compliance or security guarantees without evidence.
+For each significant driver, explain why it matters and connect it to its source identifier when one exists.
 
-## Step 9 — Record Decisions, Risks, and Open Questions
+Do not invent quantitative quality targets. If a target is necessary but unspecified, record it as `UNKNOWN` or `REQUIRES_DECISION`.
 
-Create concise architecture decision records (`ADR-XXX`) for consequential choices. Each record must include context, options considered, outcome/status, rationale, consequences, and approval state.
+### Step 3 — Define the system context
 
-Use statuses such as `ACCEPTED`, `PROPOSED`, `DEFERRED`, and `SUPERSEDED`. Only explicitly approved project decisions may be labeled accepted. Record risks and questions with impact and the decision or evidence needed to resolve them.
+Describe:
 
-## Step 10 — Audit Traceability and Readiness
+* The system boundary.
+* The primary actors and their interactions with the system.
+* External systems or services explicitly required by the inputs.
+* Trust boundaries and important data exchanges.
+* Responsibilities that belong inside or outside the application.
 
-Check that every major component, interface, data concept, security control, and decision is justified by a requirement, constraint, or explicit operational need. Check that every architecture-driving requirement maps to an architecture element or is identified as unresolved.
+Distinguish confirmed external dependencies from proposed ones. Do not introduce third-party services without a justified need.
 
-Set the status using the rules in Section 10. Do not hide a dependency on unresolved information.
+Include a simple system-context diagram using Mermaid.
 
----
+### Step 4 — Select and justify the architectural style
 
-# 7. ARCHITECTURE RULES
+Choose an architectural style appropriate to the actual MVP scope, team constraints, and known requirements.
 
-## 7.1 Scope and Simplicity
+Consider alternatives only where they represent meaningful choices. For each relevant alternative, briefly describe:
 
-Design only for the approved MVP and documented quality needs. Prefer the smallest useful architecture. Avoid speculative extensibility, redundant layers, unnecessary services, dependencies, infrastructure, and optimization.
+* Benefits.
+* Costs and complexity.
+* Fit with the requirements and delivery scope.
+* Reasons for selecting or rejecting it.
 
-## 7.2 Technology Decisions
+Prefer a simple, cohesive architecture unless the requirements justify additional separation.
 
-Use an existing, explicitly approved stack when one exists. Otherwise, technology recommendations must be labeled `PROPOSAL` and include:
+Do not select microservices, event-driven infrastructure, distributed systems, or other complex patterns merely because they are common in production architectures.
 
-* The driver and evidence behind the recommendation.
-* At least one reasonable alternative when the choice is consequential.
-* Relevant team, delivery, maintenance, security, and deployment trade-offs.
-* The decision or approval still needed.
+If the technology stack is not established, separate:
 
-Do not present a proposed language, framework, database, cloud, vendor, or deployment platform as selected.
+* Architectural principles and structural decisions that can be made now.
+* Technology recommendations that remain proposals.
+* Decisions that must be resolved before implementation depends on them.
 
-For each consequential library, platform service, or other dependency introduced by the architecture, first determine whether the existing stack can meet the need without it. Document relevant compatibility, maintenance status, security implications, license considerations, and added complexity. Do not recommend a dependency for functionality already reasonably supported by the selected stack.
+Do not confuse an architectural style with a particular framework or programming language.
 
-## 7.3 Security and Privacy
+### Step 5 — Define components and responsibilities
 
-Apply least privilege, explicit trust boundaries, secure configuration, and data minimization at the architectural level. Do not assume authentication, payment processing, location tracking, regulatory scope, or external identity providers unless established by an input. Flag security-critical unknowns as questions or blockers.
+Identify the major logical components or modules required by the MVP.
 
-## 7.4 Consistency and Change Control
+For each component, specify:
 
-Do not silently resolve conflicting upstream artifacts. For a significant proposed change, create a `CR-XXX` record with:
+* Unique identifier, such as `COMP-001`.
+* Name and purpose.
+* Main responsibilities.
+* Responsibilities explicitly outside its boundary.
+* Requirements and backlog items it supports.
+* Data it owns or manages.
+* Interfaces it exposes or consumes.
+* Dependencies on other components.
+* Important constraints or invariants.
 
-```text
-Reason:
-Affected Artifacts:
-Affected Requirements:
-Impact:
-Proposed Change:
-Required Revalidation:
-```
+Keep the component model at a level useful for implementation planning. Avoid decomposing the system into excessive classes, files, functions, or trivial modules.
 
-Identify downstream artifacts that may need updates, obtain human approval before treating the proposal as a decision, and do not modify upstream artifacts as part of this prompt.
+Make responsibilities sufficiently clear that multiple developers can work on different components without relying on conflicting assumptions.
 
-## 7.5 Diagram Discipline
+Include a component diagram using Mermaid.
 
-Include concise Mermaid diagrams when they improve understanding:
+### Step 6 — Define boundaries, dependencies, and interfaces
 
-* System context diagram.
-* Logical component/container diagram.
-* One key interaction diagram only if it clarifies a required cross-component flow.
+Establish the rules governing communication between components.
 
-Diagrams must match the prose and tables. Do not depict unapproved proposals as existing or approved systems; label them clearly. If a diagram cannot be justified from available evidence, provide a textual view instead.
+For each significant interface, specify:
 
----
+* Unique identifier, such as `IF-001`.
+* Provider and consumer.
+* Purpose and expected interaction.
+* Information exchanged at a conceptual level.
+* Relevant authorization or validation requirements.
+* Expected error or failure behavior.
+* Related requirements and backlog items.
 
-# 8. REQUIRED OUTPUT FORMAT
+Identify allowed and prohibited dependencies between components.
 
-Generate:
+Explain where API contracts, event contracts, or other concrete integration details will need to be defined before dependent work proceeds in parallel.
 
-```text
-artifacts/05_architecture/ARCHITECTURE.md
-```
+Do not invent complete endpoint lists, request/response schemas, or transport mechanisms unless the inputs explicitly require them or they are necessary to resolve an architectural decision. Label unapproved choices as proposals.
 
-Use the following structure. For unavailable information, write `UNKNOWN` and explain its effect; do not leave a required section blank.
+### Step 7 — Define conceptual data architecture
 
-```markdown
-# Software Architecture
+Identify the principal business entities and relationships required by the MVP.
 
-## 1. Document Metadata
-- Version:
-- Stage: P05 — Architecture
-- Status: READY / READY_WITH_ASSUMPTIONS / BLOCKED
-- Last Updated:
-- Project:
-- Source Artifacts and Versions:
-- Upstream Validation Statuses:
-- Approval Status:
+For each important entity, specify:
 
-## 2. Executive Summary
-Summarize the architectural approach, key constraints, major decisions, and readiness.
+* Unique identifier, such as `DATA-001`.
+* Purpose.
+* Conceptual attributes or information it represents.
+* Relationships with other entities.
+* Owning component.
+* Important integrity, lifecycle, or access constraints.
+* Relevant requirements and backlog items.
 
-## 3. Scope and Architectural Drivers
-### In Scope
-### Out of Scope / Not Decided
-### Architecture Drivers
-| ID | Driver / Requirement | Source | Architectural Impact | Response / Status |
-|---|---|---|---|---|
-
-## 4. Constraints, Assumptions, and Unknowns
-| ID | Statement | Classification | Source | Impact / Owner or Decision Needed |
-|---|---|---|---|---|
+Explain the principal data flows and which component is responsible for creating, modifying, validating, and exposing each entity.
 
-## 5. System Context
-### System Boundary
-### Actors and External Systems
-| ID | Actor / System | Relationship | Status | Source |
-|---|---|---|---|---|
-### Context Diagram
+Address data consistency, validation, and persistence concerns where they affect the architecture.
 
-## 6. Architectural Approach
-### Style and Rationale
-### Alternatives and Trade-offs
-### Technology and Platform Decisions
-| Concern | Choice | Classification / Approval | Rationale | Source / Open Decision |
-|---|---|---|---|---|
+Do not produce a complete physical database schema, exhaustive field definitions, or migration scripts. Avoid inventing attributes not supported by the requirements or UX. Any necessary but unresolved data decision must be recorded explicitly.
 
-## 7. Logical Architecture
-### Components
-| ID | Component | Responsibility / Boundary | Requirements Served | Dependencies | Status |
-|---|---|---|---|---|---|
-### Component Diagram
-### Component Interaction Summary
+Include a conceptual data model diagram using Mermaid when the domain has meaningful entity relationships.
 
-## 8. Runtime and Deployment View
-Describe runtime processes, environments, communication, persistence, and external dependencies only to the level supported by approved decisions. Mark deployment details deferred to P08 when appropriate.
+### Step 8 — Address security and quality concerns
 
-## 9. Interfaces and Integration Contracts
-| ID | Interface | Provider / Consumer | Purpose and Information | Requirements | Decision Status |
-|---|---|---|---|---|---|
-Document unresolved protocols, API details, and integration decisions.
+Define architectural measures for the security and quality requirements identified in the inputs.
 
-## 10. Conceptual Data Architecture
-| ID | Domain Concept | Purpose | Owner | Relationships / Lifecycle | Source / Status |
-|---|---|---|---|---|---|
-### Data Ownership and Persistence
-### Data Classification and Privacy Considerations
-### Data Questions
+Consider, where relevant:
 
-## 11. Quality Attributes and Security
-| ID | Concern / Requirement | Source / Target | Architectural Tactic | Components Affected | Status / Verification Note |
-|---|---|---|---|---|---|
-### Trust Boundaries and Authorization
-### Sensitive Data and Privacy
-### Reliability and Failure Handling
-### Observability and Operations
-
-## 12. Key Interaction Views
-Include a Mermaid interaction diagram only when supported and useful; otherwise state why no additional view is needed.
+* Authentication and session handling.
+* Authorization and access boundaries.
+* Server-side validation and trust of client input.
+* Protection of sensitive data.
+* Secure configuration and secret management.
+* Logging and error handling without exposing sensitive information.
+* Data integrity and prevention of unauthorized changes.
+* Testing boundaries and component testability.
+* Maintainability and observability appropriate to the MVP.
+* Backup, recovery, and availability where required.
 
-## 13. Architecture Decision Records
-| ADR ID | Decision | Status | Context and Options | Rationale | Consequences / Approval Needed |
-|---|---|---|---|---|---|
+For each significant concern, describe the architectural response and its traceability.
 
-## 14. Risks and Open Questions
-| ID | Risk / Question | Impact | Related Elements | Resolution / Owner Needed |
-|---|---|---|---|---|
+Distinguish required controls from recommended improvements. Do not claim compliance with standards, laws, or certifications unless the inputs establish the applicable requirements and the design supports that claim.
 
-## 15. Requirements-to-Architecture Traceability
-| Requirement / Constraint | Architecture Element(s) | Coverage | Notes / Gap |
-|---|---|---|---|
+### Step 9 — Preserve the UX and design-system contract
 
-## 16. Implementation Guidance and Boundaries
-State architectural invariants P06 must preserve, allowed implementation flexibility, and items that require approval/change control. Where P03 defines implementation tasks, relate component boundaries to those tasks without inventing task IDs. Prefer small, independently verifiable increments; do not prescribe detailed code.
+Use `UX_SPEC.md` as the authoritative reference for the user experience.
 
-## 17. Known Limitations
+Explain how the proposed architecture supports:
 
-## 18. Architecture Status and Next Actions
-Justify the status and list blocking decisions, non-blocking assumptions, required approvals, and readiness for P06.
-```
+* The defined navigation and user flows.
+* The specified screens and their responsibilities.
+* Shared UI components and consistent component reuse.
+* Design tokens and the visual system.
+* Relevant loading, empty, validation, success, and error states.
+* Accessibility and responsive behavior where specified.
 
----
+Do not redesign the UX or introduce screens and flows without justification.
 
-# 9. IDENTIFIER RULES
+Keep the UX specification and implementation architecture at their appropriate levels. The architecture should establish the responsibilities and boundaries that allow the frontend to implement the UX consistently; it should not duplicate the full UX specification.
 
-Use existing upstream identifiers without changing them. New architecture identifiers may use:
+If the UX depends on a backend capability or data requirement that is missing or ambiguous, record the gap and its impact.
 
-```text
-ARCH-XXX
-COMP-XXX
-IF-XXX
-DATA-XXX
-ADR-XXX
-RISK-XXX
-AQ-XXX
-CR-XXX
-```
+### Step 10 — Record architectural decisions
 
-Do not duplicate identifiers or invent requirement IDs. If upstream artifacts have no identifiers, cite their exact section or title until stable IDs are introduced.
+Document significant decisions in an Architecture Decision Record (ADR).
 
----
+Assign identifiers such as `ADR-001`.
 
-# 10. STATUS RULES
+For each decision, include:
 
-## READY
+* Title.
+* Status: `ACCEPTED`, `PROPOSED`, or `REQUIRES_DECISION`.
+* Context and problem.
+* Considered options, when meaningful.
+* Decision or recommendation.
+* Rationale and trade-offs.
+* Consequences and risks.
+* Related requirements, backlog items, components, or interfaces.
 
-Use only when required upstream artifacts are sufficiently validated, architecture drivers are clear, major design choices are approved or already constrained, no blocking contradictions remain, and the architecture is traceable enough to guide P06.
+Use `ACCEPTED` only for decisions explicitly established by the inputs or otherwise formally approved. A recommendation generated during this stage must remain `PROPOSED` until approved.
 
-## READY_WITH_ASSUMPTIONS
+Do not create an ADR for every minor implementation detail. Focus on decisions that materially affect component boundaries, data ownership, security, integration, deployment, or parallel development.
 
-Use when the architecture is usable for P06, remaining assumptions or proposals are explicit and bounded, and no unresolved item invalidates a core MVP path or security boundary. List required human approvals and prevent implementation from treating proposals as decisions.
+### Step 11 — Define implementation guidance
 
-## BLOCKED
+Explain the architectural rules the development team must follow.
 
-Use when required inputs are absent or invalid, a major contradiction remains, a security/data/interface decision blocks a safe design, or a core requirement cannot be mapped to a coherent architecture. Name the exact blocker, impact, and decision needed.
+Include:
 
-Never use `READY` to imply that an unapproved proposal is a team decision.
+* Component ownership and dependency rules.
+* Data ownership and access rules.
+* Interface and validation responsibilities.
+* Security invariants.
+* Shared frontend component and design-token reuse.
+* Architectural constraints on testing and error handling.
+* Dependencies that must be resolved before parallel implementation.
+* Areas where implementation teams retain freedom to choose details.
 
----
+Identify the minimum contracts that must be agreed upon before dependent backlog items can be implemented independently.
 
-# 11. FAILURE CONDITIONS
+Do not prescribe a detailed sprint plan or invent developer assignments. Use the prioritized backlog as context, not as a reason to expand the architecture beyond the approved scope.
 
-The architecture is invalid if it:
+### Step 12 — Check traceability and consistency
 
-* Adds MVP functionality unsupported by approved requirements.
-* Silently resolves conflicting upstream artifacts.
-* Presents assumptions or proposals as approved decisions.
-* Selects technology or infrastructure without evidence or explicit approval.
-* Adds complexity without a requirement or documented architectural driver.
-* Omits an architecture-driving requirement without identifying the gap.
-* Contains components, interfaces, data, or diagrams that contradict each other.
-* Claims security, compliance, performance, availability, or scalability guarantees without evidence.
-* Treats conceptual data as a finalized schema or invents detailed contracts.
-* Hides risks or unknowns that materially affect implementation.
+Before finalizing, verify that:
 
----
+* Major architectural components map to actual MVP needs.
+* Significant requirements have an architectural response or a documented explanation for why none is required.
+* In-scope backlog items are supported by the architecture at the appropriate level.
+* Deferred and out-of-scope items do not drive unnecessary implementation.
+* UX flows, screens, shared components, and data needs are not contradicted.
+* Component responsibilities and dependencies are coherent.
+* Data ownership is unambiguous for important entities.
+* Significant interfaces have identifiable providers and consumers.
+* Unapproved technology choices remain proposals.
+* Risks, unknowns, and unresolved decisions are visible.
+* The architecture is proportionate to the MVP.
 
-# 12. SELF-REVIEW BEFORE OUTPUT
+Do not claim complete traceability if some mappings are unresolved. Document gaps explicitly.
 
-```text
-[ ] Required upstream artifacts and validation statuses were inspected.
-[ ] Missing, empty, and conflicting inputs are reported.
-[ ] Architecture drivers trace to source requirements or constraints.
-[ ] Scope stays within the approved MVP.
-[ ] The architectural style is justified against alternatives.
-[ ] Technology and deployment choices have accurate approval labels.
-[ ] Components have clear responsibilities and traceability.
-[ ] Interfaces and data concepts are supported and appropriately scoped.
-[ ] Security, privacy, and relevant quality concerns are addressed.
-[ ] Diagrams match the prose and do not imply unapproved decisions.
-[ ] ADRs distinguish accepted, proposed, deferred, and superseded decisions.
-[ ] Risks and open questions include impacts and next actions.
-[ ] The status follows the stated readiness rules.
-[ ] No implementation code or unrelated product decisions were introduced.
-```
+## 6. Architecture Rules
 
----
+### Scope and simplicity
 
-# 13. FINAL RESPONSE
+* Design for the prioritized MVP, not an imagined future enterprise system.
+* Prefer the simplest architecture that satisfies the supported requirements.
+* Avoid unnecessary abstractions, infrastructure, services, and dependencies.
+* Mention future extensibility only when it can be preserved without unjustified present-day complexity.
 
-After generating the artifact, report:
+### Technology decisions
 
-1. The architecture status and the principal architectural approach.
-2. The most consequential decisions still requiring team approval.
-3. Any blocking upstream gaps or contradictions.
-4. Whether P06 can proceed and under what constraints.
+* Use only technologies explicitly approved in the inputs as confirmed decisions.
+* If no stack is approved, provide a justified recommendation where useful and label it `PROPOSAL`.
+* Do not fabricate hosting, database, framework, cloud, or third-party service decisions.
+* Do not let a proposed technology silently become a project constraint.
+
+### Traceability
+
+* Preserve requirement and backlog IDs exactly as they appear in the input artifacts.
+* Use unique IDs for architecture-specific components, interfaces, data concepts, decisions, risks, and architectural constraints.
+* If an input item has no identifier, refer to its exact title or description rather than inventing an existing ID.
+* Record the rationale for major decisions.
+
+### Assumptions and unknowns
+
+Use these labels consistently:
+
+* `ASSUMPTION`: a temporary premise used to proceed.
+* `UNKNOWN`: information not established by the inputs.
+* `PROPOSAL`: a recommended option that has not been approved.
+* `REQUIRES_DECISION`: an explicit decision needed from the project team.
+* `BLOCKED`: an issue preventing a reliable architectural decision or safe progression.
+
+For each important item, include its impact and the action or owner needed to resolve it, if known. Do not invent owners or deadlines.
+
+### Security and privacy
+
+* Treat client input as untrusted.
+* Define authorization boundaries explicitly when relevant.
+* Avoid exposing sensitive information through errors, logs, or interfaces.
+* Do not assume that hiding a UI control is sufficient authorization.
+* Make security responsibilities clear across components.
+
+### Diagrams
+
+* Use Mermaid for architecture diagrams.
+* Keep diagrams consistent with the written component, interface, and data descriptions.
+* Use simple diagrams that clarify boundaries and relationships.
+* Do not create diagrams that imply unapproved technologies or integrations.
+
+## 7. Required Output Format
+
+Produce `artifacts/05_architecture/ARCHITECTURE.md` using the following structure.
+
+### 1. Document Metadata
+
+* Stage and version.
+* Architecture status: `READY`, `READY_WITH_ASSUMPTIONS`, or `BLOCKED`.
+* Inputs reviewed.
+* Brief summary of the architecture.
+
+### 2. Architectural Scope
+
+* MVP capabilities covered.
+* Relevant in-scope backlog items.
+* Deferred or excluded capabilities that affect architectural boundaries.
+* Scope limitations.
+
+### 3. Architectural Drivers
+
+* Important functional and quality drivers.
+* Source references.
+* Architectural implications.
+
+### 4. System Context
+
+* System boundary.
+* Actors and external dependencies.
+* Trust boundaries.
+* Mermaid context diagram.
+
+### 5. Architectural Style and Rationale
+
+* Selected style.
+* Justification.
+* Meaningful alternatives and trade-offs.
+* Confirmed decisions versus proposals.
+
+### 6. Component Architecture
+
+* Component inventory with IDs.
+* Responsibilities and exclusions.
+* Ownership, dependencies, and source traceability.
+* Mermaid component diagram.
+
+### 7. Interfaces and Interaction Rules
+
+* Significant interfaces with IDs.
+* Providers, consumers, purpose, and conceptual data exchanged.
+* Validation, authorization, and error-handling responsibilities.
+* Contracts that must be detailed before dependent implementation.
+
+### 8. Conceptual Data Architecture
+
+* Important data concepts and IDs.
+* Relationships and ownership.
+* Principal data flows.
+* Integrity, lifecycle, and access constraints.
+* Mermaid conceptual data diagram, where applicable.
+
+### 9. Security and Quality Architecture
+
+* Relevant quality attributes and constraints.
+* Architectural responses.
+* Responsibilities and limitations.
+* Unspecified targets or controls requiring decisions.
+
+### 10. UX and Design-System Alignment
+
+* How the architecture supports the specified screens and flows.
+* Frontend responsibilities and shared-component reuse.
+* Design-token and visual-system preservation.
+* UX dependencies, gaps, and unresolved issues.
+
+### 11. Architectural Decision Records
+
+* ADR inventory.
+* Context, options, rationale, status, and consequences for significant decisions.
+
+### 12. Architectural Risks and Open Issues
+
+Use identifiers such as `RISK-001`.
+
+For each issue, include:
+
+* Description.
+* Cause or uncertainty.
+* Impact.
+* Likelihood or severity only when supported; otherwise mark it `UNKNOWN`.
+* Mitigation or next action.
+* Related requirements, backlog items, components, or decisions.
+
+### 13. Architectural Constraints and Invariants
+
+Use identifiers such as `CR-001`.
+
+Document rules that must remain true during implementation, including dependency boundaries, data ownership, authorization, interface contracts, and UX consistency.
+
+### 14. Traceability Matrix
+
+Map significant requirements and relevant in-scope backlog items to:
+
+* Architectural components.
+* Interfaces or data concepts, when applicable.
+* Decisions or constraints, when relevant.
+* Status or identified gaps.
+
+Do not force irrelevant mappings. Mark missing or unresolved mappings explicitly.
+
+### 15. Implementation Guidance and Parallelization
+
+* Component boundaries suitable for independent work.
+* Allowed and prohibited dependencies.
+* Minimum shared contracts required before parallel implementation.
+* Decisions that must be resolved before dependent work begins.
+* Implementation details intentionally left open.
+
+Do not assign developers or invent capacity.
+
+### 16. Assumptions, Proposals, and Required Decisions
+
+Consolidate important `ASSUMPTION`, `UNKNOWN`, `PROPOSAL`, and `REQUIRES_DECISION` items. Reference their detailed sections and explain their implementation impact.
+
+### 17. Limitations and Next Steps
+
+* What this architecture intentionally does not specify.
+* Contracts or design details required before dependent stories are implemented.
+* The most important next actions to make implementation safe and consistent.
+
+### 18. Self-Review
+
+Summarize the checks performed for:
+
+* Scope alignment.
+* Requirements and backlog traceability.
+* UX consistency.
+* Component and data ownership clarity.
+* Interface and dependency clarity.
+* Security and quality concerns.
+* Decision status and unresolved issues.
+* Suitability for MVP implementation.
+
+## 8. Status Rules
+
+Assign exactly one overall status:
+
+### `READY`
+
+Use when the architecture is coherent, aligned with the available inputs, and sufficiently defined for the next stage. No material unresolved issue prevents progression.
+
+### `READY_WITH_ASSUMPTIONS`
+
+Use when the architecture can proceed, but one or more explicit assumptions, proposals, or decisions still need confirmation. Explain which downstream activities may depend on them.
+
+### `BLOCKED`
+
+Use when a missing input, material contradiction, unresolved decision, or architectural risk prevents a reliable design or makes safe implementation planning impossible.
+
+Do not mark the architecture `READY` merely because the document is complete.
+
+## 9. Failure Conditions
+
+The output is unacceptable if it:
+
+* Requires or uses the obsolete P02 backlog instead of the updated P03 backlog as the planning reference.
+* Introduces unsupported requirements or expands the approved MVP scope.
+* Contradicts the requirements, prioritization, UX specification, or material UX validation findings without documenting the conflict.
+* Treats proposed technologies or assumptions as approved decisions.
+* Omits major components needed for in-scope capabilities.
+* Leaves important data ownership or component responsibilities ambiguous.
+* Defines dependencies that prevent the team from understanding how components interact.
+* Ignores significant security, data-integrity, or quality constraints established by the inputs.
+* Overengineers the system beyond what the MVP justifies.
+* Produces diagrams inconsistent with the written architecture.
+* Claims readiness while concealing material blockers.
+
+## 10. Final Instructions
+
+Read and analyze the five required inputs before writing the architecture.
+
+Generate the complete Markdown document at:
+
+`artifacts/05_architecture/ARCHITECTURE.md`
+
+Do not modify the input artifacts.
+
+Do not generate application code or unrelated deliverables.
+
+Do not fabricate missing information, silently resolve contradictions, or treat proposals as approved decisions.
+
+If the architecture is blocked, still produce the document with the available evidence, clearly identifying the blockers and the information or decisions needed to resolve them.
+
+Your final response should briefly state:
+
+* The output file generated.
+* The architecture status.
+* The most important assumptions, proposals, or blockers.
+* Whether the architecture is suitable for the next stage and what must be resolved first.

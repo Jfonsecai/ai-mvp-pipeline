@@ -1,473 +1,480 @@
-# P05 — Software Architecture Validation
+# P05 — Software Architecture Validator
 
-**Version:** 1.0
-**Stage:** P05 — Architecture
-**Type:** Validation Prompt
-**Input Artifacts:**
+**Version:** 2.0
+**Stage:** P05 — Architecture Validation
+**Primary output:** `artifacts/05_architecture/ARCHITECTURE_VALIDATION.md`
 
-* `artifacts/00_context/PROJECT_CONTEXT.md`
-* `artifacts/00_context/CONTEXT_VALIDATION.md`
-* `artifacts/01_discovery/PRODUCT_VISION.md`
-* `artifacts/01_discovery/PRODUCT_VISION_VALIDATION.md`
-* `artifacts/02_requirements/REQUIREMENTS.md`
-* `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
-* `artifacts/03_planning/PRIORITIZATION.md`
-* `artifacts/04_ux/UX_DESIGN.md`
-* `artifacts/04_ux/UX_VALIDATION.md`
-* `artifacts/05_architecture/ARCHITECTURE.md`
-* `prompts/system/SYSTEM_PROMPT.md`
+## 1. Purpose
 
-**Output Artifact:** `artifacts/05_architecture/ARCHITECTURE_VALIDATION.md`
-**Related Generation Prompt:** `prompts/05_architecture/P05_architecture.md`
-**Previous Stage:** P04 — UX/UI
-**Next Stage:** P06 — Implementation
+Independently validate the software architecture produced by P05.
 
----
+Determine whether the architecture is:
 
-# 1. PURPOSE
+* Aligned with the approved requirements and prioritized MVP scope.
+* Consistent with the UX specification and its validation findings.
+* Coherent in its components, responsibilities, interfaces, and conceptual data model.
+* Traceable to the relevant requirements and backlog items.
+* Proportionate to the MVP.
+* Sufficiently defined to guide the next stage without concealing important uncertainties or decisions.
 
-Objectively validate whether `ARCHITECTURE.md` is a coherent, sufficiently complete, traceable, secure-by-design, and appropriately scoped architecture for the approved MVP, and whether it is reliable enough to guide implementation.
+Your role is to evaluate the architecture, identify evidence-based findings, and determine readiness. Do not rewrite the architecture or silently correct its deficiencies.
 
-Determine whether the architecture:
+## 2. Required Inputs
 
-* Correctly reflects validated upstream artifacts and their status.
-* Covers the architecture-driving requirements and constraints.
-* Defines understandable system boundaries, components, responsibilities, and interactions.
-* Describes data ownership and interfaces at an appropriate level.
-* Addresses relevant quality attributes, security, and privacy concerns.
-* Makes consequential decisions, assumptions, proposals, and unknowns explicit.
-* Avoids unsupported product scope, technologies, integrations, and infrastructure.
-* Provides useful implementation guidance without prescribing code prematurely.
+Read the following artifacts:
 
-This is a **validation prompt**, not an architecture redesign prompt. Do not rewrite the architecture or make decisions on behalf of the team.
+1. `artifacts/02_requirements/REQUIREMENTS.md`
+2. `artifacts/03_planning/PRIORITIZATION.md`
+3. `artifacts/03_planning/product_backlog.json`
+4. `artifacts/04_ux/UX_SPEC.md`
+5. `artifacts/04_ux/UX_SPEC_VALIDATION.md`
+6. `artifacts/05_architecture/ARCHITECTURE.md`
 
----
+The P03 backlog is the authoritative backlog for scope and prioritization. Do not require or use the original P02 backlog as an additional source of planning truth.
 
-# 2. INPUTS AND SOURCE OF TRUTH
+The architecture document is the object being evaluated, not an authoritative source for its own correctness.
 
-Review the upstream artifacts listed in the metadata and the generated architecture. Use upstream artifacts as the source for product intent, requirements, constraints, priorities, UX flows, and existing decisions. Use the system prompt for global rules.
+## 3. Validation Principles
 
-The current repository is the source of truth. Do not rely on undocumented conversation history. Treat the P02–P04 paths in this prompt as expected references only; if the corresponding stage prompts define other output paths, validate against those actual artifacts and report the path difference. Do not infer missing artifacts.
+### 3.1 Independent assessment
 
-If an input is missing, empty, stale, or has no validation status:
+Evaluate the architecture against the source artifacts rather than accepting its own claims.
 
-* Record that limitation; do not pretend it was reviewed or passed.
-* Determine whether the missing input prevents meaningful validation.
-* Distinguish a genuine architecture defect from an inability to assess it.
-* Use `BLOCKED` when a reliable readiness decision cannot be made.
+A statement in `ARCHITECTURE.md` that a requirement is covered does not prove that the design actually supports it.
 
-The architecture artifact itself is not evidence that a decision has been approved. Verify approval against an explicit upstream decision or recorded human approval.
+### 3.2 Evidence-based findings
 
----
+Every material finding must reference:
 
-# 3. ROLE
+* The relevant source artifact.
+* The affected requirement, backlog item, component, interface, decision, or section, when identifiable.
+* The observed issue.
+* Its practical impact.
 
-Act as a:
+Use exact identifiers from the artifacts. Do not invent requirement or backlog IDs, and do not fabricate line numbers.
 
-> **Senior Software Architecture Reviewer and Technical Design Auditor.**
+When a source does not provide enough information to establish a conclusion, state that limitation explicitly.
 
-Evaluate the artifact based on evidence, traceability, internal consistency, and implementation readiness. Do not:
+### 3.3 Scope discipline
 
-* Redesign the system.
-* Add or remove requirements.
-* Approve proposals on behalf of the team.
-* Treat common industry practice as project evidence.
-* Convert assumptions into facts.
-* Accept an attractive diagram as a substitute for rationale or coverage.
+Evaluate only the approved MVP scope and the architectural implications of documented constraints.
 
-For each issue, identify evidence, impact, severity, and the smallest corrective action or decision needed.
+Do not fail the architecture for omitting functionality explicitly deferred or excluded from the MVP.
 
----
+Do flag deferred functionality if the architecture unnecessarily depends on it or if its inclusion contradicts planning decisions.
 
-# 4. CORE VALIDATION PRINCIPLE
+### 3.4 Distinguish severity from readiness
 
-The central question is:
+A finding may be important without blocking the next stage.
 
-> **Does the architecture faithfully and sufficiently translate approved requirements and constraints into an implementable design without unsupported decisions, contradictions, or unnecessary complexity?**
+Classify findings by severity and evaluate readiness separately. Do not automatically mark the architecture as blocked because a noncritical detail is missing.
 
-Validate this relationship:
+### 3.5 No silent decisions
 
-```text
-Validated Context / Product / Requirements / UX
-						 ↓
-				 Architecture Drivers
-						 ↓
-			 Architecture and Decisions
-						 ↓
-			  P06 Implementation Readiness
-```
+Check whether assumptions, proposals, unknowns, and required decisions are clearly labeled.
 
-Evaluate both document quality and the validity of its reasoning. Do not require runtime evidence for a design artifact, but do require evidence for claims that depend on executed tests, prototypes, benchmarks, or deployments.
+An unapproved technology choice must not be represented as an accepted project decision.
 
----
+### 3.6 No unnecessary requirements
 
-# 5. VALIDATION PROCESS
+Do not demand specific technologies, patterns, diagrams, infrastructure, or implementation details unless they are justified by the input artifacts or necessary for a coherent architecture.
 
-## Step 1 — Check Upstream Readiness
+## 4. Input Readiness Check
 
-Record existence, version, and validation result for each upstream artifact. Identify unresolved upstream findings that affect architecture, including scope, user roles, acceptance criteria, quality targets, data handling, and UX flows.
+Before validating the architecture:
 
-Do not mark P05 as fully ready if a required upstream decision is absent and materially affects the design.
+1. Confirm that all six required artifacts are available and readable.
+2. Confirm that the requirements and P03 backlog can be interpreted.
+3. Confirm that the UX specification and validation findings are available.
+4. Check whether the architecture document exists and includes enough content to assess.
+5. Identify contradictions or missing information in the inputs that limit the validation.
 
-Use the artifact paths declared by the current repository. If a referenced stage prompt is empty or does not yet define its output, report the expected input as unavailable rather than assuming that the named artifact exists or passed validation.
+If a required artifact is missing or unreadable, document the issue and mark validation `BLOCKED`.
 
-## Step 2 — Check Structural Completeness
+If an input contains ambiguity or conflicting information, do not silently resolve it. Determine whether it affects architectural correctness or readiness.
 
-Verify that `ARCHITECTURE.md` contains the required sections from P05 generation:
+Do not treat an unresolved issue originating in an input artifact as an architectural defect automatically. Record its origin and assess whether the architecture handled it responsibly.
 
-1. Document Metadata
-2. Executive Summary
-3. Scope and Architectural Drivers
-4. Constraints, Assumptions, and Unknowns
-5. System Context
-6. Architectural Approach
-7. Logical Architecture
-8. Runtime and Deployment View
-9. Interfaces and Integration Contracts
-10. Conceptual Data Architecture
-11. Quality Attributes and Security
-12. Key Interaction Views
-13. Architecture Decision Records
-14. Risks and Open Questions
-15. Requirements-to-Architecture Traceability
-16. Implementation Guidance and Boundaries
-17. Known Limitations
-18. Architecture Status and Next Actions
+## 5. Validation Checklist
 
-Sections may state `UNKNOWN` with impact and follow-up. Empty or misleading sections are findings.
+Evaluate each category using the following statuses:
 
-## Step 3 — Validate Fidelity and Scope
+* `PASS`: sufficient evidence supports compliance.
+* `PARTIAL`: some evidence exists, but an important gap or inconsistency remains.
+* `FAIL`: a material requirement or architectural expectation is violated.
+* `NOT_APPLICABLE`: the criterion genuinely does not apply; explain why.
+* `NOT_VERIFIABLE`: available evidence is insufficient to reach a reliable conclusion.
 
-Compare the architecture against P00–P04. For significant elements classify the relationship as:
+Do not use `PASS` when the evidence is merely an unsupported assertion in the architecture document.
 
-```text
-DIRECT
-REFINED
-ASSUMED
-PROPOSED
-UNSUPPORTED
-CONTRADICTORY
-```
-
-Identify new actors, product capabilities, integrations, data, or user flows that are not justified by approved requirements. An architectural component may be a technical means to satisfy a requirement; it must not conceal a new product capability.
-
-## Step 4 — Validate Architecture Drivers and Coverage
-
-Check that every architecture-driving functional requirement, quality requirement, and constraint maps to one or more architecture elements or is explicitly recorded as unresolved. Check that each major architecture element has a documented reason and source.
-
-Flag:
-
-* Requirements with no architectural response.
-* Components with no supported requirement or operational purpose.
-* Conflicting or duplicated ownership.
-* Traceability links to nonexistent identifiers.
-
-## Step 5 — Validate System Boundaries and Components
+### A. Scope and Requirements Alignment
 
 Verify that:
 
-* System scope and external dependencies are clear.
-* Actors and external systems match upstream evidence.
-* Component responsibilities are cohesive and non-overlapping.
-* Dependencies and communication paths are understandable.
-* Logical components are distinguished from runtime/deployment units.
-* Diagrams agree with the textual description.
+* Major in-scope requirements have an architectural response.
+* The architecture supports the actual MVP rather than an expanded or imagined product.
+* Required functional capabilities are represented by appropriate components or responsibilities.
+* Significant non-functional requirements have corresponding architectural considerations.
+* Requirement identifiers and descriptions are preserved accurately.
+* No unsupported requirements are introduced as approved scope.
+* Material requirement conflicts and ambiguities are documented.
+* The architecture does not rely on functionality that planning explicitly deferred or excluded without justification.
+
+### B. Planning and Backlog Alignment
+
+Verify that:
+
+* `PRIORITIZATION.md` and the P03 backlog are used as the planning references.
+* The architecture respects the current scope classifications and priorities.
+* Relevant in-scope backlog items can be mapped to architectural components or responsibilities.
+* Dependencies between backlog items are not contradicted by the architecture.
+* Blocked or decision-dependent items are not presented as unconditionally ready for implementation.
+* Deferred work does not drive unnecessary complexity.
+* The architecture does not modify priorities, scope, or delivery commitments.
+* The original P02 backlog is not incorrectly treated as the authoritative planning version.
+
+### C. UX and Design-System Alignment
+
+Verify that:
+
+* The architecture supports the navigation, information architecture, screens, and flows defined in `UX_SPEC.md`.
+* Frontend and backend responsibilities are sufficiently clear for the specified experience.
+* Data and capabilities needed by relevant screens are represented or explicitly identified as unresolved.
+* Shared UI components and design tokens can be reused consistently.
+* Loading, empty, validation, success, and error states are supported where specified.
+* Accessibility and responsive behavior are addressed where required by the UX inputs.
+* The architecture does not silently redesign or contradict the UX specification.
+* Material findings in `UX_SPEC_VALIDATION.md` are handled appropriately.
+* Unresolved UX issues that affect component boundaries, data needs, or interfaces are documented.
+
+Do not require the architecture to reproduce the entire UX specification.
+
+### D. Architectural Style and Simplicity
+
+Verify that:
+
+* The selected architectural style is described clearly.
+* Its rationale relates to actual requirements, constraints, and MVP scope.
+* Meaningful alternatives are considered when a consequential choice exists.
+* Complexity is proportionate to the project.
+* There is no unjustified adoption of microservices, distributed infrastructure, event-driven systems, or elaborate abstractions.
+* Technology recommendations are distinguished from confirmed decisions.
+* Missing stack decisions are acknowledged instead of invented.
+* The architecture provides enough structure to guide implementation without over-specifying implementation details.
+
+### E. System Context and Components
+
+Verify that:
+
+* The system boundary is understandable.
+* Relevant actors and external dependencies are identified.
+* Confirmed external dependencies are distinguished from proposals.
+* Major components have clear responsibilities.
+* Important responsibilities are neither missing nor ambiguously duplicated.
+* Component boundaries support cohesive implementation.
+* Component dependencies are understandable and consistent.
+* Important components map to relevant requirements or backlog items.
+* The system-context and component diagrams agree with the written description.
+
+### F. Interfaces and Dependencies
+
+Verify that:
+
+* Significant interfaces identify their providers and consumers.
+* Their purpose and conceptual information exchange are understandable.
+* Validation, authorization, and error-handling responsibilities are clear where relevant.
+* Allowed and prohibited component dependencies are sufficiently defined.
+* Important integration assumptions are visible.
+* The architecture identifies concrete contracts that must be agreed upon before dependent implementation proceeds in parallel.
+* Interface descriptions are consistent with component responsibilities.
+* The architecture does not invent unapproved endpoints, protocols, or integrations as settled decisions.
+
+Do not require complete API schemas at this stage unless the inputs or architectural dependencies make them necessary.
+
+### G. Conceptual Data Architecture
+
+Verify that:
+
+* The principal business entities and relationships are identified where relevant.
+* Data ownership is clear for important entities.
+* The architecture describes the main data flows.
+* Responsibilities for creating, modifying, validating, and exposing data are understandable.
+* Important integrity, lifecycle, and access constraints are considered.
+* Data concepts are consistent with requirements, backlog items, and UX needs.
+* The conceptual data diagram, when applicable, matches the written descriptions.
+* Missing data requirements are identified rather than concealed.
+* The architecture avoids unsupported attributes or unnecessary database-level detail.
+
+### H. Security and Quality Attributes
 
-Do not demand a particular architecture style. Evaluate whether the chosen style is justified for this MVP and its constraints.
+Verify that:
+
+* Relevant security and quality requirements have corresponding architectural responses.
+* Authentication and authorization responsibilities are clear where applicable.
+* Trust boundaries and client-input validation are considered.
+* Sensitive information is appropriately protected where required.
+* Error handling and logging do not introduce obvious security or privacy problems.
+* Data integrity and unauthorized access are addressed where relevant.
+* Testing and maintainability concerns are considered at an appropriate level.
+* Availability, performance, recovery, or observability are addressed when supported by the inputs.
+* Quantitative targets are not fabricated.
+* Unspecified controls or targets are recorded as unknowns or required decisions.
 
-## Step 6 — Validate Interfaces and Data
+Do not claim regulatory compliance or certification without evidence.
 
-Check that important interfaces have a purpose, provider/consumer, and requirement trace. Check that the conceptual data model supports documented flows, names ownership, and does not masquerade as a detailed schema.
+### I. Architectural Decisions and Traceability
 
-Flag invented endpoints, fields, protocols, retention policies, data volumes, or integrations. Ensure unresolved contracts are clearly marked for later decisions.
+Verify that:
 
-## Step 7 — Validate Quality, Security, and Privacy
+* Significant decisions have unique ADR identifiers.
+* Each important decision includes context, rationale, consequences, and status.
+* Only explicitly established or approved choices are labeled `ACCEPTED`.
+* Recommendations remain `PROPOSED` until approved.
+* Relevant requirement and backlog identifiers are preserved.
+* Component, interface, data, risk, and constraint identifiers are used consistently.
+* The traceability matrix reflects the architecture rather than merely asserting coverage.
+* Unmapped requirements and unresolved relationships are visible.
+* Diagrams and written decisions do not contradict each other.
 
-Check that relevant non-functional requirements are addressed with plausible architectural tactics and that their evidence or unverified status is clear.
+### J. Risks, Constraints, and Open Decisions
 
-Evaluate, when relevant:
+Verify that:
 
-* Authentication and authorization boundaries.
-* Trust boundaries and input crossing points.
-* Sensitive data minimization, access, and persistence.
-* Secret/configuration handling.
-* Failure handling and dependency behavior.
-* Availability, recovery, and performance targets.
-* Logging, monitoring, and operational support.
+* Material architectural risks are documented.
+* Risks have meaningful impacts and reasonable next actions.
+* Severity or likelihood is not presented as established fact without evidence.
+* Assumptions, unknowns, proposals, required decisions, and blockers are distinguished.
+* Architectural invariants and constraints are explicit enough to guide implementation.
+* Important decisions that affect parallel work are identified.
+* No critical uncertainty is hidden in vague language.
 
-Do not require unsupported controls or declare regulatory compliance, security, or quality targets as satisfied without evidence. An unknown that could expose sensitive data or invalidate core access control is potentially blocking.
+### K. Implementation Readiness and Parallel Work
 
-## Step 8 — Validate Decisions and Alternatives
+Verify that:
 
-Review major architecture decision records for context, alternatives, rationale, consequences, status, and approval. Verify that `ACCEPTED` corresponds to an explicit team decision and that proposals/deferred decisions are not treated as implementation instructions.
+* The architecture provides a coherent implementation direction.
+* Component responsibilities are clear enough to support task decomposition.
+* Important dependencies are identifiable.
+* Shared contracts that must be agreed upon before parallel implementation are specified.
+* Implementation freedoms are distinguished from mandatory architectural constraints.
+* The architecture does not invent developer availability, capacity, assignments, or delivery estimates.
+* Remaining implementation details are intentionally deferred rather than accidentally omitted.
+* The document states what must be resolved before dependent work can proceed safely.
 
-Check whether the selected approach avoids unjustified complexity and whether meaningful alternatives were considered for consequential choices.
+### L. Document Quality and Internal Consistency
 
-For significant changes proposed to resolve upstream conflicts, verify that a change request identifies the reason, affected artifacts and requirements, impact, proposed change, and required revalidation. Confirm that downstream impacts and human approval are explicit; do not treat an unapproved change as accepted.
+Verify that:
 
-## Step 9 — Validate Implementation Readiness
+* The required architecture sections are present or explicitly marked not applicable.
+* The document uses the required status vocabulary consistently.
+* Diagrams are syntactically plausible Mermaid and match the written architecture.
+* Identifiers are unique and consistently referenced.
+* Tables and traceability mappings are readable.
+* There are no major internal contradictions.
+* The document distinguishes facts, assumptions, proposals, and unknowns.
+* The final status is supported by the actual findings.
 
-Determine whether P06 can identify the components and boundaries to implement, required interfaces/data responsibilities, architectural invariants, and unresolved approvals. The architecture need not contain source code, detailed schemas, or a complete API specification.
+## 6. Severity Classification
 
-Where P03 implementation tasks exist, check that the architecture can be implemented in traceable, manageable increments without inventing task identifiers. Identify whether implementation can proceed safely, can proceed only with explicit constraints, or must wait for decisions.
+Assign one severity to each finding:
 
-## Step 10 — Determine the Result
+* `CRITICAL`: the architecture cannot be relied upon for safe or coherent progression because of a fundamental flaw, major contradiction, or critical unresolved dependency.
+* `HIGH`: a significant gap or inconsistency that must be resolved before the affected implementation can proceed safely.
+* `MEDIUM`: a meaningful weakness that should be addressed but does not necessarily prevent the next stage from proceeding.
+* `LOW`: a minor clarification, documentation improvement, or limited inconsistency.
+* `INFO`: a useful observation without a confirmed defect.
 
-Assign finding severity and an overall result using Sections 13–15. Recommendations must identify the artifact, requirement, approval, or validation that should be revisited; do not silently change the design.
+Severity must reflect practical impact, not the number of words missing from a section.
 
----
+## 7. Readiness Decision
 
-# 6. ARCHITECTURAL APPROACH VALIDATION
+Assign exactly one overall validation status.
 
-Evaluate the selected style and deployment shape against:
+### `PASS`
 
-* MVP scope and delivery constraints.
-* Team skills and maintainability constraints when documented.
-* Integration and data needs.
-* Relevant quality requirements.
-* Operational and deployment complexity.
+Use when:
 
-Flag unnecessary microservices, infrastructure, frameworks, layers, dependencies, or speculative extensibility when they lack a documented driver. Do not insist on a monolith if requirements support a different approach.
+* No critical or high-severity defects remain.
+* The architecture is coherent and sufficiently traceable.
+* The approved MVP scope and UX are respected.
+* No material issue prevents progression to the next stage.
 
-Technology selections must be classified as:
+Minor findings may remain if they are documented and do not undermine readiness.
 
-```text
-APPROVED
-EXISTING CONSTRAINT
-PROPOSED
-ASSUMED
-UNKNOWN
-```
+### `PASS_WITH_CONDITIONS`
 
-Flag any unapproved technology or platform presented as an accepted decision.
+Use when:
 
-Review consequential proposed dependencies against the existing stack. Check whether each dependency is necessary and whether compatibility, maintenance, security, relevant license considerations, and added complexity were considered. Flag dependencies added for trivial functionality already supported by the selected stack when this creates unjustified cost or risk.
+* The architecture is broadly coherent.
+* No critical defect makes the design unreliable.
+* One or more noncritical gaps or explicit decisions must be addressed before the affected implementation work proceeds.
+* Conditions, responsible parties if known, and the affected work are clearly documented.
 
----
+Do not use this status to conceal a fundamental architectural contradiction.
 
-# 7. DIAGRAM VALIDATION
+### `FAIL`
 
-Check that diagrams:
+Use when material architectural defects remain, such as:
 
-* Have valid and readable Mermaid syntax when Mermaid is used.
-* Match component names and boundaries in the prose.
-* Show only supported actors, services, and interactions.
-* Clearly label proposed or unknown elements.
-* Do not imply deployment, ownership, or approval that the text does not establish.
+* A major in-scope capability has no viable architectural support.
+* The architecture materially contradicts requirements, planning, or UX.
+* Important component responsibilities or data ownership are incoherent.
+* Significant interfaces or dependencies cannot be understood.
+* Unapproved choices are presented as settled decisions in a way that undermines the design.
+* The architecture is so incomplete or overengineered that it cannot reasonably guide implementation.
 
-A diagram is optional when the same information is clearly represented in text and tables. Do not penalize absent diagrams solely for presentation preference.
+Explain the required corrections.
 
----
+### `BLOCKED`
 
-# 8. MVP AND COMPLEXITY AUDIT
+Use when validation cannot be completed reliably because a required input is missing, unreadable, or materially insufficient, or because an unresolved source conflict prevents a defensible assessment.
 
-For each major architectural element, ask:
+A blocked validation is not equivalent to proving that the architecture itself is defective.
 
-1. Which approved requirement or operational need justifies it?
-2. Is it necessary for the MVP or a stated quality constraint?
-3. Does it introduce a new user-visible capability or external dependency?
-4. Is a simpler alternative sufficient?
-5. Is its cost or risk documented?
+## 8. Required Output Format
 
-Flag untraceable architecture, scope expansion, and speculative design. Do not reject future-facing extension points if they are minimal, justified, and do not add current operational cost.
+Generate `artifacts/05_architecture/ARCHITECTURE_VALIDATION.md` using this structure.
 
----
+### 1. Validation Metadata
 
-# 9. SECURITY AND DATA VALIDATION
+* Stage and validator version.
+* Architecture document reviewed.
+* Required inputs reviewed.
+* Overall validation status: `PASS`, `PASS_WITH_CONDITIONS`, `FAIL`, or `BLOCKED`.
+* Short justification.
 
-Verify that data boundaries and access responsibilities are understandable and that security-relevant unknowns are visible. Look for:
+### 2. Input Readiness
 
-* Sensitive data stored or exchanged without a stated purpose or owner.
-* No stated authorization boundary where requirements imply distinct user permissions.
-* Unnecessary collection or propagation of data.
-* Hard-coded secrets or insecure configuration recommendations.
-* Unjustified assumptions about compliance, encryption, identity, or retention.
+A table containing:
 
-Do not reproduce secret values in the report. Classify suspected exposure as critical and recommend secure handling without copying the value.
+* Artifact.
+* Availability and readability.
+* Role in validation.
+* Limitations or conflicts.
 
----
+### 3. Executive Assessment
 
-# 10. TRACEABILITY AUDIT
+Summarize:
 
-Audit the relationship:
+* Overall architectural quality.
+* Scope and UX alignment.
+* Main strengths.
+* Most important unresolved concerns.
+* Whether the architecture can guide the next stage.
 
-```text
-Product Goal / User Journey
-		  ↓
-Requirement / Constraint
-		  ↓
-Architecture Driver
-		  ↓
-Component / Interface / Data / Quality Tactic
-		  ↓
-Implementation Guidance
-```
+### 4. Validation Scorecard
 
-Use `DIRECT`, `REFINED`, `ASSUMED`, `PROPOSED`, `UNSUPPORTED`, or `CONTRADICTORY` for major decisions and elements. Every significant decision must trace to an existing requirement, constraint, explicit team decision, or a clearly labeled proposal.
+A table containing each category A–L, its status, concise evidence, and any finding IDs.
 
-Do not require every sentence to have an identifier. Do require coverage for all architecture-driving requirements and justification for all major design elements.
+Do not calculate a numeric score or percentage unless the project explicitly defines a scoring method.
 
----
+### 5. Detailed Findings
 
-# 11. SEVERITY LEVELS
+Assign unique identifiers such as `AV-001`.
 
-### CRITICAL
+For each finding, include:
 
-The architecture cannot safely guide implementation.
+* ID.
+* Severity.
+* Category.
+* Status or issue.
+* Evidence and source artifact.
+* Affected requirement, backlog item, component, interface, ADR, or architecture section.
+* Practical impact.
+* Recommended correction or next action.
+* Whether the finding blocks the next stage or only affected implementation work.
 
-Examples:
+If there are no findings in a category, state that no material issue was identified based on the available evidence.
 
-* Core MVP requirements are contradicted or materially unsupported.
-* A security or data-boundary issue creates a significant risk.
-* Major proposed decisions are represented as approved, making implementation unsafe.
-* The system boundary or architecture is incoherent for a core user journey.
+### 6. Traceability Review
 
-### HIGH
+Summarize whether the architecture correctly connects:
 
-A significant correction or decision is required before P06.
+* Requirements to architectural responses.
+* In-scope backlog items to components and responsibilities.
+* UX flows and screens to frontend capabilities and required data.
+* Architectural decisions to their evidence and constraints.
 
-Examples:
+List material gaps and affected identifiers. Do not duplicate the full architecture traceability matrix unless needed to explain a finding.
 
-* Important requirements lack architecture coverage.
-* A major data owner, interface, or component responsibility is unclear.
-* Architecture depends on an unresolved decision that blocks a core flow.
-* Unjustified infrastructure materially increases MVP delivery risk.
+### 7. Scope and Consistency Review
 
-### MEDIUM
+Report any:
 
-The architecture may proceed with clarification or bounded assumptions.
+* Unjustified scope expansion.
+* Deferred features influencing the architecture unnecessarily.
+* Conflicts between requirements, planning, UX, and architecture.
+* Contradictions between diagrams and written descriptions.
+* Unsupported technology or integration assumptions.
 
-Examples:
+### 8. Readiness Conditions
 
-* Non-critical traceability gaps.
-* An alternative or consequence is insufficiently explained.
-* Non-blocking quality targets or operational details remain open.
+List every condition that must be resolved before the affected work proceeds.
 
-### LOW
+For each condition, include:
 
-Minor quality issue that does not materially affect implementation readiness.
+* Condition ID, such as `COND-001`.
+* Required action.
+* Reason.
+* Related finding IDs.
+* Affected work or dependency.
+* Owner or deadline only if explicitly known.
 
-Examples:
+If no conditions are needed, state that explicitly.
 
-* Minor wording or formatting inconsistency.
-* Diagram labels or section references need clarification.
+### 9. Strengths and Nonblocking Improvements
 
----
+List meaningful strengths and optional improvements separately from defects that must be corrected.
 
-# 12. OVERALL VALIDATION RESULT
+Do not inflate this section with generic praise.
 
-Return exactly one overall result:
+### 10. Final Recommendation
 
-## PASS
+State:
 
-Use when required upstream inputs are available and sufficiently validated, architecture drivers are covered, no critical/high blocking issue remains, major decisions are approved or explicitly constrained, and P06 can proceed safely.
+* Final status.
+* Whether the architecture is suitable for the next stage.
+* What must be corrected or decided first.
+* Whether the architecture document itself should be revised before proceeding.
 
-## PASS_WITH_WARNINGS
+Do not rewrite `ARCHITECTURE.md` as part of this validation task.
 
-Use when P06 can proceed with explicit limits, non-blocking assumptions, or medium/low findings. These must not invalidate a core flow, security boundary, or major architecture decision.
+## 9. Failure Conditions
 
-## FAIL
+The validation is unacceptable if it:
 
-Use when the architecture contains significant defects, contradictions, unsupported scope, or unapproved choices that must be corrected before implementation.
+* Evaluates the architecture without checking the source artifacts.
+* Treats the architecture's own claims as sufficient evidence.
+* Uses the P02 backlog instead of the P03 backlog as the planning reference.
+* Invents source identifiers, requirements, approvals, or facts.
+* Requires technologies or patterns not justified by the inputs.
+* Ignores material UX validation findings.
+* Fails to distinguish architecture defects from missing or contradictory inputs.
+* Labels the architecture ready while overlooking critical defects.
+* Marks the architecture blocked for minor issues that do not prevent reliable validation.
+* Gives findings without evidence or practical impact.
+* Rewrites the architecture instead of independently validating it.
+* Produces a status that conflicts with the documented findings.
 
-## BLOCKED
+## 10. Final Instructions
 
-Use when missing/invalid upstream inputs or unavailable human decisions prevent reliable validation or a safe architecture decision. Name the precise input or decision required.
+Read all six required artifacts before completing the validation.
 
-Decision rules:
+Evaluate the architecture against the source artifacts, not against an imagined ideal system.
 
-```text
-IF validation cannot be reliable because essential evidence/decision is missing
-	→ BLOCKED
-ELSE IF critical or high architecture defect exists
-	→ FAIL
-ELSE IF P06 can proceed with non-blocking findings or bounded assumptions
-	→ PASS_WITH_WARNINGS
-ELSE
-	→ PASS
-```
+Generate the complete validation report at:
 
-Do not award PASS because the document is polished. Evidence, consistency, coverage, approval status, and implementation readiness govern the result.
+`artifacts/05_architecture/ARCHITECTURE_VALIDATION.md`
 
----
+Do not modify the source artifacts or the architecture document.
 
-# 13. REQUIRED VALIDATION REPORT
+Do not invent missing information, silently resolve contradictions, or treat proposals as approved.
 
-Generate:
+If validation is blocked, produce the report with the available evidence and clearly state what is missing.
 
-```text
-artifacts/05_architecture/ARCHITECTURE_VALIDATION.md
-```
+Your final response should briefly report:
 
-Use this structure:
-
-```markdown
-# P05 Architecture Validation Report
-
-## 1. Validation Metadata
-- Validator: P05 Architecture Validator
-- Project:
-- Architecture Version:
-- Validation Date:
-- Upstream Artifact Versions / Statuses:
-- Overall Result: PASS / PASS_WITH_WARNINGS / FAIL / BLOCKED
-- P06 Readiness:
-
-## 2. Executive Summary
-Summarize the result, strongest evidence, and primary limitation.
-
-## 3. Input Readiness
-| Input Artifact | Present | Validation Status | Reviewed | Impact / Notes |
-|---|---|---|---|---|
-
-## 4. Structural Validation
-| Architecture Section | Present | Adequate | Evidence / Finding |
-|---|---|---|---|
-
-## 5. Findings
-| ID | Severity | Category | Finding | Evidence / Source | Impact | Recommendation |
-|---|---|---|---|---|---|---|
-
-## 6. Scope and Traceability
-### Supported Elements
-### Unsupported / Contradictory Elements
-### Requirement Coverage
-| Requirement / Constraint | Architecture Element | Coverage | Gap |
-|---|---|---|---|
-
-## 7. Architecture Review
-### System Boundary and Components
-### Interfaces and Data
-### Quality Attributes, Security, and Privacy
-### Decisions, Alternatives, and Approval
-### Diagrams and Internal Consistency
-
-## 8. MVP Complexity Review
-Identify justified and potentially unnecessary elements.
-
-## 9. Assumptions, Unknowns, and Risks
-| ID | Item | Classification | Impact | Required Action |
-|---|---|---|---|---|
-
-## 10. P06 Readiness
-- Ready to proceed: YES / WITH CONSTRAINTS / NO
-- Constraints or required approvals:
-- Blocking items:
-- Required artifact updates / revalidation:
-
-## 11. Final Decision
-State exactly one result and justify it against the decision rules.
-```
-
-If no findings exist, explicitly state `No findings identified` rather than leaving the section empty.
-
----
-
-# 14. FINAL RESPONSE
-
-After generating the validation report, summarize:
-
-1. Overall result and P06 readiness.
-2. Critical/high findings or the fact that none were found.
-3. Required decisions, corrections, or upstream revalidation.
-4. Any limits on the evidence available.
+* The validation file generated.
+* The overall validation status.
+* The most important findings or conditions.
+* Whether the architecture can proceed to the next stage.
