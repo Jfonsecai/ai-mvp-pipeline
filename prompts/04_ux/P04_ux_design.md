@@ -1,916 +1,413 @@
-# P04 — UX Design
+# P04 — UX Specification and Visual Design System
 
-**Version:** 1.0
+**Version:** 2.0
 **Stage:** P04 — UX Design
-**Type:** Generation Prompt
-**Input Artifacts:**
+**Output language:** English
+**Primary output:** `artifacts/04_ux/UX_SPEC.md`
 
-* Requirements artifact(s) produced by P02 (expected under `artifacts/02_requirements/`)
-* Validation report of the Requirements stage
-* Sprint Plan artifact(s) produced by the sprint planning stage (locate under `artifacts/`)
-* Validation report of the Sprint Plan stage
+## 1. Purpose
+
+Transform the approved product requirements and delivery scope into a coherent, implementable UX specification and initial visual design system.
+
+The output must allow multiple developers and AI agents to implement different user stories while preserving a consistent user experience, visual identity, component usage, navigation, and interaction behavior.
+
+This stage defines **what users see and how they interact with the product**. It also establishes the visual rules that the frontend must follow.
+
+It does not define the software architecture, API contracts, database schema, backend implementation, or source code. Those belong to P05 and subsequent stages.
+
+Follow `prompts/system/SYSTEM_PROMPT.md` for global project rules.
+
+## 2. Inputs
+
+Read and cross-reference all the following artifacts:
+
+### Product definition and requirements
+
+* `artifacts/02_requirements/REQUIREMENTS.md`
+* `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
+
+### Prioritization and delivery scope
+
+* `artifacts/03_planning/PRIORITIZATION.md`
+* `artifacts/03_planning/PRIORITIZATION_VALIDATION.md`
+* `artifacts/03_planning/product_backlog.json` — updated P03 backlog.
+
+### Global rules
+
 * `prompts/system/SYSTEM_PROMPT.md`
 
-**Output Artifact:** `artifacts/04_ux_design/UX_SPEC.md`
-**Validator:** P04 UX Validator
-**Previous Stage:** P03
-**Next Stage:** P05
+Use P02 as the authoritative source for product requirements and P03 as the authoritative source for priorities, scope classification, and current delivery decisions.
 
----
 
-# 1. Purpose
+## 3. Preconditions and input validation
 
-Transform the validated requirements and the sprint plan into a clear and structured UX specification that defines:
+Before designing:
 
-* The user roles that interact with the product.
-* The information architecture: which screens exist and how users move between them.
-* The user flows that allow each role to accomplish every MVP functionality.
-* The functional content, actions, and states of each screen.
-* The interaction and feedback rules that apply across the product.
-* How flows and screens are distributed across the planned sprints.
-* How every MVP functionality is covered by at least one flow.
+1. Verify that all required input artifacts are available and readable.
+2. Review the P02 and P03 validation reports.
+3. Check whether requirements and delivery scope are sufficiently clear to design the user experience.
+4. Identify unresolved decisions, contradictions, missing information, and dependencies that affect UX.
+5. Distinguish approved requirements from assumptions and proposals.
 
-This stage converts requirements into a **user experience definition** that can serve as the foundation for design decisions in later stages.
+If essential inputs are missing, invalid, or blocked, do not fabricate a complete UX specification. Document the blocking issues and produce the output with an appropriate status.
 
-The objective is not to produce a visual design.
+If some non-critical details remain unknown, proceed only where reasonable. Mark those details as `ASSUMPTION` or `REQUIRES_DECISION` and explain their impact.
 
-Visual design, UI component libraries, frontend implementation, architecture, database design, APIs, and deployment decisions belong to other stages.
+Do not silently resolve contradictions between upstream artifacts. Identify them and request a decision where necessary.
 
-The defining condition of this stage is:
+## 4. Scope and design principles
 
-> **The user flows must cover the MVP functionalities.**
+The UX specification must:
 
----
+* Cover user-facing functionality included in the approved MVP scope.
+* Reflect the single current delivery sprint, `SPRINT-001`, and the scope established by P03.
+* Prioritize clarity, usability, consistency, accessibility, and implementation simplicity.
+* Define a coherent visual language across all included screens.
+* Prefer reusable components and shared design tokens over isolated styling decisions.
+* Support independent development of user stories without allowing each developer to invent a different interface.
+* Avoid unnecessary screens, interactions, components, or visual complexity.
+* Preserve traceability to existing requirements and backlog items.
+* Clearly separate current MVP design from future possibilities.
 
-# 2. Inputs
+Do not introduce product functionality solely because it is common in similar applications.
 
-## 2.1 Requirements
+If a screen, component, or interaction requires an unapproved business rule or essential product decision, document it as `REQUIRES_DECISION`.
 
-Read the Requirements artifact(s) produced by P02.
+A proposed improvement that is not part of the approved scope must be marked `PROPOSAL` and must not be treated as an approved MVP requirement.
 
-This is the primary source for understanding:
-
-* Functional requirements and their identifiers.
-* The MVP scope and the priority of each requirement.
-* User roles and their permissions or restrictions.
-* Business rules that affect user interaction.
-* Non-functional requirements that affect the experience (for example, responsiveness, accessibility, or usability expectations), if present.
-* Acceptance criteria that describe observable behavior.
-* Assumptions, unknowns, and open questions inherited from earlier stages.
-
----
-
-## 2.2 Sprint Plan
-
-Read the Sprint Plan artifact(s).
-
-Use it to understand:
-
-* Which requirements are planned in which sprint.
-* The planned order and dependencies between sprints.
-* The sprint goals.
-* Any scope or capacity warnings.
-
-The Sprint Plan constrains **when** capabilities are delivered.
-
-It does not define **what** the user experience is.
-
----
-
-## 2.3 Upstream Validation Results
-
-Read the validation reports of the Requirements stage and of the Sprint Plan stage.
-
-Use them to determine whether those artifacts can be used as the foundation for UX Design.
-
-If the validation result is:
-
-### PASS
-
-Proceed normally.
-
-### PASS_WITH_WARNINGS
-
-Proceed while preserving and explicitly tracking the warnings that affect UX Design.
-
-### FAIL
-
-Do not proceed normally.
-
-Identify the blocking issues and indicate that the corresponding stage must be revised before UX Design can be completed.
-
-### BLOCKED
-
-Do not generate a definitive UX specification.
-
-Identify the missing information preventing reliable UX design.
-
-If a validation report is missing, record it as `UNKNOWN` and proceed only if the artifact itself is present and no evidence suggests that it is invalid.
-
----
-
-## 2.4 Global System Prompt
-
-Read:
-
-```text
-prompts/system/SYSTEM_PROMPT.md
-```
-
-Use it to comply with the global pipeline principles.
-
----
-
-## 2.5 Reference Rule
-
-Requirements may reference identifiers from earlier stages (for example P00 or P01).
-
-Use those identifiers only for traceability.
-
-Do not re-derive requirements, users, or scope from earlier stages. The Requirements artifact is the authoritative source for this stage.
-
----
-
-# 3. Role
-
-Act as a:
-
-> Senior UX Designer and Interaction Analyst.
-
-Your responsibility is to transform validated requirements into coherent user flows and screen definitions while preserving the project's scope.
-
-You must:
-
-* Understand each user's goal.
-* Define flows that allow users to complete their goals.
-* Make navigation and screen responsibilities explicit.
-* Define screen states and interaction feedback.
-* Maintain traceability to the requirements.
-* Respect the sprint plan.
-* Identify assumptions and uncertainties.
-
-You must not:
-
-* Add functionality that is not present in the requirements.
-* Change or reprioritize the requirements or the sprint plan.
-* Make visual design decisions.
-* Make technical or architectural decisions.
-* Decide on behalf of the team any question that the requirements leave open.
-
----
-
-# 4. Core Principle
-
-The UX specification should answer:
-
-> **For each type of user, how do they accomplish every MVP functionality through the product, screen by screen, and in which sprint does each part become available?**
-
-The result must be precise enough to guide design and implementation, but it must not become a visual design or a technical specification.
-
----
-
-# 5. UX Design Process
-
-Follow this process.
-
-## Step 1 — Review the Inputs
-
-Read the complete Requirements and Sprint Plan artifacts and their validation reports.
-
-Identify:
-
-* Established requirements and their identifiers.
-* MVP and non-MVP requirements.
-* User roles.
-* Business rules affecting interaction.
-* Sprint allocation of requirements.
-* Assumptions, unknowns, and open questions.
-* Validation warnings.
-
-Do not ignore unresolved issues.
-
-If the Requirements and the Sprint Plan contradict each other, register the contradiction. Do not resolve it silently.
-
----
-
-## Step 2 — Classify Requirements by UX Relevance
-
-Classify every requirement as:
-
-```text
-USER_FACING
-```
-
-The user directly performs or observes the behavior through the interface.
-
-```text
-UX_SUPPORTING
-```
-
-Not directly performed by the user but it influences the experience (for example, a rule that determines what the user sees or is allowed to do).
-
-```text
-UX_CONSTRAINT
-```
-
-A non-functional requirement that constrains the experience (for example, responsiveness, accessibility, language, or usability).
-
-```text
-NOT_UX_RELEVANT
-```
-
-No observable effect on the user experience (for example, internal processing, infrastructure, or data storage behavior).
-
-Record the classification and the justification.
-
-Do not classify a requirement as `NOT_UX_RELEVANT` merely because it is hard to represent in a flow.
-
----
-
-## Step 3 — Identify User Roles and Goals
-
-Determine, from the requirements:
-
-* Each user role.
-* The goals of each role related to MVP functionality.
-* The relationships between roles, if any.
-* Access or permission differences between roles.
-
-Do not create personas with invented demographics or characteristics.
-
-Do not introduce roles that do not exist in the requirements.
-
----
-
-## Step 4 — Define the Information Architecture
-
-Define:
-
-* The screens (or views) needed to support the MVP functionality.
-* The responsibility of each screen.
-* The navigation structure between screens.
-* Which roles can access which screens.
-
-Every screen must exist because a requirement or a flow needs it.
-
-Do not add screens for functionality that is not in the requirements.
-
----
-
-## Step 5 — Define User Flows
-
-For each MVP functionality, define at least one user flow.
-
-A flow must include:
-
-* The role performing it.
-* The entry point and the triggering goal.
-* The main path from start to outcome.
-* Relevant alternative paths.
-* Relevant exception and error paths.
-* The final outcome and where the user goes next.
-* The requirements that the flow covers.
-
-A flow may cover more than one requirement.
-
-A requirement may be covered by more than one flow.
-
-Alternative and exception paths must be derived from the requirements, business rules, or acceptance criteria. If a necessary path is not supported by the requirements, register it as an open question.
-
----
-
-## Step 6 — Define Screen Specifications
-
-For each screen, define at a functional level:
-
-* Purpose.
-* Roles that can access it.
-* Entry points and exits.
-* Information displayed.
-* Actions available.
-* Inputs requested from the user.
-* States (initial, loading, empty, populated, error, success), when applicable.
-* The requirements it supports.
-
-Use text structure only.
-
-Do not define colors, typography, spacing, icons, animations, or pixel-level layout.
-
----
-
-## Step 7 — Define Interaction and Feedback Rules
-
-Define the rules that apply consistently across the product, for example:
-
-* How validation errors are communicated.
-* How system errors are communicated.
-* How successful actions are confirmed.
-* How empty and loading states behave.
-* How users navigate back or cancel.
-* How restricted access is communicated to a role.
-
-Derive these rules from the requirements and business rules.
-
-If a rule is a UX convention rather than a requirement, label it as a `UX_PRINCIPLE` or an `ASSUMPTION`.
-
-Do not define the exact wording of messages unless it is specified in the requirements. Define the **intent** of the message.
-
----
-
-## Step 8 — Align with the Sprint Plan
-
-For each flow and screen, identify:
-
-* The sprint(s) in which the requirements it depends on are planned.
-* Whether the flow can be completed using only the capabilities planned up to that sprint.
-
-Identify:
-
-* Flows split across multiple sprints.
-* Screens that must exist before their dependent flows.
-* Flows that cannot deliver a coherent experience in the sprint where they first appear.
-
-Do not modify the Sprint Plan.
-
-If the Sprint Plan makes a coherent flow impossible, register it as a risk or an open question.
-
----
-
-## Step 9 — Analyze Coverage
-
-Build the Flow Coverage Matrix.
-
-For every MVP requirement classified as `USER_FACING` or `UX_SUPPORTING`, verify that at least one flow or screen covers it.
-
-For every `UX_CONSTRAINT`, identify how the UX specification respects it.
-
-Classify each requirement as:
-
-```text
-COVERED
-PARTIALLY_COVERED
-NOT_COVERED
-NOT_UX_RELEVANT
-```
-
-Do not mark a requirement as `COVERED` unless a complete path exists from the user's goal to the outcome, including the behavior described by the requirement.
-
-Any MVP requirement that is `PARTIALLY_COVERED` or `NOT_COVERED` must have a reason and a registered open question or decision.
-
----
-
-## Step 10 — Self-Validate
-
-Use the checklist in Section 18 before finalizing the artifact.
-
----
-
-# 6. Coverage Principle
-
-The UX specification is acceptable only if:
-
-```text
-Every MVP functionality
-        ↓
-is reachable and completable
-        ↓
-through at least one defined flow
-```
-
-The following must be true:
-
-* Every MVP `USER_FACING` requirement is covered by a flow.
-* Every MVP `UX_SUPPORTING` requirement is reflected in the flows or screens it affects.
-* Every flow ends with a defined outcome.
-* Every screen is reachable from at least one flow or from the navigation structure.
-* Every transition points to an existing screen or flow.
-* No flow depends on functionality that is not in the requirements.
-
-If these conditions cannot be met because the requirements are incomplete or contradictory, report the problem. Do not fill the gap with invented functionality.
-
----
-
-# 7. Scope Boundaries
-
-Clearly distinguish:
-
-## MVP Flows
-
-Flows that cover MVP requirements.
-
-## Non-MVP Requirements
-
-Requirements that are not part of the MVP. They are not given flows or screens unless the requirements explicitly demand it.
-
-## UX Supporting Elements
-
-Elements necessary for the MVP flows to function from the user's perspective and that do not introduce new capabilities. Examples: an empty state, a confirmation message, an error state, a navigation element.
-
-## Proposed UX Considerations
-
-Capabilities or screens that appear necessary for a coherent experience but are not present in the requirements. Examples: a password recovery flow when only authentication is required, or a search filter when only listing is required.
-
-Proposed UX Considerations:
-
-1. Must be identified.
-2. Must explain why they may be relevant.
-3. Must be registered as an open question or `REQUIRES_DECISION`.
-4. Must **not** become part of the MVP flows automatically.
-
-Do not classify an unresolved decision as out of scope merely because it is undefined. Use `REQUIRES_DECISION`.
-
----
-
-# 8. Flow Specification Rules
-
-Each flow must be defined using the following structure.
-
-```text
-Flow ID
-Name
-Role
-Goal
-Entry Point
-Preconditions
-Covered Requirements
-Sprint Availability
-Main Path (step table)
-Alternative Paths
-Exception Paths
-Outcome
-Postconditions
-```
-
-The Main Path must be defined as a step table:
-
-| Step | Screen | User Action | System Response | Next |
-| --- | --- | --- | --- | --- |
-
-Rules:
-
-* Each step must reference an existing screen.
-* `System Response` describes observable behavior, not implementation.
-* `Next` references a step, a screen, or the flow's outcome.
-* Steps must be sequential and complete.
-* A flow must not end in an undefined state.
-
-Diagrams (for example, Mermaid) may be added as a visual aid. If included, they must be consistent with the step table. The table is authoritative.
-
----
-
-# 9. Screen Specification Rules
-
-Each screen must be defined using the following structure.
-
-```text
-Screen ID
-Name
-Purpose
-Roles with Access
-Entry Points
-Exits
-Information Displayed
-Available Actions
-User Inputs
-States
-Supported Requirements
-Used in Flows
-Sprint Availability
-```
-
-Rules:
-
-* Describe content and behavior, not appearance.
-* Do not define components from a specific UI library.
-* Do not define data structures, endpoints, or storage.
-* Every screen must be used by at least one flow or be part of the navigation structure.
-* Every user input must correspond to information required by a requirement or business rule. If it is not supported, register it as an assumption or question.
-
----
-
-# 10. UX Principles
-
-Derive a small set of UX principles to guide design decisions.
-
-Examples:
-
-* Keep the primary journey short.
-* Make the next action clear on every screen.
-* Provide feedback for every user action.
-* Avoid exposing functionality that a role cannot use.
-
-Only include principles relevant to the project.
-
-Principles must be derived from the requirements or labeled as assumptions.
-
-Do not turn principles into technical or visual requirements.
-
----
-
-# 11. Sprint Alignment Rules
-
-For each sprint, identify:
-
-* Flows that are fully deliverable.
-* Flows that are partially deliverable.
-* Screens introduced.
-
-Rules:
-
-* A flow delivered partially in a sprint must still leave the user in a coherent state (no dead ends).
-* A flow must not depend on screens or capabilities planned in a later sprint, unless the dependency is registered.
-* Do not move requirements between sprints.
-* Do not propose a new sprint order.
-
-If the sprint allocation of a requirement is not available, register it as `UNKNOWN`.
-
----
-
-# 12. Traceability
-
-Every UX element must be traceable to the requirements.
-
-Use stable identifiers.
-
-Recommended identifiers:
-
-```text
-P04-USER-001
-P04-FLOW-001
-P04-SCR-001
-P04-NAV-001
-P04-RULE-001
-P04-PRINCIPLE-001
-P04-COV-001
-P04-ASSUMPTION-001
-P04-QUESTION-001
-P04-RISK-001
-```
-
-Where possible, include the originating identifier from the Requirements artifact.
-
-For example:
-
-```text
-Source: <requirement ID as written in the Requirements artifact>
-ID: P04-FLOW-001
-```
-
-Use requirement identifiers exactly as they appear in the Requirements artifact.
-
-If the Requirements artifact does not provide an identifier, reference the relevant section instead.
-
-Do not invent source identifiers that do not exist.
-
----
-
-# 13. Avoiding Scope Expansion
-
-The UX Design stage must not introduce new functionality simply because it is:
-
-* Common in similar products.
-* A standard UX pattern.
-* Technically easy to implement.
-* Recommended by generic usability guidelines.
-
-If a new capability appears necessary but is not present in the requirements:
-
-1. Identify it.
-2. Explain why it may be relevant.
-3. Mark it as a Proposed UX Consideration and an open question.
-4. Do not add it to the MVP flows.
-
-If the team later decides to include it, introduce it through the appropriate change process, which should update the Requirements first.
-
----
-
-# 14. Handling Unknown Information
-
-Use the following classifications:
-
-### CONFIRMED
-
-Supported by the Requirements or the Sprint Plan.
-
-### ASSUMED
-
-Reasonable interpretation explicitly identified as an assumption.
-
-### UNKNOWN
-
-Insufficient information exists.
-
-### REQUIRES_DECISION
-
-The project team must make a decision before the issue can be finalized.
-
-Never fabricate:
-
-* User behavior.
-* Business rules.
-* Permissions.
-* Validation rules.
-* Content or message text specified as final.
-* Accessibility or device-support obligations.
-* Usability metrics.
-* Platform constraints.
-
-unless they are provided by the project or verified through an explicitly authorized source.
-
----
-
-# 15. Prohibited Content
-
-The UX specification must not contain:
-
-* Visual design (colors, typography, spacing, iconography, animations).
-* Detailed or high-fidelity wireframes or mockups.
-* UI component library or framework selection.
-* Frontend implementation details.
-* System architecture.
-* API definitions.
-* Database schemas.
-* Code.
-* New requirements, user stories, or acceptance criteria.
-* Changes to the Sprint Plan.
-* Test cases.
-
-These belong to later stages or to other stages' artifacts.
-
----
-
-# 16. Required Output
+## 5. Required output
 
 Generate:
 
-```text
-artifacts/04_ux_design/UX_SPEC.md
-```
+`artifacts/04_ux/UX_SPEC.md`
 
-Use exactly the following high-level structure:
+The document must use the following structure.
 
-```markdown
-# UX Specification
+### 5.1. Document metadata and status
 
-## 1. Document Metadata
+Include:
 
-- Version:
-- Stage:
-- Status:
-- Generated From:
-- Validation Dependency:
+* Stage and version.
+* Source artifacts.
+* Current delivery scope.
+* Sprint identifier: `SPRINT-001`.
+* Overall status: `READY`, `READY_WITH_ASSUMPTIONS`, or `BLOCKED`.
+* A brief explanation of the status.
 
-## 2. UX Scope and Objectives
+Use `READY` only when the specification is sufficiently complete and no unresolved essential decision prevents implementation.
 
-Short description of what this specification covers and which MVP scope it addresses.
+Use `READY_WITH_ASSUMPTIONS` when implementation can proceed with explicitly documented, non-blocking assumptions.
 
-## 3. Requirement UX Classification
+Use `BLOCKED` when essential decisions, contradictions, or missing inputs prevent a coherent specification.
 
-| Requirement ID | Summary | MVP | UX Classification | Justification |
-|---|---|---|---|---|
+### 5.2. UX objectives and design principles
 
-## 4. User Roles and Goals
+Describe:
 
-| ID | Role | Goals | Access Notes | Source |
-|---|---|---|---|---|
+* The primary user needs the interface must support.
+* The key usability objectives.
+* The design principles that guide the experience.
+* Relevant accessibility and responsive-design considerations.
 
-## 5. Information Architecture
+Derive these from the approved product vision and requirements. Do not create new business objectives or functionality.
 
-### 5.1 Screen Inventory
+### 5.3. Visual direction
 
-| ID | Screen | Purpose | Roles | Sprint | Source |
-|---|---|---|---|---|---|
+Define the initial visual identity of the application.
 
-### 5.2 Navigation Structure
+Include:
 
-Describe how users move between screens, by role.
+* Overall visual style and intended user perception.
+* Color palette, including semantic colors for success, warning, error, and informational states where needed.
+* Typography and text hierarchy.
+* Spacing scale.
+* Sizing and layout conventions.
+* Border, radius, elevation, and shadow conventions where appropriate.
+* Iconography and image usage.
+* Principles for visual hierarchy, contrast, and readability.
+* Responsive behavior for relevant screen sizes.
 
-### 5.3 Access by Role
+For each decision, provide a concrete value, rule, or clearly defined convention whenever feasible.
 
-| Screen | Role | Access | Source |
-|---|---|---|---|
+For example, define actual hexadecimal color values rather than only saying “use blue.” Specify a font family or a justified fallback rather than merely saying “use a modern font.”
 
-## 6. User Flows
+Use a small, coherent visual system appropriate to the MVP. Avoid excessive tokens or decorative complexity.
 
-### 6.1 Flow Catalog
+If a value cannot be chosen responsibly from the available context, provide a reasonable proposed default and label it `PROPOSAL`, or mark it `REQUIRES_DECISION` if it materially affects implementation.
 
-| ID | Flow | Role | Goal | Covered Requirements | Sprint |
-|---|---|---|---|---|---|
+Do not claim that a proposed visual direction has been approved by a human.
 
-### 6.2 Flow Specifications
+### 5.4. Design tokens
 
-(One subsection per flow, following the structure in Section 8 of the generation prompt.)
+Define a centralized set of design tokens that can later be implemented in CSS, a theme configuration, or another frontend-supported format.
 
-## 7. Screen Specifications
+At minimum, consider:
 
-(One subsection per screen, following the structure in Section 9 of the generation prompt.)
+* `color-*`
+* `font-family-*`
+* `font-size-*`
+* `font-weight-*`
+* `line-height-*`
+* `spacing-*`
+* `radius-*`
+* `shadow-*`
+* `border-*`
+* `breakpoint-*`
 
-## 8. Interaction and Feedback Rules
+Only include tokens that serve an actual purpose in the specified interface.
 
-| ID | Rule | Applies To | Source / Basis |
-|---|---|---|---|
+For each token, document:
 
-## 9. UX Principles
+* Token name.
+* Value.
+* Intended usage.
 
-| ID | Principle | Rationale |
-|---|---|---|
+Use consistent naming conventions. Components and screens must reference these tokens instead of independently inventing equivalent values.
 
-## 10. Sprint Alignment
+This section defines the design contract, not a requirement to use a specific CSS framework or frontend library. Technical implementation choices belong to P05 unless already approved upstream.
 
-| Sprint | Flows Fully Deliverable | Flows Partially Deliverable | Screens Introduced | Notes |
-|---|---|---|---|---|
+### 5.5. Shared component library specification
 
-## 11. Flow Coverage Matrix
+Identify the reusable UI components required by the screens in scope.
 
-| ID | Requirement | MVP | Flow(s) | Screen(s) | Coverage | Notes |
-|---|---|---|---|---|---|---|
+Potential component categories include:
 
-## 12. UX Assumptions
+* Buttons and links.
+* Text fields and form controls.
+* Selectors and filters.
+* Cards and list items.
+* Navigation elements.
+* Dialogs, notifications, and feedback messages.
+* Loading indicators, empty states, and error states.
 
-| ID | Assumption | Impact | Source |
-|---|---|---|---|
+Include only components justified by the actual UX.
 
-## 13. Open UX Questions
+For each component, define:
 
-| ID | Question | Impact | Priority |
-|---|---|---|---|
+* Component ID, such as `COMP-UX-001`.
+* Name and purpose.
+* Where it is used.
+* Relevant variants.
+* Relevant interaction states.
+* Required behavior.
+* Accessibility considerations.
+* Design tokens used.
+* Related screens and requirement IDs.
 
-## 14. UX Risks
+Where applicable, define states such as `default`, `hover`, `focus`, `disabled`, `loading`, `error`, or `selected`. Do not require irrelevant states for every component.
 
-| ID | Risk | Impact | Mitigation Consideration |
-|---|---|---|---|
+Components that appear in multiple screens must follow one shared specification.
 
-## 15. Scope Summary
+Do not define backend components, API services, database entities, or software modules here. Those belong to the technical design stages.
 
-### Covered in MVP Flows
+### 5.6. Information architecture and navigation
 
-### Partially Covered
+Describe the structure of the application from the user's perspective.
 
-### Not Covered
+Include:
 
-### Not UX Relevant
+* Main navigation areas.
+* Screen hierarchy.
+* Entry points and destinations.
+* Navigation relationships.
+* Relevant access or authentication boundaries, if established by the requirements.
 
-### Proposed UX Considerations (not in MVP)
+Provide a text-based navigation diagram or structured list.
 
-## 16. Traceability Summary
+Do not invent user roles, access restrictions, or navigation destinations that are not supported by the upstream artifacts.
 
-Describe how the UX elements derive from the Requirements and the Sprint Plan.
+### 5.7. Screen inventory
 
-## 17. UX Specification Status
+Create a complete inventory of the screens needed to support the in-scope user-facing requirements.
 
-Allowed values:
+For each screen, document:
 
-- READY
-- READY_WITH_ASSUMPTIONS
-- BLOCKED
-```
+* Screen ID, such as `SCR-UX-001`.
+* Name.
+* Primary user and purpose.
+* Related requirement IDs and user-story IDs.
+* Scope classification.
+* Entry points.
+* Main actions.
+* Destination or navigation outcomes.
+* Shared components used.
+* Dependencies or unresolved decisions.
 
----
+Include only screens required by the approved scope.
 
-# 17. Status Rules
+If a requirement is not user-facing, mark it as not UX-relevant in the coverage matrix rather than inventing a screen for it.
 
-## READY
+### 5.8. Screen-level specifications
 
-Use when:
+Provide a functional and visual specification for every screen in the inventory.
 
-* Every MVP `USER_FACING` and `UX_SUPPORTING` requirement is `COVERED`.
-* Flows are complete and have defined outcomes.
-* Navigation is coherent and all screens are reachable.
-* Sprint alignment is documented and coherent.
-* Remaining unknowns do not prevent design or implementation work.
+For each screen, define:
 
-## READY_WITH_ASSUMPTIONS
+**A. Structure and layout**
 
-Use when:
+* Main regions and their order.
+* Information hierarchy.
+* Placement and grouping of content.
+* Responsive adaptations where relevant.
 
-* The UX specification is usable.
-* Every MVP requirement is `COVERED`, or some are `PARTIALLY_COVERED` for documented reasons that do not prevent progress.
-* Important assumptions or open questions remain.
-* Those items are explicitly documented.
-* Subsequent stages may begin while tracking them.
+**B. Content**
 
-## BLOCKED
+* Information displayed.
+* Labels and meaningful interface text where useful.
+* Required and optional fields.
+* Validation and feedback messages.
+* Data-dependent content, distinguishing known requirements from unresolved data decisions.
 
-Use when:
+**C. Actions and interactions**
 
-* The requirements cannot be identified or the MVP cannot be bounded.
-* User roles cannot be determined.
-* The Requirements and the Sprint Plan contain unresolved critical contradictions.
-* An upstream validation result is `FAIL` or `BLOCKED` in a way that prevents reliable design.
-* A significant portion of the MVP cannot be covered without inventing functionality.
+* Available user actions.
+* Expected interface behavior.
+* Navigation outcomes.
+* Relevant validation rules already established by P02.
+* Feedback after successful or unsuccessful actions.
 
----
+**D. States**
 
-# 18. Self-Validation Before Output
+* Initial or default state.
+* Loading state, where relevant.
+* Empty state, where relevant.
+* Error state, where relevant.
+* Success state, where relevant.
+* Disabled or unavailable state, where relevant.
 
-Before finalizing `UX_SPEC.md`, verify:
+**E. Visual consistency**
 
-```text
-[ ] Requirements were reviewed.
-[ ] Sprint Plan was reviewed.
-[ ] Upstream validations were reviewed.
-[ ] Every requirement has a UX classification.
-[ ] MVP scope was identified from the requirements.
-[ ] User roles come from the requirements.
-[ ] Every screen is required by a requirement or flow.
-[ ] Every MVP USER_FACING requirement is covered by a flow.
-[ ] Every MVP UX_SUPPORTING requirement is reflected.
-[ ] Every flow has an entry point, a main path, and an outcome.
-[ ] Alternative and exception paths are supported by the requirements.
-[ ] Every flow step references an existing screen.
-[ ] Every screen is reachable.
-[ ] No flow ends in an undefined state.
-[ ] Role access is consistent across screens and flows.
-[ ] Interaction rules are derived from requirements or labeled.
-[ ] Sprint alignment is documented and the Sprint Plan was not modified.
-[ ] Coverage Matrix is complete and accurate.
-[ ] Proposed UX considerations are not in the MVP.
-[ ] Assumptions are labeled.
-[ ] Open questions are documented.
-[ ] UX risks are documented.
-[ ] Traceability is maintained.
-[ ] No visual design was defined.
-[ ] No architecture, API, or database design was introduced.
-[ ] No new requirements were created.
-[ ] No unsupported facts were fabricated.
-```
+* Components and design tokens used.
+* Relevant layout and responsive rules.
+* Accessibility considerations.
 
----
+A screen specification must be detailed enough for frontend implementation without requiring the developer or AI agent to invent essential interaction behavior.
 
-# 19. Failure Conditions
+Do not repeat the complete definition of a shared component on every screen. Reference its component ID and describe only screen-specific behavior.
 
-The generation should be considered invalid if:
+### 5.9. User flows
 
-* Information is fabricated.
-* Requirements are changed without explanation.
-* Functionality not present in the requirements is added to the MVP flows.
-* An MVP functionality has no flow and the gap is not reported.
-* A requirement is marked `COVERED` without a complete flow.
-* Flows contain steps that reference nonexistent screens.
-* Flows end in undefined states.
-* Screens exist without a flow or navigation path.
-* Roles or permissions are invented.
-* The Sprint Plan is modified or contradicted silently.
-* Contradictions between the Requirements and the Sprint Plan are silently resolved.
-* Visual design, technical architecture, API, or database design is introduced.
-* New requirements, user stories, or acceptance criteria are generated.
-* Assumptions are presented as facts.
-* The output cannot be traced to the requirements.
+Document the end-to-end flows needed to complete the in-scope user stories.
 
----
+For each flow, include:
 
-# 20. Final Response
+* Flow ID, such as `FLOW-UX-001`.
+* Name and goal.
+* Primary user.
+* Preconditions, where applicable.
+* Starting screen.
+* Ordered user actions and system responses.
+* Destination or completion condition.
+* Relevant alternative paths.
+* Relevant error and recovery paths.
+* Related screen IDs and requirement IDs.
 
-After generating the artifact, report:
+Represent the flows using concise numbered steps or Mermaid diagrams where useful.
 
-1. Artifact generated.
-2. UX specification status.
-3. MVP coverage summary (number of requirements covered, partially covered, not covered, and not UX relevant).
-4. Major assumptions identified.
-5. Major unresolved UX questions.
-6. Contradictions found between the Requirements and the Sprint Plan, if any.
-7. Whether the artifact is ready for P04 validation.
+Cover failure and recovery scenarios that materially affect usability. Do not create new business rules to fill gaps in P02.
 
-Do not claim that the product experience is fully designed.
+If a flow cannot be completed coherently because a required business decision is unresolved, identify the exact blocker.
 
-The output of this stage is a **UX Specification**, not a visual design or a technical specification.
+### 5.10. UX coverage and traceability matrix
 
----
+Map the user-facing requirements and user stories to the UX specification.
 
-# 21. Stage Transition
+Include at least:
 
-The condition to advance is:
+| Requirement / story ID | Scope | Screen IDs | Flow IDs | Component IDs | Coverage status | Notes |
+| ---------------------- | ----- | ---------- | -------- | ------------- | --------------- | ----- |
 
-```text
-The flows cover the MVP functionalities.
-```
+Use these coverage statuses:
 
-This condition is determined by the P04 UX Validator, not by this generation stage.
+* `COVERED`: the relevant UX behavior is sufficiently specified.
+* `PARTIALLY_COVERED`: some relevant behavior is specified, but a gap remains.
+* `NOT_COVERED`: relevant UX behavior has not been specified.
+* `NOT_UX_RELEVANT`: the requirement does not directly require a user interface.
 
-If the UX specification is:
+Explain every `PARTIALLY_COVERED`, `NOT_COVERED`, or `NOT_UX_RELEVANT` classification.
 
-```text
-READY
-```
+Every in-scope, user-facing MVP requirement must have verifiable UX coverage. Every in-scope user story involving user interaction must map to the relevant screens or flows.
 
-it may be submitted to P04 validation.
+Do not mark a requirement as covered merely because a screen with a related name exists.
 
-If it is:
+Preserve existing requirement and user-story IDs. Do not invent upstream IDs or modify their meanings.
 
-```text
-READY_WITH_ASSUMPTIONS
-```
+### 5.11. Assumptions, proposals, and open decisions
 
-it may be submitted to P04 validation while carrying the documented assumptions and open questions forward.
+Maintain a consolidated list of:
 
-If it is:
+* `ASSUMPTION`: a reasonable, non-blocking interpretation used to proceed.
+* `PROPOSAL`: an improvement or design choice that still requires review.
+* `REQUIRES_DECISION`: an unresolved decision that affects the design or implementation.
+* `BLOCKED`: an issue that prevents a coherent specification or implementation.
 
-```text
-BLOCKED
-```
+For each item, include:
 
-return to P04 or to the earlier stage (Requirements or Sprint Plan) that produced the blocking issue.
+* ID, using a P04-specific identifier where necessary.
+* Description.
+* Reason it matters.
+* Affected screens, flows, or components.
+* Impact on implementation.
+* Recommended next action or responsible decision-maker, if known.
 
-The AI must not automatically advance the pipeline.
+Do not assign responsibility to a specific team member unless that assignment is supported by the planning artifacts.
 
-The AI must not modify the Requirements or the Sprint Plan to make the UX specification consistent.
+### 5.12. Handoff to P05 and implementation
+
+Provide a concise handoff checklist identifying the UX decisions and artifacts that P05 and subsequent implementation stages must respect.
+
+At minimum, include:
+
+* Approved or proposed visual direction and its approval status.
+* Design tokens and naming conventions.
+* Shared component specifications.
+* Screen inventory and navigation.
+* Interaction behavior and user flows.
+* Responsive and accessibility rules.
+* UX requirements with unresolved decisions.
+* Relevant requirement and story IDs.
+
+State explicitly that P05 must preserve the UX contract when defining the technical architecture and frontend/backend integration.
+
+The design tokens and component specifications must remain the single reference for visual decisions. If implementation requires a change to them, the change must be reviewed and documented rather than introduced independently in a user story.
+
+Do not generate API contracts, database schemas, architecture diagrams, source code, or implementation tasks in this stage.
+
+### 5.13. Final self-review
+
+Before finalizing the document, verify:
+
+* Every required input was considered.
+* The output reflects the approved P02 requirements and P03 scope.
+* The specification is limited to `SPRINT-001`.
+* Every in-scope user-facing MVP requirement has appropriate UX coverage.
+* All screens and flows have traceable IDs and relationships.
+* Shared components and design tokens are defined consistently.
+* Screen specifications reference the shared visual system.
+* No screen introduces unapproved functionality.
+* Unknown business behavior is not presented as a confirmed requirement.
+* The document provides enough detail for consistent parallel frontend development.
+* The handoff does not prematurely define technical architecture or backend contracts.
+* Assumptions, proposals, blockers, and unresolved decisions are explicit.
+
+If a material gap remains, document it and adjust the status accordingly. Do not claim completeness merely because every section contains text.
+
+## 6. Output and completion rules
+
+Create or update only:
+
+`artifacts/04_ux/UX_SPEC.md`
+
+Do not overwrite or modify P00, P01, P02, or P03 artifacts.
+
+Do not generate the P04 validation report. That is the responsibility of `P04_validation.md`.
+
+At completion, report:
+
+1. Output artifact created.
+2. Final status.
+3. Main design decisions established.
+4. Important assumptions or unresolved decisions.
+5. Any blockers that prevent proceeding to P05.
+
+Follow the global rules in `SYSTEM_PROMPT.md`. The specification is a proposed project artifact until it passes validation and receives any required human approval.

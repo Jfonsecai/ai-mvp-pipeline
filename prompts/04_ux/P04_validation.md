@@ -1,1289 +1,538 @@
-# P04 — UX Design Validation
+# P04 — UX Specification and Visual Design System Validator
 
-**Version:** 1.0
-**Stage:** P04 — UX Design
-**Type:** Validation Prompt
-**Input Artifacts:**
+**Version:** 2.0
+**Stage:** P04 Validation
+**Output language:** English
+**Output:** `artifacts/04_ux/UX_SPEC_VALIDATION.md`
 
-* Requirements artifact(s) produced by P02 (expected under `artifacts/02_requirements/`)
-* Validation report of the Requirements stage
-* Sprint Plan artifact(s) produced by the sprint planning stage (locate under `artifacts/`)
-* Validation report of the Sprint Plan stage
-* `artifacts/04_ux_design/UX_SPEC.md`
+## 1. Purpose
+
+Evaluate whether the P04 UX specification is complete, consistent, traceable, and sufficiently detailed to guide the implementation of the approved MVP without requiring developers or AI agents to invent essential product behavior or independent visual conventions.
+
+Validate both dimensions of the artifact:
+
+1. **Functional UX:** information architecture, screens, navigation, interactions, user flows, states, accessibility, and responsive behavior.
+2. **Visual design system:** visual direction, design tokens, reusable components, screen-level consistency, and rules for maintaining a coherent interface during parallel development.
+
+The validation must determine whether the specification faithfully reflects the requirements and delivery scope established by P02 and P03.
+
+Follow `prompts/system/SYSTEM_PROMPT.md` for global rules.
+
+## 2. Inputs
+
+Read and cross-reference all the following artifacts.
+
+### Product definition and requirements
+
+* `artifacts/02_requirements/REQUIREMENTS.md`
+* `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
+
+### Prioritization and delivery scope
+
+* `artifacts/03_planning/PRIORITIZATION.md`
+* `artifacts/03_planning/PRIORITIZATION_VALIDATION.md`
+* `artifacts/03_planning/product_backlog.json` — updated P03 backlog.
+
+### UX specification under validation
+
+* `artifacts/04_ux/UX_SPEC.md`
+
+### Global rules
+
 * `prompts/system/SYSTEM_PROMPT.md`
 
-**Output Artifact:** `artifacts/04_ux_design/UX_SPEC_VALIDATION.md`
-**Related Generation Prompt:** `prompts/04_ux_design/P04_ux_design.md`
-**Previous Stage:** P03
-**Next Stage:** P05
+Use P02 as the source of truth for requirements and P03 as the source of truth for priorities and delivery scope.
 
----
+Do not assume that the UX specification is correct merely because it references an upstream artifact.
 
-# 1. Purpose
+## 3. Preconditions and validation behavior
 
-Validate that `UX_SPEC.md` correctly transforms the validated requirements and the sprint plan into a coherent, traceable, and appropriately scoped UX specification.
+Before evaluating the UX specification:
 
-The validator must determine whether the UX specification:
+1. Verify that all required input artifacts exist and are readable.
+2. Review the P02 and P03 validation results.
+3. Determine whether upstream blockers or invalid decisions affect the UX specification.
+4. Identify contradictions between the UX specification and upstream artifacts.
+5. Confirm that the specification targets the single current sprint, `SPRINT-001`.
 
-* Faithfully represents the requirements.
-* Covers every MVP functionality through complete user flows.
-* Defines user roles consistent with the requirements.
-* Defines a coherent information architecture and navigation.
-* Defines complete and consistent screen specifications.
-* Defines interaction rules that are supported or explicitly labeled.
-* Aligns with the sprint plan without modifying it.
-* Preserves assumptions and uncertainties.
-* Maintains traceability to the requirements.
-* Avoids unsupported functionality.
-* Does not introduce visual design, technical design, or new requirements.
+If an essential input is missing, unreadable, or invalid, document the issue and use `BLOCKED` when reliable validation cannot proceed.
 
-This is a **validation prompt**, not a UX redesign prompt.
+If an upstream artifact is itself blocked, determine whether that blocker prevents UX validation. Do not automatically treat every upstream warning as a P04 failure.
 
----
+Distinguish between:
 
-# 2. Inputs
+* A defect in the P04 specification.
+* An unresolved upstream decision.
+* A reasonable, explicitly documented assumption.
+* A proposed improvement that has not been approved.
 
-## 2.1 Requirements
+Do not silently correct the artifact being validated. Report the issue and recommend a correction.
 
-Read the Requirements artifact(s) produced by P02.
+## 4. Validation criteria
 
-This is the primary source for validating whether the UX specification is grounded in the established requirements and for determining the MVP scope.
+### 4.1. Structural completeness
 
----
+Verify that `UX_SPEC.md` contains all required sections:
 
-## 2.2 Sprint Plan
+1. Document metadata and status.
+2. UX objectives and design principles.
+3. Visual direction.
+4. Design tokens.
+5. Shared component library specification.
+6. Information architecture and navigation.
+7. Screen inventory.
+8. Screen-level specifications.
+9. User flows.
+10. UX coverage and traceability matrix.
+11. Assumptions, proposals, and open decisions.
+12. Handoff to P05 and implementation.
+13. Final self-review.
 
-Read the Sprint Plan artifact(s).
+Check that the document has a valid status: `READY`, `READY_WITH_ASSUMPTIONS`, or `BLOCKED`.
 
-Use it to validate sprint alignment.
+A section is not complete merely because its heading exists. Evaluate whether it contains meaningful, consistent, actionable information.
 
----
-
-## 2.3 Upstream Validation Results
-
-Read the validation reports of the Requirements stage and of the Sprint Plan stage.
-
-Use them to understand:
-
-* Previously identified issues.
-* Accepted assumptions.
-* Open questions.
-* Scope warnings.
-* Upstream validation status.
-
-Do not ignore unresolved upstream findings that affect UX Design.
-
----
-
-## 2.4 UX Specification
-
-Read:
-
-```text
-artifacts/04_ux_design/UX_SPEC.md
-```
-
-This is the artifact being validated.
-
----
-
-## 2.5 Global System Prompt
-
-Read:
-
-```text
-prompts/system/SYSTEM_PROMPT.md
-```
-
-Use it to verify compliance with the global pipeline principles.
-
----
-
-# 3. Role
-
-Act as a:
-
-> Senior UX Auditor and Requirements Coverage Analyst.
-
-Your responsibility is to determine whether the UX specification is sufficiently reliable to become the basis for subsequent design and implementation stages.
-
-You must evaluate the artifact objectively.
-
-You must not:
-
-* Redesign the user experience.
-* Add flows, screens, or features.
-* Remove flows or screens based only on personal preference.
-* Make product or design decisions for the team.
-* Modify the requirements or the sprint plan.
-* Invent user behavior.
-* Invent business rules.
-* Convert assumptions into facts.
-* Rewrite the UX specification automatically.
-
----
-
-# 4. Core Validation Principle
-
-The central question is:
-
-> **Does `UX_SPEC.md` define complete, coherent user flows that cover every MVP functionality, based on the validated requirements and sprint plan, without introducing unsupported functionality or prematurely specifying visual or technical design?**
-
-The validation must evaluate:
-
-```text
-Requirements + Sprint Plan
-        ↓
-UX Specification
-        ↓
-Readiness for Design and Implementation
-```
-
-The UX specification should represent a legitimate refinement of the requirements, not a replacement of them.
-
----
-
-# 5. Validation Process
-
-## Step 1 — Validate Upstream Dependency
-
-Review:
-
-* The Requirements artifact(s).
-* The Sprint Plan artifact(s).
-* Their validation reports.
-
-Determine:
-
-* Upstream status.
-* Existing warnings.
-* Existing assumptions.
-* Existing open questions.
-* The MVP scope.
-* The sprint allocation of requirements.
-
-Identify which of these should have been carried into P04.
-
-If the MVP scope cannot be determined from the upstream artifacts, the validation is `BLOCKED`.
-
----
-
-## Step 2 — Establish the Coverage Baseline Independently
-
-Before reading the UX specification's own classification and coverage tables, build your own baseline:
-
-* List every MVP requirement.
-* Classify each one by UX relevance (see Section 7).
-* Determine which ones the UX specification must cover.
-
-Do not use the UX specification's classification as the baseline. Compare against it afterward.
-
----
-
-## Step 3 — Validate Structure
-
-Verify that all required sections exist and follow the expected structure.
-
----
-
-## Step 4 — Validate Coverage
-
-Apply Section 8. This is the most important validation.
-
----
-
-## Step 5 — Validate Flows, Screens, and Navigation
-
-Apply Sections 9 to 13.
-
----
-
-## Step 6 — Validate Scope, Sprint Alignment, and Prematurity
-
-Apply Sections 14 to 17.
-
----
-
-## Step 7 — Audit Assumptions, Questions, Risks, and Traceability
-
-Apply Sections 18 to 21.
-
----
-
-## Step 8 — Decide
-
-Apply Sections 22 to 24 and produce the report.
-
----
-
-# 6. Structural Validation
-
-Verify that `UX_SPEC.md` contains:
-
-```text
-1. Document Metadata
-2. UX Scope and Objectives
-3. Requirement UX Classification
-4. User Roles and Goals
-5. Information Architecture
-6. User Flows
-7. Screen Specifications
-8. Interaction and Feedback Rules
-9. UX Principles
-10. Sprint Alignment
-11. Flow Coverage Matrix
-12. UX Assumptions
-13. Open UX Questions
-14. UX Risks
-15. Scope Summary
-16. Traceability Summary
-17. UX Specification Status
-```
+### 4.2. Upstream consistency and scope control
 
 Verify that:
 
-* Each flow follows the required flow structure (ID, name, role, goal, entry point, preconditions, covered requirements, sprint availability, main path table, alternative paths, exception paths, outcome, postconditions).
-* Each screen follows the required screen structure (ID, name, purpose, roles, entry points, exits, information displayed, actions, inputs, states, supported requirements, used in flows, sprint availability).
-* Identifiers are unique and stable.
+* The UX specification reflects the product vision and approved requirements.
+* Screen and interaction decisions are consistent with P02.
+* Scope classifications and delivery decisions are consistent with P03.
+* The specification targets `SPRINT-001`, without introducing additional sprints.
+* Deferred, out-of-scope, and decision-pending functionality is not presented as committed MVP functionality.
+* No new product feature, business rule, role, permission, or workflow is silently introduced.
+* Proposals and assumptions are clearly labeled and are not presented as approved decisions.
+* Existing requirement and user-story IDs are preserved without changing their meanings.
+* No nonexistent upstream IDs are used as evidence of traceability.
 
-A missing section or structure element is a finding.
+When the P02 and P03 artifacts disagree, report the conflict rather than choosing one interpretation without justification.
 
----
+### 4.3. UX objectives and design principles
 
-# 7. Requirement Classification Validation
+Verify that:
 
-Compare the UX specification's classification with your baseline.
+* UX objectives derive from the product vision and approved requirements.
+* Design principles support the actual users and workflows.
+* Usability, accessibility, readability, and responsive behavior are addressed where relevant.
+* The document avoids generic statements that do not guide implementation.
+* No unapproved business objective or functionality is introduced.
 
-For every requirement, verify the classification:
+### 4.4. Visual direction
 
-```text
-USER_FACING
-UX_SUPPORTING
-UX_CONSTRAINT
-NOT_UX_RELEVANT
-```
+Verify that the visual direction provides a coherent, practical starting point for implementation.
 
-Classify each as:
+Check whether it defines, as applicable:
 
-```text
-CORRECT
-INCORRECT
-UNSUPPORTED_JUSTIFICATION
-MISSING
-```
+* Overall visual style and intended user perception.
+* Primary and secondary colors.
+* Semantic colors for feedback states.
+* Typography and text hierarchy.
+* Spacing and sizing conventions.
+* Borders, radii, shadows, and elevation.
+* Iconography and image usage.
+* Contrast, readability, and visual hierarchy.
+* Responsive layout principles.
 
-Pay particular attention to:
+Evaluate specificity.
 
-* User-facing requirements classified as `NOT_UX_RELEVANT` to avoid designing a flow.
-* Requirements missing from the classification table.
-* MVP status that differs from the Requirements artifact.
-* Non-functional requirements that constrain the experience and were ignored.
+Examples of insufficient definitions include:
 
-A requirement may only be `NOT_UX_RELEVANT` when it has no observable effect on the user. A justification of "difficult to represent" is not valid.
+* “Use attractive colors.”
+* “Choose a modern font.”
+* “Make the interface responsive.”
+* “Use consistent spacing.”
 
----
+Prefer concrete values, token references, or verifiable rules.
 
-# 8. Flow Coverage Validation
+A proposed default may be acceptable if it is explicitly identified as a proposal and does not contradict approved decisions. Do not fail a specification solely because a human has not yet approved a proposed visual direction; evaluate whether its status is clear and whether that approval is required before implementation.
 
-This is the **gate for this stage**.
+### 4.5. Design-token quality and consistency
 
-The condition to advance is:
+Verify that:
 
-```text
-The flows cover the MVP functionalities.
-```
+* Tokens have consistent names and defined values.
+* Each token has an understandable intended use.
+* Repeated visual decisions are centralized rather than duplicated with conflicting values.
+* Colors, typography, spacing, radii, and other tokens are used consistently across the document.
+* Token references used by components and screens actually exist.
+* There are no unexplained conflicting definitions for the same visual purpose.
+* Tokens are sufficiently concrete to be implemented in a frontend theme, CSS, or equivalent configuration.
+* The specification does not mandate a framework or implementation technology without upstream justification.
 
-## 8.1 Coverage Test
+Report redundant, undefined, conflicting, or unused tokens when they materially affect consistency.
 
-For every MVP requirement classified as `USER_FACING` or `UX_SUPPORTING` (according to the validator's baseline), verify:
+Do not require every possible token category if it is irrelevant to the actual MVP interface.
 
-### Existence
+### 4.6. Shared component library
 
-Does at least one flow cover it?
+Verify that each relevant shared component has:
 
-### Completeness
+* A stable P04 component ID.
+* A clear name and purpose.
+* Identified screens or contexts of use.
+* Appropriate variants.
+* Relevant interaction states.
+* Expected behavior.
+* References to applicable design tokens.
+* Accessibility considerations where relevant.
+* Traceability to screens or requirements when applicable.
 
-Does the flow provide a path from the user's goal to the outcome described by the requirement?
+Check that:
 
-### Behavior Fidelity
+* Components reused across screens follow one consistent definition.
+* Component names and IDs are stable throughout the document.
+* Variants and states are not contradictory.
+* Screen specifications reference shared components rather than redefining their styles independently.
+* No unnecessary component complexity is introduced.
+* The specification distinguishes UI components from backend modules, database entities, and API services.
 
-Does the flow reflect the behavior, business rules, and acceptance criteria stated in the requirement?
+A component inventory consisting only of names, without enough behavior or visual information to guide implementation, is insufficient.
 
-### Accessibility of the Flow
+### 4.7. Information architecture and navigation
 
-Is the flow reachable by the role that the requirement concerns?
+Verify that:
 
-### Consistency
+* The application structure is understandable.
+* Screen relationships and navigation destinations are explicit.
+* Navigation supports the approved user stories.
+* Entry points and relevant authentication or access boundaries match upstream requirements.
+* Every referenced screen exists in the screen inventory.
+* No unsupported role, permission, or navigation destination is introduced.
+* Navigation is consistent across the specification.
 
-Do the Flow Coverage Matrix, the flow catalog, and the flow specifications agree about this requirement?
+### 4.8. Screen inventory and screen-level specifications
 
----
+Verify that:
 
-## 8.2 Coverage Classification
+* All necessary user-facing screens for the in-scope MVP are inventoried.
+* Each screen has a stable ID, name, purpose, scope classification, and relevant traceability.
+* Screen entry points, actions, destinations, dependencies, and shared components are identified.
+* Screen specifications describe structure, information hierarchy, content, actions, and relevant states.
+* Validation behavior matches the approved requirements.
+* Loading, empty, error, success, disabled, or selected states are documented where applicable.
+* Responsive behavior and accessibility are considered where relevant.
+* Screen-specific styling follows the common visual direction and design tokens.
+* Shared components are reused consistently.
+* No screen introduces functionality outside the approved scope.
 
-Classify each MVP requirement as:
+Evaluate implementation readiness. A screen is not adequately specified if a developer must invent essential business behavior, navigation outcomes, or component conventions to implement it.
 
-```text
-COVERED
-PARTIALLY_COVERED
-NOT_COVERED
-NOT_UX_RELEVANT
-```
+Do not require irrelevant states or fields for every screen.
 
-Then compare with the UX specification's matrix:
+### 4.9. User flows and interaction behavior
 
-```text
-MATRIX_CORRECT
-MATRIX_OVERSTATED
-MATRIX_UNDERSTATED
-MATRIX_MISSING
-```
+Verify that:
 
-* `MATRIX_OVERSTATED`: the specification claims `COVERED` but the flow is incomplete or absent.
-* `MATRIX_UNDERSTATED`: the specification reports a gap that does not actually exist.
-* `MATRIX_MISSING`: the requirement does not appear in the matrix.
+* All important in-scope user journeys are documented.
+* Each flow has a stable ID, goal, starting point, ordered steps, outcomes, and relevant traceability.
+* Flow steps correspond to existing screens and supported user actions.
+* Alternative paths, errors, and recovery behavior are documented where material.
+* The flows agree with screen-level specifications.
+* The flows do not introduce unsupported business rules or features.
+* Unresolved decisions that prevent flow completion are explicitly identified.
 
----
+A flow is incomplete if it ends at an undefined destination, relies on an unspecified essential action, or assumes behavior not supported by upstream requirements.
 
-## 8.3 UX Constraints
+### 4.10. UX coverage and traceability
 
-For every `UX_CONSTRAINT` requirement (for example, responsiveness, accessibility, or language), verify that the specification describes how it is respected or registers why it cannot yet be.
+Validate the coverage matrix against both the P02 backlog and the updated P03 backlog.
 
----
+Check that:
 
-## 8.4 Coverage Result
+* Every in-scope user-facing MVP requirement is mapped to the relevant screens or flows.
+* Every in-scope user story involving user interaction is mapped to relevant UX elements.
+* Screen, flow, and component IDs exist and are used consistently.
+* Existing requirement and user-story IDs are valid.
+* Requirements classified as `NOT_UX_RELEVANT` have a reasonable explanation.
+* `PARTIALLY_COVERED` and `NOT_COVERED` entries explain the gaps.
+* A requirement is not marked `COVERED` merely because a related screen exists.
+* Scope classifications agree with P03.
+* Coverage claims are supported by actual content in the specification.
 
-Summarize:
+Accept only the following coverage statuses:
 
-* Number of MVP requirements by baseline classification.
-* Number covered, partially covered, and not covered.
-* Overstated and missing entries.
+* `COVERED`
+* `PARTIALLY_COVERED`
+* `NOT_COVERED`
+* `NOT_UX_RELEVANT`
 
-Coverage is considered **satisfied** only if:
+An in-scope, user-facing MVP requirement marked `NOT_COVERED` is a significant defect. A material gap in a critical user flow may prevent approval even if the overall coverage matrix appears complete.
 
-* Every MVP `USER_FACING` and `UX_SUPPORTING` requirement is `COVERED`; or
-* Gaps are explicitly reported, justified, and registered as open questions or `REQUIRES_DECISION`, and they do not prevent the core MVP experience.
+### 4.11. Assumptions, proposals, and unresolved decisions
 
-Unreported gaps (`MATRIX_OVERSTATED` or `MATRIX_MISSING`) make coverage **not satisfied**.
+Verify that:
 
----
+* Assumptions, proposals, required decisions, and blockers are distinguishable.
+* Each item explains its impact and affected screens, flows, or components.
+* Decisions that affect essential functionality are not hidden inside screen descriptions.
+* Unresolved decisions are consistent with the document status.
+* No specific team member is assigned responsibility without supporting planning information.
 
-# 9. User Role Validation
+A non-blocking assumption may be acceptable when explicitly documented. An essential unresolved decision that makes the interface incoherent must result in a blocker or an appropriate status downgrade.
 
-Verify:
+### 4.12. Handoff readiness for P05
 
-* Every role in the specification exists in the requirements.
-* Every role in the requirements that interacts with MVP functionality exists in the specification.
-* Access differences between roles match the requirements.
+Verify that the handoff identifies the UX decisions that subsequent stages must preserve.
 
-For every role, classify:
+Check that it includes, where applicable:
 
-```text
-SUPPORTED
-REASONABLE_REFINEMENT
-UNSUPPORTED_ADDITION
-CONTRADICTORY
-MISSING
-```
+* Visual direction and its approval status.
+* Design tokens and naming conventions.
+* Shared component specifications.
+* Screen inventory and navigation.
+* User flows and interaction states.
+* Responsive and accessibility requirements.
+* Unresolved UX decisions.
+* Relevant requirement and story IDs.
 
-Pay particular attention to newly introduced:
+Verify that P04 defines user-facing behavior and visual conventions without prematurely defining:
 
-* Administrators.
-* Moderators.
-* Guests or anonymous users.
-* Other actors not present in the requirements.
-
-Do not assume that a role is justified simply because it is common in similar applications.
-
----
-
-# 10. Information Architecture and Navigation Validation
-
-Verify:
-
-* Every screen is required by a requirement or flow.
-* Every screen is reachable from at least one flow or from the navigation structure.
-* Every navigation path leads to an existing screen.
-* Access by role is consistent between the screen inventory, the access table, the screen specifications, and the flows.
-* There are no orphan screens, dead ends, or circular navigation without exit.
-* There is a way for users to return, cancel, or leave a flow when applicable.
-
-Classify screens as:
-
-```text
-SUPPORTED
-SUPPORTED_WITH_ASSUMPTION
-UNSUPPORTED
-ORPHAN
-```
-
-Flag screens that exist only because they are common in similar products.
-
----
-
-# 11. User Flow Validation
-
-For every flow, verify:
-
-### Structure
-
-All required elements are present.
-
-### Entry and Goal
-
-The flow starts from a legitimate user goal and entry point.
-
-### Main Path
-
-The steps are sequential, complete, and lead to the outcome.
-
-### Step Integrity
-
-Every step references an existing screen. Every `Next` reference points to an existing step, screen, or outcome.
-
-### Alternative and Exception Paths
-
-Relevant paths are present and derived from the requirements, business rules, or acceptance criteria.
-
-### Outcome
-
-The flow ends in a defined state, and the next destination is defined.
-
-### Role Consistency
-
-The role performing the flow is allowed to access every screen in the flow.
-
-### Traceability
-
-The covered requirements are cited and the flow actually implements their behavior.
-
-### Diagram Consistency
-
-If diagrams are included, they agree with the step tables.
-
-Classify each flow as:
-
-```text
-SUPPORTED
-SUPPORTED_WITH_ASSUMPTION
-UNSUPPORTED
-CONTRADICTORY
-INCOMPLETE
-```
-
-Flag flows that:
-
-* Contain steps unsupported by the requirements.
-* Skip steps required by business rules.
-* End in undefined states.
-* Cover requirements not listed in the flow.
-* Introduce functionality not present in the requirements.
-
-The validator must not require visual detail, UI components, or technical implementation in flows.
-
----
-
-# 12. Screen Specification Validation
-
-For every screen, verify:
-
-* Purpose is consistent with the requirements it supports.
-* Information displayed is supported by the requirements or business rules.
-* Available actions correspond to flows.
-* User inputs correspond to information required by requirements or business rules.
-* States (loading, empty, error, success) are defined where relevant.
-* Role access matches Section 10 and the access table.
-* The requirements and flows it cites actually use it.
-
-Flag:
-
-* Inputs that no requirement justifies.
-* Actions that no flow uses.
-* Information displayed that implies unspecified data.
-* Screens that describe appearance instead of content and behavior.
-
----
-
-# 13. Interaction and Feedback Rule Validation
-
-Verify that interaction rules:
-
-* Are consistent with requirements, business rules, and acceptance criteria.
-* Are labeled as `UX_PRINCIPLE` or `ASSUMPTION` when they are conventions, not requirements.
-* Do not contradict each other or any flow.
-* Define message intent rather than final text, unless the requirements specify the text.
-* Do not introduce unsupported validation rules or business rules.
-
-Classify each rule as:
-
-```text
-SUPPORTED
-SUPPORTED_WITH_ASSUMPTION
-UNSUPPORTED
-CONTRADICTORY
-```
-
----
-
-# 14. Scope Creep Detection
-
-Look for functionality added during P04 that is not present in the requirements.
-
-Examples:
-
-* Password recovery.
-* Registration flows when only authentication is required.
-* Search, filtering, or sorting.
-* Notifications.
-* Profile or settings management.
-* Onboarding tours.
-* Administration screens.
-* Analytics dashboards.
-* Social or sharing features.
-* Multi-language support.
-
-These features are not automatically invalid.
-
-However, if they are not present in the requirements, the UX specification must not silently treat them as confirmed MVP functionality.
-
-Classify them as:
-
-* `NEW_UX_PROPOSAL`: identified as a proposal requiring a decision (acceptable if labeled and excluded from MVP flows).
-* `ASSUMPTION`: explicitly labeled assumption.
-* `REQUIRES_DECISION`: registered decision.
-* `SCOPE_EXPANSION`: included in MVP flows without support (finding).
-
-Do not penalize **UX supporting elements** that do not introduce new capabilities, such as empty states, loading states, error states, confirmations, and basic navigation, provided they are derived from the requirements or labeled.
-
----
-
-# 15. Sprint Alignment Validation
-
-Compare the Sprint Alignment section with the Sprint Plan.
-
-Verify:
-
-* Every flow and screen has a sprint availability consistent with the sprint allocation of the requirements it depends on.
-* A flow does not depend on screens or capabilities planned in a later sprint, or the dependency is registered.
-* Partially delivered flows leave users in a coherent state.
-* The specification does not move requirements between sprints.
-* The specification does not propose a different sprint order.
-* Contradictions between the Requirements and the Sprint Plan are reported, not silently resolved.
-* Requirements missing from the Sprint Plan are reported.
-
-Classify each alignment entry as:
-
-```text
-ALIGNED
-ALIGNED_WITH_RISK
-MISALIGNED
-UNKNOWN
-```
-
-A flow that cannot deliver a coherent experience in its first sprint and has no registered risk is a finding.
-
-The validator must not re-plan sprints.
-
----
-
-# 16. UX Principle Validation
-
-Verify that UX principles:
-
-* Support the experience of the identified roles.
-* Are relevant to the project.
-* Are derived from requirements or labeled as assumptions.
-* Do not become hidden requirements.
-* Do not introduce technical or visual constraints.
-
-For example:
-
-> "Provide feedback for every user action."
-
-is a UX principle.
-
-> "Use a modal dialog with a blue confirmation button."
-
-is not a UX principle.
-
----
-
-# 17. Premature Specification Check
-
-Detect whether the UX specification contains content that belongs to other stages.
-
-Flag detailed:
-
-* Visual design (colors, typography, spacing, icons, animations).
-* High-fidelity wireframes or mockups.
-* UI component library or framework decisions.
-* Frontend implementation details.
-* Architecture decisions.
 * API contracts.
 * Database schemas.
-* Code.
-* New requirements, user stories, or acceptance criteria.
-* Test cases.
+* Backend architecture.
+* Implementation code.
+* Detailed implementation tasks.
 
-The UX specification may describe the content and behavior of a screen at a functional level.
+The handoff must make it clear that P05 should respect the UX contract when defining the technical solution.
 
-It should not specify how the software renders or implements it.
+### 4.13. Parallel-development consistency
 
----
+Assess whether multiple developers or AI agents could implement separate in-scope stories without independently inventing major visual or interaction decisions.
 
-# 18. Assumption Validation
+Check for:
 
-Compare UX assumptions with the assumptions in the Requirements and the Sprint Plan.
+* One shared source of truth for design tokens.
+* Reusable component definitions.
+* Consistent screen and component naming.
+* Clear references from screens to shared components.
+* Consistent feedback, validation, and interaction states.
+* Sufficient responsive and accessibility rules.
+* Explicitly documented exceptions.
+* A clear mechanism for identifying unresolved decisions rather than silently improvising.
 
-For every assumption:
+This criterion is essential. A visually descriptive document is not enough if it does not establish reusable conventions that prevent divergence during parallel implementation.
 
-* Check whether it was already identified upstream.
-* Determine whether it is a legitimate refinement.
-* Verify that it remains explicitly labeled.
+### 4.14. Scope, duplication, and premature technical decisions
 
-Flag cases where:
+Verify that the specification:
 
-```text
-Upstream ASSUMPTION or UNKNOWN
-        ↓
-UX FACT
-```
+* Remains focused on UX and visual design.
+* Avoids unnecessary repetition of shared definitions.
+* Does not duplicate the global rules already established in `SYSTEM_PROMPT.md` without a clear reason.
+* Does not invent implementation technologies or frameworks.
+* Does not generate architecture, APIs, database structures, source code, or formal implementation plans.
+* Does not expand the MVP beyond the P03 scope.
 
-without evidence or an explicit project decision.
+Report material scope violations and unnecessary complexity.
 
----
+## 5. Defect severity
 
-# 19. Open Question Validation
+Classify each finding using one of the following severity levels:
 
-Verify that important unresolved questions from the Requirements and the Sprint Plan that affect UX have been:
+* `CRITICAL`: A major contradiction, missing essential input, or fundamental defect prevents reliable validation or makes the specification unusable.
+* `HIGH`: A significant requirements, scope, traceability, flow, or design-system defect prevents reliable implementation of important in-scope functionality.
+* `MEDIUM`: A meaningful omission or inconsistency creates ambiguity or a risk of divergent implementations but does not invalidate the entire specification.
+* `LOW`: A minor documentation, naming, or clarity issue with limited impact.
 
-* Carried forward.
-* Resolved with explicit evidence.
-* Reclassified appropriately.
+For each finding, provide:
 
-An open question must not disappear simply because it is inconvenient.
+* Finding ID, such as `P04-VAL-001`.
+* Severity.
+* Criterion.
+* Affected artifact section.
+* Evidence or a precise description of the issue.
+* Why it matters.
+* Recommended correction.
 
-For example:
+Do not invent line numbers or claim evidence that was not inspected.
 
-```text
-Requirements:
-"How are users notified of a rejected request?"
-```
+Prioritize findings by implementation impact, not by the number of stylistic preferences involved.
 
-should not silently become:
+## 6. Validation decision
 
-```text
-UX_SPEC:
-"The system shows a notification banner."
-```
+Choose exactly one final decision.
 
-unless that decision was actually made.
+### `PASS`
 
----
+Use when:
 
-# 20. Risk Validation
+* All critical criteria are satisfied.
+* No critical or high-severity defects remain.
+* In-scope, user-facing requirements have appropriate UX coverage.
+* The visual system is sufficiently concrete and consistent.
+* Shared components and design tokens support parallel frontend implementation.
+* No unresolved essential decision prevents implementation.
+* The handoff to P05 is clear.
 
-Verify that UX-relevant risks from upstream remain visible, and that new UX risks are identified where evident (for example, flows split across sprints, complex flows, or unresolved role permissions).
+### `PASS_WITH_WARNINGS`
 
-Check that the specification does not:
+Use when:
 
-* Hide uncertainty.
-* Present risky assumptions as established facts.
-* Ignore sprint-related risks that affect flow coherence.
+* No critical or high-severity defect prevents implementation.
+* The UX specification is usable.
+* Remaining issues are limited to manageable medium- or low-severity findings.
+* Any assumptions or proposals are explicitly documented.
+* The visual system remains coherent despite the outstanding issues.
 
-Do not require every upstream risk to appear in P04. Only UX-relevant risks need to be carried forward.
+### `FAIL`
 
----
+Use when the specification contains material defects that require correction before it can be approved, such as:
 
-# 21. Traceability Audit
+* Significant missing UX coverage.
+* Contradictions with approved requirements or scope.
+* Inconsistent or unusable design tokens.
+* Shared components with conflicting definitions.
+* Important user flows that cannot be implemented coherently.
+* Insufficient screen-level detail for critical MVP functionality.
 
-Perform a traceability audit for the main UX elements.
+Use `FAIL` when the inputs are available and validation can be performed, but the specification does not meet the acceptance criteria.
 
-| UX Element | Expected Source |
-| --- | --- |
-| Roles | Requirements (users and permissions) |
-| Screens | Requirements and flows |
-| Flows | Requirements (functional requirements, business rules, acceptance criteria) |
-| Alternative/exception paths | Business rules, acceptance criteria, validation rules |
-| Interaction rules | Requirements, business rules, or labeled principles |
-| Screen inputs and displayed information | Requirements and business rules |
-| Sprint alignment | Sprint Plan |
-| UX constraints | Non-functional requirements |
-| Assumptions | Upstream assumptions |
-| Questions | Upstream unknowns and open questions |
-| Risks | Upstream risks |
+### `BLOCKED`
 
-Each element should be classified as:
+Use when validation cannot be performed reliably because essential input artifacts are missing, unreadable, or invalid, or upstream blockers prevent meaningful evaluation.
 
-```text
-DIRECT
-```
+Also identify upstream decisions that must be resolved before UX can be finalized.
 
-Directly supported by the upstream artifacts.
+Do not use `BLOCKED` merely because minor visual preferences remain undecided if a reasonable, explicitly labeled proposal allows implementation to proceed.
 
-```text
-REFINED
-```
-
-A reasonable refinement of the upstream artifacts.
-
-```text
-ASSUMED
-```
-
-A new assumption explicitly labeled.
-
-```text
-UNSUPPORTED
-```
-
-Not supported by the upstream artifacts.
-
-```text
-CONTRADICTORY
-```
-
-Conflicts with the upstream artifacts.
-
----
-
-# 22. Traceability Rule
-
-Not every sentence needs a source identifier.
-
-However, all major UX decisions must be explainable through:
-
-* A requirement.
-* A business rule or acceptance criterion.
-* A documented assumption.
-* An explicit project decision.
-
-If a major decision cannot be traced to one of these, flag it.
-
-Verify that source identifiers match the identifiers used in the Requirements artifact exactly, and that no source identifier was invented.
-
----
-
-# 23. Severity Levels
-
-Use:
-
-### CRITICAL
-
-The UX specification cannot safely become the basis for the next stages.
-
-Examples:
-
-* A significant part of the MVP is not covered and the gap is not reported.
-* The specification describes a different product from the requirements.
-* The user roles are fundamentally different from the requirements.
-* Major unsupported functionality is introduced in the MVP flows.
-
-### HIGH
-
-A significant issue requires correction before proceeding.
-
-Examples:
-
-* An MVP user-facing requirement is not covered, or the coverage is overstated.
-* A flow is incomplete, ends in an undefined state, or references nonexistent screens.
-* Orphan screens or unreachable functionality exist.
-* An unsupported role or screen is included in the MVP flows.
-* Major assumptions are presented as facts.
-* The specification contradicts the Sprint Plan or silently resolves a contradiction.
-* The Flow Coverage Matrix is missing or does not match the flows.
-
-### MEDIUM
-
-The artifact is usable but requires clarification.
-
-Examples:
-
-* Some alternative or exception paths are missing.
-* Some screens lack defined states.
-* Some interaction rules are unlabeled conventions.
-* Some open questions are missing.
-* Weak traceability for some elements.
-* Sprint alignment entries are incomplete.
-
-### LOW
-
-Minor quality issue.
-
-Examples:
-
-* Wording inconsistencies.
-* Minor duplication.
-* Small traceability gaps.
-* Formatting issues.
-
----
-
-# 24. Validation Decision
-
-Return exactly one overall result:
-
-### PASS
-
-The UX specification satisfies the P04 contract.
-
-### PASS_WITH_WARNINGS
-
-The UX specification is sufficiently reliable to proceed, but non-blocking issues remain.
-
-### FAIL
-
-The UX specification requires correction before proceeding.
-
-### BLOCKED
-
-Validation cannot be reliably completed because essential upstream information is unavailable or contradictory.
-
----
-
-# 25. Decision Rules
-
-Use:
-
-```text
-IF the MVP scope cannot be determined
-    → BLOCKED
-
-ELSE IF critical issue exists
-    → FAIL
-
-ELSE IF flow coverage is not satisfied
-    → FAIL
-
-ELSE IF any high-severity issue exists
-    → FAIL
-
-ELSE IF the specification is usable but has non-blocking issues
-    → PASS_WITH_WARNINGS
-
-ELSE
-    → PASS
-```
-
-The condition to advance is:
-
-```text
-The flows cover the MVP functionalities.
-```
-
-Interpretation:
-
-* A reported and justified gap does not by itself cause `FAIL`, provided it does not prevent the core MVP experience and is registered as an open question or `REQUIRES_DECISION`.
-* An unreported gap, an overstated coverage claim, or an incomplete flow **does** cause `FAIL`.
-
-Do not approve an artifact simply because it is well written.
-
-Content correctness, coverage, and traceability are more important than presentation quality.
-
----
-
-# 26. Required Validation Report
+## 7. Required validation report
 
 Generate:
 
-```text
-artifacts/04_ux_design/UX_SPEC_VALIDATION.md
-```
+`artifacts/04_ux/UX_SPEC_VALIDATION.md`
 
-Use this structure:
+Use the following structure.
 
-```markdown
-# P04 UX Specification Validation Report
+### 7.1. Metadata
 
-## 1. Validation Metadata
+Include:
 
-- Validator: P04 UX Validator
-- Project:
-- UX Specification Version:
-- Validation Date:
-- Requirements Validation Status:
-- Sprint Plan Validation Status:
-- Overall Result:
+* Validator name and version.
+* Artifact validated.
+* Validation date, only if reliably available.
+* Input artifacts inspected.
+* Final decision: `PASS`, `PASS_WITH_WARNINGS`, `FAIL`, or `BLOCKED`.
 
-## 2. Executive Summary
+### 7.2. Executive summary
 
-Short explanation of the validation result.
+Summarize:
 
-## 3. Structural Validation
+* Overall readiness.
+* Most important findings.
+* Whether the UX specification supports consistent parallel development.
+* Whether P05 can proceed.
 
-| Section | Present | Valid | Notes |
-|---|---|---|---|
-| Document Metadata | | | |
-| UX Scope and Objectives | | | |
-| Requirement UX Classification | | | |
-| User Roles and Goals | | | |
-| Information Architecture | | | |
-| User Flows | | | |
-| Screen Specifications | | | |
-| Interaction and Feedback Rules | | | |
-| UX Principles | | | |
-| Sprint Alignment | | | |
-| Flow Coverage Matrix | | | |
-| UX Assumptions | | | |
-| Open UX Questions | | | |
-| UX Risks | | | |
-| Scope Summary | | | |
-| Traceability Summary | | | |
-| UX Specification Status | | | |
+Do not claim readiness if unresolved essential issues remain.
 
-## 4. Findings
+### 7.3. Criterion results
 
-| ID | Severity | Category | Finding | Evidence | Recommendation |
-|---|---|---|---|---|---|
-| VAL-001 | | | | | |
+Provide a table:
 
-## 5. Requirement Classification Validation
+| Criterion | Result | Severity | Evidence / notes |
+| --------- | ------ | -------- | ---------------- |
 
-| Requirement | MVP | Specification Classification | Validator Classification | Result |
-|---|---|---|---|---|
+Use `PASS`, `WARN`, `FAIL`, or `BLOCKED` for individual criterion results.
 
-## 6. Flow Coverage Validation (Gate)
+Include at least:
 
-### 6.1 Coverage Baseline
+* Input integrity and upstream consistency.
+* Structural completeness.
+* Scope control.
+* UX objectives and principles.
+* Visual direction.
+* Design tokens.
+* Shared component library.
+* Information architecture and navigation.
+* Screen inventory.
+* Screen-level specifications.
+* User flows.
+* UX coverage and traceability.
+* Assumptions and open decisions.
+* Handoff to P05.
+* Parallel-development consistency.
+* Separation of UX from technical architecture.
 
-Summary of MVP requirements by validator classification.
+### 7.4. Findings
 
-### 6.2 Coverage Audit
+List all material findings using the severity format defined in Section 5.
 
-| Requirement | MVP | Validator Coverage | Specification Coverage | Flow(s) | Matrix Result | Notes |
-|---|---|---|---|---|---|---|
+If there are no findings, explicitly state that no material defects were identified.
 
-### 6.3 UX Constraint Audit
+### 7.5. Coverage summary
 
-| Constraint | Source | How Respected | Result |
-|---|---|---|---|
+Summarize:
 
-### 6.4 Coverage Result
+* Number of in-scope user-facing requirements reviewed.
+* Number covered.
+* Number partially covered.
+* Number not covered.
+* Number classified as not UX-relevant.
+* Any important exceptions.
 
-- MVP requirements requiring coverage:
-- Covered:
-- Partially covered:
-- Not covered:
-- Overstated entries:
-- Missing entries:
-- **Coverage satisfied:** YES / NO
+Use counts only when they can be reliably derived from the inspected artifacts. Do not estimate missing counts.
 
-## 7. User Role Validation
+### 7.6. Visual-system assessment
 
-| Role | Requirements Source | UX Representation | Classification | Result |
-|---|---|---|---|---|
+Explicitly assess:
 
-## 8. Information Architecture and Navigation Audit
+* Whether the visual direction is actionable.
+* Whether design tokens are sufficiently concrete.
+* Whether shared components are reusable and consistent.
+* Whether screens reference the shared design system.
+* Whether responsive and accessibility rules are adequate.
+* Whether parallel frontend development is likely to produce a consistent result.
 
-| Screen | Source | Reachable | Role Consistency | Classification | Result |
-|---|---|---|---|---|---|
+Identify any material gap between the documented design and what can be implemented reliably.
 
-## 9. User Flow Validation
+### 7.7. Required corrections and recommendations
 
-| Flow | Role | Covered Requirements | Structure | Step Integrity | Outcome Defined | Classification | Result |
-|---|---|---|---|---|---|---|---|
+Separate:
 
-## 10. Screen Specification Validation
+* Corrections required before approval.
+* Recommended non-blocking improvements.
+* Upstream decisions requiring human input.
 
-| Screen | Purpose Supported | Inputs Supported | States Defined | Flows Consistent | Result |
-|---|---|---|---|---|---|
+For each correction, reference the finding ID and affected section.
 
-## 11. Interaction Rule Validation
+### 7.8. Readiness for P05
 
-| Rule | Basis | Classification | Result |
-|---|---|---|---|
+Choose one:
 
-## 12. Scope Creep Audit
+* `READY`
+* `READY_WITH_CONDITIONS`
+* `NOT_READY`
 
-List functionality introduced without sufficient support.
+Explain the decision.
 
-If none:
+`READY` requires an acceptable validation decision and no unresolved essential issue that prevents architecture design.
 
-> No relevant scope expansion detected.
+`READY_WITH_CONDITIONS` is appropriate when P05 can begin with clearly documented, non-blocking assumptions or conditions.
 
-## 13. Sprint Alignment Audit
+`NOT_READY` applies when material defects or upstream blockers prevent a reliable handoff.
 
-| Flow / Screen | Specification Sprint | Sprint Plan Evidence | Classification | Result |
-|---|---|---|---|---|
+### 7.9. Final recommendation
 
-Include contradictions between the Requirements and the Sprint Plan.
+State the final validation decision, the most important reason for it, and the next action.
 
-## 14. UX Principle Validation
+Do not silently modify `UX_SPEC.md` while validating it.
 
-Evaluate whether the principles are relevant and do not act as hidden requirements.
+## 8. Output and completion rules
 
-## 15. Assumption Audit
+Create or update only:
 
-| ID | Assumption | Upstream Status | UX Status | Result |
-|---|---|---|---|---|
+`artifacts/04_ux/UX_SPEC_VALIDATION.md`
 
-## 16. Open Question Audit
+Do not modify the UX specification or upstream artifacts.
 
-| Upstream Question | UX Status | Result |
-|---|---|---|
+Do not generate source code, design assets, API contracts, database schemas, or architecture documents.
 
-## 17. UX Risk Audit
+At completion, report:
 
-Identify important risks that were:
-- Preserved.
-- Resolved.
-- Lost.
-- Newly introduced.
+1. Validation report created.
+2. Final decision.
+3. Critical and high-severity findings, if any.
+4. Whether P05 is ready to proceed.
+5. Any human decisions required.
 
-## 18. Premature Specification Audit
-
-Check for:
-- Visual design.
-- High-fidelity wireframes.
-- UI component or framework decisions.
-- Frontend implementation.
-- Architecture.
-- API/database design.
-- New requirements, user stories, or acceptance criteria.
-
-## 19. Traceability Audit
-
-| UX Element | Expected Source | Classification | Result |
-|---|---|---|---|
-
-## 20. Recommended Corrections
-
-List only necessary or strongly recommended corrections.
-
-Do not redesign the experience.
-
-## 21. Downstream Readiness
-
-Evaluate whether the UX specification provides enough clarity for the next stages.
-
-Result:
-
-- READY
-- READY_WITH_ASSUMPTIONS
-- NOT_READY
-
-## 22. Final Decision
-
-**Result:** PASS / PASS_WITH_WARNINGS / FAIL / BLOCKED
-
-**Flows cover MVP functionalities:** YES / NO / PARTIAL
-
-### Conditions to Proceed
-
-### Conditions to Revalidate
-
-## 23. Validator Integrity Statement
-
-Confirm:
-
-- No UX decisions were invented.
-- No unsupported flows or screens were accepted.
-- No source artifact was modified.
-- No requirement or sprint allocation was changed.
-- No technical or visual design was introduced during validation.
-- Findings are evidence-based.
-```
-
----
-
-# 27. Validator Behavior
-
-## Rule 1 — Do Not Modify the UX Specification
-
-Never silently modify:
-
-```text
-artifacts/04_ux_design/UX_SPEC.md
-```
-
-The validator produces a separate report.
-
----
-
-## Rule 2 — Do Not Solve Findings
-
-If a problem is found:
-
-> Identify the problem.
-
-Do not automatically rewrite the UX specification or design the missing flow.
-
----
-
-## Rule 3 — Independent Verification
-
-Do not accept the specification's own classification and coverage claims without confirming them against the requirements.
-
----
-
-## Rule 4 — Preserve Uncertainty
-
-If the correct classification is unknown:
-
-> UNKNOWN
-
-If the project team must decide:
-
-> REQUIRES_DECISION
-
-Do not guess.
-
----
-
-## Rule 5 — Do Not Penalize Reasonable Refinement
-
-P04 is expected to provide more structure than the requirements.
-
-Not every new sentence represents scope creep.
-
-A refinement is valid when it:
-
-* Makes an implicit relationship explicit.
-* Organizes existing requirements into flows.
-* Defines supporting states and feedback derived from the requirements.
-* Clarifies how a requirement is experienced by a role.
-
----
-
-## Rule 6 — Do Not Reward Quantity
-
-A UX specification is not better because it contains more screens or flows.
-
-Prefer:
-
-```text
-Complete flows
-+
-Full MVP coverage
-+
-Coherent navigation
-+
-Honest assumptions
-```
-
-over:
-
-```text
-Many screens and flows
-```
-
----
-
-## Rule 7 — Separate UX Gaps from Requirement Gaps
-
-If a flow cannot be completed because the requirements are incomplete or ambiguous, the finding concerns the upstream stage.
-
-Record it as a dependency issue.
-
-It is acceptable for the UX specification to expose such a gap, provided it reports the gap instead of inventing functionality.
-
----
-
-# 28. Handling New UX Ideas
-
-If P04 introduces a potentially useful capability not present in the requirements:
-
-Do not automatically reject it.
-
-Classify it as:
-
-```text
-NEW_UX_PROPOSAL
-```
-
-and determine whether the specification clearly indicates that it requires team validation and excludes it from MVP flows.
-
-If the new capability is already included as a confirmed MVP flow or screen without justification, flag it as a scope traceability issue.
-
----
-
-# 29. Handling Conflicting Decisions
-
-If the Requirements, the Sprint Plan, and the UX specification contain conflicting decisions:
-
-1. Identify each statement.
-2. Cite the respective sections.
-3. Explain the conflict.
-4. Do not decide which is correct.
-5. Require explicit project-team resolution when necessary.
-
----
-
-# 30. Self-Validation Checklist
-
-Before producing the validation report:
-
-```text
-[ ] Requirements were reviewed.
-[ ] Sprint Plan was reviewed.
-[ ] Upstream validation reports were reviewed.
-[ ] UX_SPEC.md was reviewed.
-[ ] The MVP scope was determined independently.
-[ ] An independent coverage baseline was built.
-[ ] Requirement classification was checked.
-[ ] Flow coverage was checked for every MVP requirement.
-[ ] The Coverage Matrix was compared with the baseline.
-[ ] UX constraints were checked.
-[ ] User roles were checked.
-[ ] Information architecture and navigation were checked.
-[ ] Flows were checked for completeness and step integrity.
-[ ] Screens were checked.
-[ ] Interaction rules were checked.
-[ ] Scope expansion was checked.
-[ ] Sprint alignment was checked.
-[ ] UX principles were checked.
-[ ] Assumptions were checked.
-[ ] Open questions were checked.
-[ ] UX risks were checked.
-[ ] Premature specification was checked.
-[ ] Traceability was audited.
-[ ] Downstream readiness was evaluated.
-[ ] Findings received severity levels.
-[ ] Final decision was justified.
-[ ] Source artifacts were not modified.
-[ ] No UX decisions were made by the validator.
-```
-
----
-
-# 31. Stage Transition
-
-If:
-
-```text
-PASS
-```
-
-the project may proceed to:
-
-```text
-P05
-```
-
-If:
-
-```text
-PASS_WITH_WARNINGS
-```
-
-the project may proceed while preserving the documented warnings and assumptions.
-
-If:
-
-```text
-FAIL
-```
-
-return to P04 and correct the UX specification.
-
-If the cause lies in the Requirements or the Sprint Plan, return to the responsible stage.
-
-If:
-
-```text
-BLOCKED
-```
-
-resolve the upstream issue before continuing.
-
-The validator must not automatically advance the pipeline.
+Follow `prompts/system/SYSTEM_PROMPT.md` and preserve traceability throughout the report.

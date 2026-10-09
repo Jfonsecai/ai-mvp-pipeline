@@ -53,7 +53,7 @@ Do not assume that the generation prompt was followed correctly merely because t
 
 ## 2.2 Source of Truth
 
-Use P00–P02 as the source of product intent, requirements and acceptance criteria.
+Use P02 as the source of requirements and acceptance criteria.
 
 Use the original P02 `product_backlog.json` to compare the pre-planning requirements with the updated P03 backlog.
 
