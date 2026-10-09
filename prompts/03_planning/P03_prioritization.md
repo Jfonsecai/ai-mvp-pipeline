@@ -1,441 +1,649 @@
-# P03 — Prioritization and Delivery Planning
+# P03 — Prioritization and Single-Sprint Delivery Planning
 
-**Version:** 1.0
+**Version:** 1.1
+
 **Stage:** P03 — Planning
+
 **Type:** Generation Prompt
+
+**Previous Stage:** P02 — Requirements Engineering
+
+**Next Stage:** P04 — UX/UI Design
+
 **Input Artifacts:**
 
-* `artifacts/00_context/PROJECT_CONTEXT.md`
-* `artifacts/00_context/CONTEXT_VALIDATION.md`
-* `artifacts/01_discovery/PRODUCT_VISION.md`
-* `artifacts/01_discovery/PRODUCT_VISION_VALIDATION.md`
 * `artifacts/02_requirements/REQUIREMENTS.md`
 * `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
+* `artifacts/02_requirements/product_backlog.json`
 * `prompts/system/SYSTEM_PROMPT.md`
 
-**Output Artifact:** `artifacts/03_planning/PRIORITIZATION.md`
+**Output Artifacts:**
+
+* `artifacts/03_planning/PRIORITIZATION.md`
+* `artifacts/03_planning/product_backlog.json`
+
 **Validator:** P03 Prioritization Validator
-**Previous Stage:** P02 — Requirements
-**Next Stage:** P04 — UX/UI
 
 ---
 
 # 1. Purpose
 
-Transform validated product discovery and requirements into an explicit, defendable prioritization for the MVP.
+Transform validated product discovery and requirements into an explicit, traceable and realistic prioritization plan for the MVP.
 
-The goal is to establish:
+This stage must determine:
 
-* Which capabilities deliver the most value early.
-* Which capabilities are essential for the MVP.
-* Which capabilities are valuable but can be delayed.
-* Which capabilities are out of scope for the current phase.
-* Which dependencies or risks affect sequencing.
-* Which user journeys or requirements should drive the implementation order.
+* Which capabilities deliver the greatest value to users.
+* Which requirements are essential for a coherent MVP.
+* Which capabilities should be deferred or excluded.
+* Which dependencies, risks and decisions affect delivery.
+* Which user stories should be implemented first.
+* Whether the selected scope is feasible within the available delivery window.
+* How to organize the MVP work into **one single sprint**.
 
-This stage does not define detailed UX or architecture, but it does define the sequencing logic that informs both.
+The objective is to define the smallest viable product that delivers the core value proposition while remaining achievable by the actual team.
 
----
+This stage defines prioritization and delivery planning. It does not define detailed UX, architecture, APIs, database schemas or implementation tasks at code level.
 
-# 2. Inputs
+# 2. Inputs and Source of Truth
 
-## 2.1 Project Context
-
-Read:
-
-```text
-artifacts/00_context/PROJECT_CONTEXT.md
-```
-
-Use it to understand the initial problem, users, constraints, and MVP boundaries.
-
-## 2.2 Product Vision
+## 2.1 Requirements and Product Backlog
 
 Read:
 
-```text
-artifacts/01_discovery/PRODUCT_VISION.md
-```
+* `artifacts/02_requirements/REQUIREMENTS.md`
+* `artifacts/02_requirements/REQUIREMENTS_VALIDATION.md`
+* `artifacts/02_requirements/product_backlog.json`
 
-Use it to understand the product value, main user needs, and the core experience.
+These are the primary sources for functional requirements, non-functional requirements, epics, user stories, acceptance criteria, dependencies and existing traceability IDs.
 
-## 2.3 Requirements
+The JSON backlog is the structured source that must be updated by this stage. Preserve its existing items and identifiers unless a documented inconsistency requires attention.
 
-Read:
+## 2.2 Delivery Constraints
 
-```text
-artifacts/02_requirements/REQUIREMENTS.md
-```
+Use explicitly available information about:
 
-This artifact is the primary source for functional requirements, non-functional requirements, and acceptance expectations.
+* Formal delivery window.
+* Actual remaining working time, if provided.
+* Team availability and responsibilities.
+* Existing technical or academic constraints.
+* Required deliverables and completion criteria.
 
-## 2.4 Validation Reports
+For this project, the formal academic delivery window is **two weeks**, but the actual time remaining may be shorter.
 
-Read any available validation reports from P00–P02 before making prioritization decisions.
+Do not assume that the entire formal period remains available. Do not invent the current date of the deadline, exact remaining days, daily hours, team availability or individual productivity.
 
-These reports may reveal:
+If actual availability is unknown, state this explicitly and prepare a conservative, provisional plan. Identify what must be confirmed before the scope can be considered feasible.
 
-* open questions,
-* assumptions,
-* contradictions,
-* missing constraints,
-* risk areas,
-* MVP scope warnings.
+## 2.3 Global System Prompt
 
-If an upstream artifact is missing, empty, or invalid, say so explicitly and continue only with the evidence that exists.
+Read `prompts/system/SYSTEM_PROMPT.md`.
 
-## 2.5 Global System Prompt
+Apply its rules regarding traceability, source-of-truth, assumptions, scope control, human approval and artifact consistency.
 
-Read:
+## 2.4 Missing or Invalid Inputs
 
-```text
-prompts/system/SYSTEM_PROMPT.md
-```
+If an upstream artifact is missing, empty, invalid or contradictory:
 
-Apply the rules for source-of-truth, MVP discipline, traceability, assumptions, and human approval.
+1. Identify the problem.
+2. Explain its impact on prioritization.
+3. Continue only where the available evidence permits.
+4. Mark affected decisions as `UNKNOWN`, `ASSUMPTION`, `PROPOSAL`, `REQUIRES DECISION` or `BLOCKED`, as appropriate.
 
----
+Do not fabricate missing requirements or silently resolve important contradictions.
 
 # 3. Role
 
-Act as a:
+Act as a **Senior Product Prioritization and Delivery Planning Analyst**.
 
-> Senior Product Strategy and Delivery Prioritization Analyst.
-
-Your responsibility is to convert business value, product intent, and requirements into a clear delivery sequence for the MVP.
+Your responsibility is to turn validated product requirements into a focused and achievable delivery plan.
 
 You must:
 
-* Keep prioritization grounded in validated project information.
-* Preserve the original product intent.
-* Balance user value, feasibility, risk, and dependency logic.
-* Make trade-offs explicit instead of hiding them.
-* Support implementation sequencing for the next stages.
+* Prioritize user value and completion of the core product journey.
+* Balance dependencies, complexity, risk and available capacity.
+* Make trade-offs explicit.
+* Preserve traceability to existing requirements.
+* Keep the MVP small enough to implement and demonstrate.
+* Distinguish confirmed decisions from proposals and assumptions.
+* Prepare a plan that supports subsequent UX and architecture work.
 
 You must not:
 
 * Invent features or requirements.
-* Add unnecessary complexity just to be comprehensive.
-* Turn proposals into approved scope.
-* Prioritize features without explaining the rationale.
+* Expand the MVP without justification and approval.
+* Treat all requirements as mandatory for the current delivery.
+* Invent team availability or implementation capacity.
+* Assume that story points correspond directly to hours.
+* Generate a multi-sprint delivery plan.
+* Produce detailed technical designs prematurely.
+* Modify the product vision or requirements silently.
 
----
-
-# 4. Core Principle
+# 4. Core Planning Principle
 
 The central question is:
 
-> What is the smallest set of features and decisions that can deliver the core value of the product early, while minimizing delivery risk and preserving future optionality?
+> What is the smallest coherent set of requirements that the team can realistically deliver in one sprint, within the available time, while demonstrating the product's core value?
 
-The prioritization should optimize for:
+Optimize for:
 
-```text
-Core user problem
-+
-Core user journey
-+
-MVP validation
-+
-Delivery feasibility
-+
-Low implementation risk
-```
+1. Completion of the core user journey.
+2. Essential user value.
+3. A demonstrable and testable MVP.
+4. Feasibility within the real delivery window.
+5. Dependencies and implementation risk.
+6. Verification of important product assumptions.
 
-not for maximal feature breadth.
-
----
+Prefer a small, complete and demonstrable product over a broad collection of partially implemented features.
 
 # 5. Planning Process
 
-## Step 1 — Review P00–P02 Evidence
+## Step 1 — Review Upstream Evidence
 
-Read the relevant artifacts and identify:
+Review P00–P02 and identify:
 
-* Core product problem.
-* Primary and secondary users.
-* MVP objectives.
-* Approved or validated requirements.
-* Assumptions and unknowns.
-* Risks and open questions.
-* Existing validation warnings.
+* Core product problem and target users.
+* Main product value proposition.
+* MVP objectives and scope boundaries.
+* Functional and non-functional requirements.
+* User stories and acceptance criteria.
+* Dependencies, assumptions and open questions.
+* Validation findings and unresolved blockers.
 
-Do not ignore unresolved issues simply because they are inconvenient.
+Distinguish validated requirements from proposed or uncertain items.
 
-## Step 2 — Distinguish MVP Core vs. Deferred
+## Step 2 — Identify and Classify Capabilities
 
-Categorize capabilities as:
+Classify each relevant capability as one of:
 
-```text
-MVP Core
-MVP Supporting
-Future / Deferred
-Out of Scope
-Requires Decision
-```
+* `MVP_CORE`: Essential to deliver the core product value.
+* `MVP_SUPPORTING`: Supports usability, reliability or completion of the core journey.
+* `FUTURE_DEFERRED`: Valuable, but not required for the current delivery.
+* `OUT_OF_SCOPE`: Excluded from the current product scope.
+* `REQUIRES_DECISION`: Cannot be confidently classified without a human decision.
 
-Do not promote future ideas to MVP status merely because they are attractive or common.
+These classifications describe product scope, not delivery order. A capability classified as `MVP_CORE` may still be blocked by an unresolved dependency.
 
-## Step 3 — Identify Delivery Drivers
+Every classification must be justified and traceable.
 
-Determine which requirements and user needs are the strongest delivery drivers.
+## Step 3 — Establish Priorities
 
-Examples of delivery drivers:
-
-* Critical user value.
-* Core workflow completion.
-* High user pain reduction.
-* Dependency on other features.
-* Validation of key assumptions.
-* Feasibility and low-risk implementation.
-
-A feature should not be prioritized high simply because it is technically easy if it does not advance user value or risk reduction.
-
-## Step 4 — Define Priority Logic
-
-For each requirement or capability, evaluate:
+Evaluate each epic or user story according to:
 
 1. User value.
-2. Strategic value for the MVP.
-3. Dependency chain / prerequisite status.
-4. Implementation complexity.
-5. Delivery risk.
-6. Opportunity cost of delaying it.
+2. Contribution to the core user journey.
+3. Necessity for a coherent MVP.
+4. Dependency and prerequisite relationships.
+5. Implementation complexity.
+6. Delivery risk.
+7. Cost of delaying the capability.
+8. Relevance to validating the product's central value proposition.
 
-Then assign a priority level such as:
+Use these priority levels:
 
-```text
-P0 — Critical / Must-have for MVP
-P1 — High priority / Strongly recommended
-P2 — Medium priority / Can be deferred
-P3 — Low priority / Future or optional
-BLOCKED — Requires clarification before prioritization
-```
+* `P0`: Essential for the current MVP; omission prevents the core journey or required demonstration from working.
+* `P1`: High value; include if capacity permits without jeopardizing P0 work.
+* `P2`: Useful, but deferrable.
+* `P3`: Low priority or suitable for a future iteration.
+* `BLOCKED`: Requires a decision or resolution before it can be planned reliably.
 
-Use only the levels that fit the project.
+Do not assign priority based solely on implementation simplicity.
 
-## Step 5 — Sequence the Delivery Plan
+A high-priority item may depend on another item with a lower independent user value. In that case, document the dependency and schedule the prerequisite first.
 
-Organize the work into a sensible incremental flow.
+## Step 4 — Estimate Relative Effort
 
-The sequence should reflect:
+Estimate the relative effort of each user story using a simple, consistent scale, such as Fibonacci story points:
 
-* Basic value before advanced polish.
-* Foundation before dependent features.
-* Validation before scale.
-* Simpler flows before optional expansions.
+`1, 2, 3, 5, 8, 13`
 
-The output should be a release-style plan, not a complete backlog of every possible detail.
+Use the scale comparatively, considering complexity, uncertainty and implementation effort.
 
-## Step 6 — Identify Dependencies and Risks
+Rules:
 
-For each major priority item, identify:
+* Estimate user stories, not every requirement and epic independently.
+* Explain unusually high or uncertain estimates.
+* Do not equate story points directly to hours or days.
+* Do not claim estimates are precise measurements.
+* If a story is too broad to estimate meaningfully, flag it for review rather than inventing precision.
+* Do not decompose stories into detailed implementation tasks unless required by the available evidence.
 
-* Prerequisite tasks.
-* Required decisions.
-* Critical dependencies.
-* Risks if delayed.
-* Risks if included too early.
+If the team has no established estimation practice, describe the estimates as preliminary planning estimates.
 
-Do not hide dependencies or assume they will be solved later without a note.
+## Step 5 — Evaluate Actual Delivery Feasibility
 
-## Step 7 — Define the MVP Slice
+Assess the selected scope against the delivery constraints.
 
-The final prioritization must clearly identify:
+The formal delivery window is two weeks, but the remaining working time may be shorter.
 
-```text
-MVP Slice
-Phase 2 / Next Priorities
-Deferred Items
-Out of Scope
-Open Decisions
-```
+Use actual remaining time and team availability only when they are explicitly provided.
 
-This should be the minimum coherent product that validates the central value proposition.
+When information is incomplete:
 
----
+* Identify the missing capacity information.
+* Avoid claiming that the plan is definitively feasible.
+* Select a conservative MVP scope.
+* Separate the committed scope from conditional work.
+* State the conditions that must be met for the plan to succeed.
 
-# 6. Prioritization Rules
+Do not compensate for insufficient time by silently reducing quality requirements or removing essential acceptance criteria.
+
+## Step 6 — Define One Single Sprint
+
+Create exactly one planned sprint for the current academic delivery.
+
+Use the identifier `SPRINT-001`.
+
+The sprint must contain the selected user stories and their existing acceptance criteria. It must have a clear objective, a demonstrable outcome and explicit completion conditions.
+
+Organize work within the sprint in a logical implementation order:
+
+1. Essential prerequisites and unresolved decisions.
+2. Foundations required by dependent stories.
+3. Core user journey.
+4. Supporting capabilities that fit the remaining capacity.
+5. Integration, verification and final corrections.
+
+This sequence is an ordering of work **within the same sprint**, not a set of separate sprints.
+
+Do not assign calendar dates unless the required dates are known.
+
+Do not create a second sprint for future work. Deferred items belong in the future backlog and must remain outside the current sprint.
+
+If the actual available time is insufficient to complete all P0 requirements, propose a smaller coherent scope and explain the trade-off. Do not label an incomplete core journey as a fully deliverable MVP.
+
+## Step 7 — Review Team Responsibilities
+
+Use team roles documented in the project context when available.
+
+If the team includes named members and responsibilities, propose assignments only when they are supported by the available information.
+
+Distinguish:
+
+* Confirmed assignment.
+* Proposed assignment.
+* Unassigned work.
+* Assignment requiring team confirmation.
+
+Avoid assuming that role labels fully describe each member's availability or technical competence.
+
+Do not force every member to receive an equal number of stories. Balance work according to dependencies, relevant responsibilities and available capacity.
+
+Detailed task-level ownership may be refined after UX and architecture decisions.
+
+## Step 8 — Identify Dependencies, Risks and Decisions
+
+For each significant dependency or risk, document:
+
+* Identifier.
+* Related requirements or stories.
+* Impact on delivery.
+* Required action or decision.
+* Status.
+* Responsible party, if known.
+
+Identify issues that could prevent the core user journey from being completed.
+
+Do not hide a critical dependency inside a general risk description.
+
+## Step 9 — Define the Final MVP Slice
+
+The final plan must clearly distinguish:
+
+* **Committed for SPRINT-001:** The scope proposed for delivery in the single sprint.
+* **Conditional:** Valuable work that enters the sprint only if capacity and dependencies permit.
+* **Deferred:** Work intentionally postponed.
+* **Out of scope:** Work excluded from the current product scope.
+* **Requires decision:** Items awaiting human approval or clarification.
+
+The committed scope must prioritize completion of a coherent user journey rather than maximizing the number of stories.
+
+Mark the plan as provisional if capacity, scope or important decisions remain unconfirmed.
+
+## Step 10 — Update the Product Backlog
+
+Generate a new, updated JSON file at:
+
+`artifacts/03_planning/product_backlog.json`
+
+Use the P02 backlog as the starting point.
+
+Preserve:
+
+* Existing epic and story IDs.
+* Requirement references.
+* User story wording.
+* Acceptance criteria and their IDs.
+* Business rule, edge case and dependency references.
+* Existing traceability information.
+
+Populate the planning fields for each item as appropriate:
+
+* `priority`
+* `story_points`
+* `release`
+* `sprint`
+* `assigned_developers`
+* `status`
+
+For stories selected for the current sprint:
+
+* Set `sprint` to `SPRINT-001`.
+* Set `release` to a consistent identifier for the current academic MVP delivery, such as `RELEASE-001`.
+* Populate `priority` and `story_points` according to the planning analysis.
+* Populate `assigned_developers` only with justified confirmed or proposed assignments, clearly distinguishing their status in the planning document.
+* Use an appropriate planning status, such as `PLANNED`, if supported by the backlog schema.
+
+For deferred stories:
+
+* Leave `sprint` and `release` unset or null when appropriate.
+* Preserve the story and its traceability.
+* Record the reason for deferral in `PRIORITIZATION.md`.
+
+For blocked or unresolved stories:
+
+* Do not force them into the sprint.
+* Preserve their IDs.
+* Document the blocking decision or dependency.
+
+If the original schema does not support a necessary planning distinction, do not silently change its structure. Document the limitation and propose a minimal schema adjustment for human approval.
+
+Ensure the resulting JSON is syntactically valid and consistent with the Markdown plan.
+
+# 6. Prioritization and Scope Rules
 
 ## 6.1 Scope Discipline
 
-Prioritization must remain within the approved problem, target users, and product vision. Do not expand scope simply because it seems useful.
+All priorities must be grounded in the product vision and requirements.
 
-## 6.2 MVP Principle
+New functionality must not be introduced merely because it is common in similar applications.
 
-Prefer a smaller but valid MVP over a broader, delayed, or fragile release.
+If a potentially necessary feature is not supported by upstream requirements, classify it as `PROPOSAL` or `REQUIRES DECISION`.
 
-## 6.3 Dependency Awareness
+## 6.2 Single-Sprint Discipline
 
-A capability may be high priority because it unlocks multiple other requirements. Explain this clearly.
+The current delivery has one sprint only.
 
-## 6.4 Risk-Conscious Sequencing
+The plan must not contain multiple sprints, sprint sequences or a second sprint disguised as another delivery phase.
 
-If a requirement depends on unresolved business, technical, or data decisions, classify it accordingly rather than silently moving forward.
+Future iterations may be described at capability level, without assigning them a sprint in the current delivery plan.
 
-## 6.5 Human Decision Visibility
+## 6.3 Capacity Discipline
 
-When prioritization rests on an assumption or unconfirmed requirement, classify it as:
+Do not invent available hours, remaining days, velocity or productivity.
 
-```text
-ASSUMPTION
-PROPOSAL
-UNKNOWN
-REQUIRES DECISION
-```
+If the actual deadline or availability is unknown, identify that limitation and keep feasibility provisional.
 
-Do not present assumptions as proven priorities.
+The number of stories selected must follow the available capacity, not an arbitrary target.
 
----
+## 6.4 Dependency Discipline
 
-# 7. Required Output Format
+Prerequisites must be scheduled before the capabilities that depend on them.
+
+If a dependency is unresolved, identify whether it blocks the story or can be managed through a documented assumption.
+
+## 6.5 Quality Discipline
+
+Do not remove essential acceptance criteria or testing needs simply to fit more features into the sprint.
+
+The selected MVP must be demonstrable and sufficiently verifiable to support the next stages.
+
+## 6.6 Human Decision Visibility
+
+Classify uncertain information as appropriate:
+
+* `ASSUMPTION`
+* `PROPOSAL`
+* `UNKNOWN`
+* `REQUIRES DECISION`
+* `BLOCKED`
+
+Do not present proposed assignments, estimates or scope decisions as formally approved unless the evidence supports that status.
+
+# 7. Required Output: PRIORITIZATION.md
 
 Generate:
 
-```text
-artifacts/03_planning/PRIORITIZATION.md
-```
+`artifacts/03_planning/PRIORITIZATION.md`
 
-Use the following exact high-level structure:
-
-```markdown
-# Prioritization and Delivery Plan
+Use the following structure.
 
 ## 1. Document Metadata
-- Version:
-- Stage: P03 — Planning
-- Status: READY / READY_WITH_ASSUMPTIONS / BLOCKED
-- Project:
-- Source Artifacts:
-- Validation Statuses:
+
+* Version.
+* Stage: P03 — Planning.
+* Status: `READY`, `READY_WITH_ASSUMPTIONS` or `BLOCKED`.
+* Project.
+* Source artifacts.
+* Upstream validation statuses.
+* Formal delivery window.
+* Actual remaining time and capacity, if known.
 
 ## 2. Executive Summary
-Briefly explain the product strategy, priority logic, and MVP focus.
 
-## 3. Product Priorities at a Glance
-| Priority | Item / Capability | Why It Matters | Source / Requirement | Status |
-|---|---|---|---|---|
+Summarize the prioritization strategy, proposed MVP scope, single-sprint constraint and main feasibility considerations.
 
-## 4. MVP Focus
-### MVP Core
-| ID | Capability | User Value | Priority | Rationale |
-|---|---|---|---|---|
+## 3. Planning Constraints
 
-### MVP Supporting
-| ID | Capability | User Value | Priority | Rationale |
-|---|---|---|---|---|
+Document:
 
-### Future / Deferred
-| ID | Capability | Reason for Deferral | Priority |
-|---|---|---|---|
+* Formal delivery duration.
+* Actual remaining time, if known.
+* Team composition and responsibilities.
+* Known capacity constraints.
+* Missing information affecting feasibility.
 
-### Out of Scope
-| ID | Excluded Item | Reason |
-|---|---|---|
+Clearly distinguish confirmed information from assumptions.
 
-## 5. Delivery Sequence
-### Phase 1 — Foundation / MVP Validation
-| Order | Work Item | Depends On | Value Delivered |
-|---|---|---|---|
+## 4. Product Priorities at a Glance
 
-### Phase 2 — Expansion / Post-MVP
-| Order | Work Item | Depends On | Value Delivered |
-|---|---|---|---|
+| Priority | Item ID | Capability | Rationale | Source Requirement | Scope Classification |
+| -------- | ------- | ---------- | --------- | ------------------ | -------------------- |
 
-## 6. Dependencies, Decisions, and Risks
-| ID | Dependency / Risk / Decision Needed | Impact | Owner / Source | Status |
-|---|---|---|---|---|
+## 5. MVP Scope
 
-## 7. Requirements-to-Priority Traceability
-| Requirement | Priority / Phase | Decision Basis | Notes |
-|---|---|---|---|
+### 5.1 Committed for SPRINT-001
 
-## 8. Assumptions and Unknowns
-| ID | Item | Classification | Why It Affects Prioritization |
-|---|---|---|---|
+| Story ID | Capability | User Value | Priority | Estimate | Dependencies |
+| -------- | ---------- | ---------- | -------- | -------- | ------------ |
 
-## 9. Key Constraints
-List major constraints affecting delivery order and MVP boundaries.
+### 5.2 Conditional on Capacity
 
-## 10. Final Recommendation
-State the proposed MVP slice and the main factor driving the priority order.
+| Story ID | Capability | Value | Condition for Inclusion |
+| -------- | ---------- | ----- | ----------------------- |
 
-## 11. Status and Next Actions
-Explain whether P04 can proceed, whether more decisions are required, or whether P03 is blocked.
-```
+### 5.3 Deferred
 
----
+| Story ID | Capability | Reason for Deferral | Future Consideration |
+| -------- | ---------- | ------------------- | -------------------- |
 
-# 8. Identifier Rules
+### 5.4 Out of Scope
 
-Use existing identifiers when available.
+| Item ID | Excluded Capability | Reason |
+| ------- | ------------------- | ------ |
 
-New recommendation identifiers may use:
+### 5.5 Requires Decision
 
-```text
-PRIOR-XXX
-CAP-XXX
-PHASE-XXX
-DEP-XXX
-RISK-XXX
-ASSUM-XXX
-```
+| Item ID | Decision Needed | Impact | Proposed Resolution |
+| ------- | --------------- | ------ | ------------------- |
 
-Do not invent requirement IDs that do not exist. If a requirement lacks an identifier, cite the relevant requirement title or section instead.
+## 6. Single-Sprint Plan
 
----
+**Sprint:** `SPRINT-001`
 
-# 9. Status Rules
+Include:
+
+* Sprint objective.
+* Proposed start and end dates, only if known.
+* Selected stories.
+* Total estimated story points.
+* Logical work sequence within the sprint.
+* Dependencies and prerequisite order.
+* Integration and verification activities.
+* Definition of Done for the current delivery.
+* Conditions for considering the sprint successful.
+
+Do not invent sprint capacity or claim that the total estimate guarantees completion.
+
+## 7. Team Responsibilities
+
+| Work Item | Responsible Member(s) | Assignment Status | Rationale / Notes |
+| --------- | --------------------- | ----------------- | ----------------- |
+
+Use `CONFIRMED`, `PROPOSED`, `UNASSIGNED` or `REQUIRES DECISION`, as appropriate.
+
+## 8. Dependencies, Risks and Decisions
+
+| ID | Related Items | Dependency / Risk / Decision | Impact | Required Action | Status |
+| -- | ------------- | ---------------------------- | ------ | --------------- | ------ |
+
+## 9. Requirements-to-Priority Traceability
+
+| Requirement ID | User Story ID | Priority | Sprint / Deferred | Decision Basis |
+| -------------- | ------------- | -------- | ----------------- | -------------- |
+
+Every relevant requirement must be accounted for, including those excluded from the sprint.
+
+## 10. Assumptions and Unknowns
+
+| ID | Item | Classification | Impact on Plan | Action Needed |
+| -- | ---- | -------------- | -------------- | ------------- |
+
+## 11. Feasibility Assessment
+
+Assess whether the proposed MVP appears feasible given the available information.
+
+Use one of:
+
+* `FEASIBLE`: Available evidence supports the proposed scope and capacity.
+* `CONDITIONALLY_FEASIBLE`: Feasibility depends on explicit assumptions or pending confirmations.
+* `NOT_FEASIBLE`: The proposed scope exceeds known constraints or cannot achieve the required outcome.
+
+Explain the evidence and limitations behind the assessment.
+
+## 12. Final Recommendation
+
+State the smallest coherent MVP, why it was selected, which trade-offs were made and what was intentionally deferred.
+
+## 13. Status and Next Actions
+
+Explain:
+
+* Whether P04 can proceed.
+* Which decisions must be resolved before implementation.
+* Which planning assumptions need confirmation.
+* What must be reviewed or approved by the human team.
+
+# 8. Product Backlog JSON Requirements
+
+Generate `artifacts/03_planning/product_backlog.json` by updating the P02 backlog.
+
+Maintain valid JSON and preserve the original data structure wherever possible.
+
+The output must:
+
+* Preserve all existing IDs and traceability.
+* Reflect the same priorities and sprint scope as `PRIORITIZATION.md`.
+* Assign `SPRINT-001` only to stories selected for the current sprint.
+* Avoid assigning deferred stories to the current sprint.
+* Populate planning fields when evidence supports them.
+* Leave unknown information unset rather than inventing values.
+* Preserve the original requirements and acceptance criteria.
+* Avoid adding unapproved requirements or technical implementation details.
+
+Before finalizing, verify that:
+
+1. Every story in the committed sprint exists in the JSON backlog.
+2. Every story assigned to `SPRINT-001` is listed in the sprint plan.
+3. Every planned story has a documented priority and estimate, or an explicit explanation of why one is pending.
+4. No deferred story is accidentally assigned to the current sprint.
+5. All IDs and references are valid.
+6. The JSON parses correctly.
+7. The two output artifacts agree on scope, priority and status.
+
+# 9. Identifier Rules
+
+Reuse identifiers from upstream artifacts.
+
+New planning identifiers may use:
+
+* `PRIOR-XXX`
+* `CAP-XXX`
+* `SPRINT-001`
+* `RELEASE-001`
+* `DEP-XXX`
+* `RISK-XXX`
+* `ASSUM-XXX`
+
+Do not invent requirement, epic, story or acceptance criterion IDs.
+
+If an upstream item lacks an identifier, refer to its title or section and flag the traceability limitation.
+
+# 10. Status Rules
 
 ## READY
 
-Use when requirements and product direction are sufficiently validated, MVP boundaries are clear, prioritization is traceable, and the plan provides a usable basis for UX and implementation planning.
+Use when:
+
+* Upstream artifacts are sufficiently validated.
+* MVP priorities and boundaries are clear.
+* The single-sprint scope is defined.
+* Traceability is maintained.
+* The plan provides a reliable basis for P04.
+
+This status does not mean every implementation detail is already decided.
 
 ## READY_WITH_ASSUMPTIONS
 
-Use when the plan is usable but important assumptions or open decisions remain. Those assumptions must be explicit and bounded.
+Use when the plan is usable but capacity, assignments, estimates or important decisions remain provisional.
+
+List the assumptions and explain their impact.
 
 ## BLOCKED
 
-Use when the required upstream artifacts are absent, contradictory, or so incomplete that a reliable prioritization cannot be produced.
+Use when missing or contradictory upstream information prevents reliable prioritization, or when a critical decision must be resolved before the plan can be meaningfully defined.
 
----
+# 11. Failure Conditions
 
-# 10. Failure Conditions
+The planning output is invalid if it:
 
-The prioritization is invalid if it:
-
-* Adds features not justified by the product and requirements.
+* Introduces unsupported requirements.
 * Treats assumptions as facts.
-* Ignores major dependencies or blockers.
-* Chooses a broad scope instead of a focused MVP.
-* Frames future requests as current priorities.
-* Hides unresolved decisions that affect sequencing.
-* Omits the rationale for priority order.
-* Cannot be traced to validated upstream evidence.
+* Ignores critical dependencies.
+* Plans more than one sprint for the current delivery.
+* Assumes the full two-week period remains available without evidence.
+* Invents capacity, availability or productivity.
+* Selects a scope that cannot deliver a coherent core journey.
+* Omits prioritization rationale.
+* Fails to preserve traceability.
+* Produces inconsistent Markdown and JSON artifacts.
+* Claims definitive feasibility without adequate evidence.
 
----
+# 12. Self-Review Before Output
 
-# 11. Self-Review Before Output
+* [ ] All required upstream artifacts were reviewed.
+* [ ] Priorities are justified and traceable.
+* [ ] The MVP scope is small and coherent.
+* [ ] Exactly one sprint is planned.
+* [ ] Formal duration and actual remaining availability are distinguished.
+* [ ] Estimates are relative and their limitations are clear.
+* [ ] Capacity is not invented.
+* [ ] Dependencies and risks are documented.
+* [ ] Proposed assignments are distinguished from confirmed assignments.
+* [ ] Deferred items are separated from the current sprint.
+* [ ] The JSON backlog is valid and synchronized with the Markdown plan.
+* [ ] The status reflects actual evidence and uncertainty.
+* [ ] P04 can proceed without hidden planning assumptions.
 
-```text
-[ ] Upstream project context and requirements were reviewed.
-[ ] MVP boundaries are explicit and justified.
-[ ] Priority rationale is documented.
-[ ] Dependencies and risks are identified.
-[ ] Assumptions are labeled and not hidden.
-[ ] Deferred items are clearly separated from MVP items.
-[ ] The status reflects evidence and available information.
-[ ] The plan supports P04 and downstream implementation.
-```
+# 13. Final Response
 
----
+After generating both artifacts, report:
 
-# 12. Final Response
+1. The planning status.
+2. The proposed core MVP.
+3. Confirmation that the plan contains one sprint.
+4. The main capacity constraints or assumptions.
+5. The most important dependencies and decisions pending.
+6. Whether the plan is feasible, conditionally feasible or not feasible.
+7. Whether P04 can proceed.
 
-After generating the artifact, report:
-
-1. The priority status.
-2. The core MVP focus.
-3. The main phases or delivery sequence.
-4. The most important assumptions, risks, or decisions still pending.
-5. Whether UX / implementation planning can proceed without additional clarification.
+Do not claim that files were created or saved unless the execution environment confirms that the artifacts were actually generated.
