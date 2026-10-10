@@ -1,2 +1,22 @@
 # Visual Studio local workspace and cache files
 .vs/
+
+# Dependencies and build output
+node_modules/
+public/
+client/dist/
+coverage/
+
+# Local environment files (never commit secrets; see .env.example)
+.env
+.env.*
+!.env.example
+
+# Vercel local project link
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
+
+.claude

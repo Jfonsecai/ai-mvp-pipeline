@@ -1,0 +1,28 @@
+{
+  "name": "vetcare",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VetCare - modular monolith (Express) and React client. Technical foundation (P06.1).",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "client"
+  ],
+  "scripts": {
+    "dev:api": "node --env-file-if-exists=.env --watch scripts/dev-server.js",
+    "dev:client": "npm run dev --workspace client",
+    "build": "npm run build --workspace client",
+    "test": "node --env-file-if-exists=.env --test tests/*.test.js",
+    "migrate": "node --env-file-if-exists=.env scripts/migrate.js",
+    "migrate:status": "node --env-file-if-exists=.env scripts/migrate.js --status"
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "yaml": "^2.9.1"
+  }
+}

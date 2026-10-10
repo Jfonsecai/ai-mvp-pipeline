@@ -1,0 +1,28 @@
+/* COMP-002 - base styles. Only tokens (tokens.css) are used: no raw visual values (CR-012). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-primary);
+  outline-offset: var(--border-width-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

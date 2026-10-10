@@ -1,0 +1,89 @@
+/* COMP-002 UI Design System Library - design tokens (ADR-013, CR-012).
+ * SINGLE SOURCE of visual values. Names and values are UX_SPEC v2.0 section 4 (approved: P04-PROP-001, TD-01).
+ * Rules: no raw values in components or screens; a new need is first met with an existing token;
+ * a missing token is added to UX_SPEC (change process, UX_SPEC section 12) before it is added here.
+ * No dark-mode tokens in the MVP.
+ * Note: breakpoint tokens cannot be used inside @media queries (CSS limitation); they document the
+ * values, and media queries must repeat 768px / 1024px as written in UX_SPEC 4.5.
+ * tests/design-tokens.test.js checks this file against UX_SPEC section 4.
+ */
+:root {
+
+  /* Color */
+  --color-primary: #0F766E;
+  --color-primary-hover: #115E59;
+  --color-primary-subtle: #F0FDFA;
+  --color-on-primary: #FFFFFF;
+  --color-bg-page: #F9FAFB;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-muted: #F3F4F6;
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #4B5563;
+  --color-text-disabled: #9CA3AF;
+  --color-border-input: #6B7280;
+  --color-border-subtle: #E5E7EB;
+  --color-success: #15803D;
+  --color-success-bg: #F0FDF4;
+  --color-warning: #B45309;
+  --color-warning-bg: #FFFBEB;
+  --color-error: #B91C1C;
+  --color-error-bg: #FEF2F2;
+  --color-info: #1D4ED8;
+  --color-info-bg: #EFF6FF;
+  --color-badge-success-text: #166534;
+  --color-badge-success-bg: #DCFCE7;
+  --color-badge-info-text: #1E40AF;
+  --color-badge-info-bg: #DBEAFE;
+  --color-badge-primary-text: #134E4A;
+  --color-badge-primary-bg: #CCFBF1;
+  --color-badge-warning-text: #92400E;
+  --color-badge-warning-bg: #FEF3C7;
+  --color-overlay: rgba(17, 24, 39, 0.5);
+  --color-badge-neutral-text: #374151;
+
+  /* Typography */
+  --font-family-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  /* Spacing and Size */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --size-control-height: 44px;
+  --size-icon: 20px;
+  --size-header-height: 56px;
+  --size-bottom-nav-height: 64px;
+  --size-content-max: 960px;
+  --size-form-max: 560px;
+
+  /* Radius, Border, Shadow, Motion */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --border-width-default: 1px;
+  --border-width-strong: 2px;
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.08);
+  --shadow-md: 0 4px 12px rgba(17, 24, 39, 0.15);
+  --motion-duration-fast: 150ms;
+  --motion-delay-loading: 300ms;
+  --motion-duration-toast: 5s;
+  --border-width-accent: 4px;
+
+  /* Breakpoints */
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+}
