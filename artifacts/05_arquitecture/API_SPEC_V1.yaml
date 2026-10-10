@@ -1,0 +1,1411 @@
+openapi: 3.1.0
+info:
+  title: VetCare API
+  version: 1.0.0
+  summary: Client–backend contract of VetCare (SPRINT-001).
+  description: |
+    Written form of the shared contracts CTR-001 to CTR-007 and CTR-009 of ARCHITECTURE.md v2.0 (TD-15, TD-20).
+    Version 1.0 (first issue), generated 2026-10-10 by P05. Status: READY.
+
+    **Scope.** Interfaces IF-001 to IF-013 (committed stories) and the new interfaces IF-025 to IF-032
+    (sign-out, product availability and orders). Each operation names its interface in `x-vetcare-interface`
+    and its contract in `x-vetcare-contract`.
+
+    **Conventions (CTR-003).**
+    - Base path `/api`, JSON bodies (`application/json; charset=utf-8`), camelCase field names.
+    - Date-times are ISO 8601 with offset. The server emits the Bogotá offset (`-05:00`); all calendar logic
+      uses the zone America/Bogota (ADR-008).
+    - Money is whole Colombian pesos (integer, no decimals, no currency field).
+    - Enumerations use the lowercase codes defined in `components.schemas`. Spanish copy never appears in
+      responses; the client maps codes to the UX message catalog (ADR-011, UX_SPEC §3.9).
+
+    **Sessions (CTR-002).** Sign-up and sign-in set the cookie `vetcare_session`
+    (HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=43200). A session ends after 60 minutes without
+    activity or 12 hours after sign-in (NFR-005), or at sign-out (FR-039).
+
+    **Same-origin rule (CR-021).** Every non-GET request must carry an `Origin` header equal to the
+    application origin and, if it has a body, `Content-Type: application/json`; otherwise the response is
+    403 FORBIDDEN_ORIGIN.
+
+    **Errors (CTR-001).** Every failure returns `ErrorResponse` with one code from `OutcomeCode`. A resource of
+    another user or of the other account type returns NOT_FOUND, exactly like a nonexistent one (CR-006).
+    Protected operations return UNAUTHENTICATED (no session) or SESSION_EXPIRED (expired session).
+
+    **Feature switches (P04-ASM-029, P05-ASM-010).** Ordering operations belong to release slices listed in
+    `x-vetcare-feature`. While a slice is disabled, its operations return NOT_FOUND and the session context
+    omits it from `features`.
+servers:
+  - url: /
+    description: Same origin as the web client (Vercel deployment).
+tags:
+  - name: Auth and session
+    description: CTR-002 — IF-001, IF-002, IF-003, IF-025.
+  - name: Provider profile and hours
+    description: CTR-004 — IF-004, IF-005.
+  - name: Catalog and discovery
+    description: CTR-005 — IF-006, IF-007, IF-008, IF-026.
+  - name: Booking
+    description: CTR-006 — IF-009, IF-010, IF-011.
+  - name: Appointments
+    description: CTR-007 — IF-012, IF-013.
+  - name: Orders
+    description: CTR-009 — IF-027 to IF-032 (ordering package).
+security:
+  - sessionCookie: []
+
+paths:
+  /api/auth/sign-up/owner:
+    post:
+      tags: [Auth and session]
+      operationId: signUpOwner
+      summary: Create a pet owner account with its first pet and start a session.
+      description: US-001; FR-001, FR-005; AC-001 to AC-004, AC-074, AC-075, AC-102. Account, pet and session are created in one transaction (CR-017).
+      x-vetcare-interface: IF-001
+      x-vetcare-contract: CTR-002
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OwnerSignUpRequest' }
+      responses:
+        '201':
+          description: Account created and signed in.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SetSessionCookie' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionContext' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '409':
+          description: DUPLICATE_ACCOUNT_FOR_TYPE — an owner account with this email exists (AC-004).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/auth/sign-up/provider:
+    post:
+      tags: [Auth and session]
+      operationId: signUpProvider
+      summary: Create a provider account with its profile and start a session.
+      description: US-002; FR-002; AC-006 to AC-008, AC-076, AC-103 to AC-105. A clinic must send an address (TD-08); an independent veterinarian may omit it (TD-09).
+      x-vetcare-interface: IF-001
+      x-vetcare-contract: CTR-002
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProviderSignUpRequest' }
+      responses:
+        '201':
+          description: Account and profile created and signed in.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SetSessionCookie' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionContext' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '409':
+          description: DUPLICATE_ACCOUNT_FOR_TYPE — a provider account with this email exists (AC-008).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/auth/sign-in:
+    post:
+      tags: [Auth and session]
+      operationId: signIn
+      summary: Sign in choosing the account type.
+      description: US-003; FR-003; AC-010 to AC-012, AC-077. One generic failure for a wrong email, a wrong password or an unregistered type.
+      x-vetcare-interface: IF-002
+      x-vetcare-contract: CTR-002
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SignInRequest' }
+      responses:
+        '200':
+          description: Signed in.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SetSessionCookie' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionContext' }
+        '401':
+          description: INVALID_CREDENTIALS.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/auth/sign-out:
+    post:
+      tags: [Auth and session]
+      operationId: signOut
+      summary: End the current session.
+      description: US-034; FR-039; BR-040; AC-112, AC-113. Idempotent. Without a session it also returns 204. The cookie is always cleared.
+      x-vetcare-interface: IF-025
+      x-vetcare-contract: CTR-002
+      security: []
+      responses:
+        '204':
+          description: Session ended (or there was none).
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/ClearSessionCookie' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/session:
+    get:
+      tags: [Auth and session]
+      operationId: getSession
+      summary: Session context for routing.
+      description: US-003; FR-004; NFR-005; UX_SPEC §6.1. Never fails for a missing or expired session; it reports the state instead (MSG-SESSION is shown for `expired`).
+      x-vetcare-interface: IF-003
+      x-vetcare-contract: CTR-002
+      security: []
+      responses:
+        '200':
+          description: Current session state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionState' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/profile:
+    get:
+      tags: [Provider profile and hours]
+      operationId: getOwnProviderProfile
+      summary: Read the signed-in provider's profile.
+      description: US-008; FR-009; SCR-UX-009.
+      x-vetcare-interface: IF-004
+      x-vetcare-contract: CTR-004
+      responses:
+        '200':
+          description: Profile.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnProviderProfile' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+    put:
+      tags: [Provider profile and hours]
+      operationId: updateOwnProviderProfile
+      summary: Save the signed-in provider's profile.
+      description: US-008; FR-009; AC-023, AC-024, AC-106; EDGE-027. A clinic cannot save a null or blank address (VALIDATION_FAILED, field `address`, REQUIRED).
+      x-vetcare-interface: IF-004
+      x-vetcare-contract: CTR-004
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProviderProfileUpdate' }
+      responses:
+        '200':
+          description: Saved profile.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnProviderProfile' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/working-hours:
+    get:
+      tags: [Provider profile and hours]
+      operationId: getWorkingHours
+      summary: Read the weekly working hours.
+      description: US-009; FR-010; SCR-UX-010.
+      x-vetcare-interface: IF-005
+      x-vetcare-contract: CTR-004
+      responses:
+        '200':
+          description: Seven days, Monday to Sunday.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WeeklyHours' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+    put:
+      tags: [Provider profile and hours]
+      operationId: replaceWorkingHours
+      summary: Replace the weekly working hours.
+      description: US-009; FR-010; AC-025, AC-080, AC-081; BR-033, BR-034. Upcoming scheduled appointments outside the new hours are cancelled in the same transaction.
+      x-vetcare-interface: IF-005
+      x-vetcare-contract: CTR-004
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WeeklyHours' }
+      responses:
+        '200':
+          description: Saved hours.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WeeklyHours' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/offerings:
+    get:
+      tags: [Catalog and discovery]
+      operationId: listOwnOfferings
+      summary: List the signed-in provider's services and products.
+      description: US-010, US-013; SCR-UX-011.
+      x-vetcare-interface: IF-006
+      x-vetcare-contract: CTR-005
+      responses:
+        '200':
+          description: Own catalog.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnCatalog' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/services:
+    post:
+      tags: [Catalog and discovery]
+      operationId: publishService
+      summary: Publish a service.
+      description: US-010; FR-011; AC-027 to AC-029, AC-082, AC-107. A clinic must send `modality`. For an independent veterinarian, `modality` must be omitted or `home`, and the service is stored as `home` (TD-09); any other value is VALIDATION_FAILED (NOT_ALLOWED).
+      x-vetcare-interface: IF-006
+      x-vetcare-contract: CTR-005
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PublishServiceRequest' }
+      responses:
+        '201':
+          description: Published service.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CatalogService' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/products:
+    post:
+      tags: [Catalog and discovery]
+      operationId: publishProduct
+      summary: Publish a product (published as available).
+      description: US-013; FR-014; AC-033, AC-034, AC-084, AC-111.
+      x-vetcare-interface: IF-006
+      x-vetcare-contract: CTR-005
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PublishProductRequest' }
+      responses:
+        '201':
+          description: Published product, with `available` = true.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CatalogProduct' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/products/{productId}/availability:
+    put:
+      tags: [Catalog and discovery]
+      operationId: setProductAvailability
+      summary: Mark an own product as available or not available.
+      description: US-033; FR-038; AC-100, AC-101; P02-ASM-016. Not-available products stay visible but cannot be ordered.
+      x-vetcare-interface: IF-026
+      x-vetcare-contract: CTR-005
+      x-vetcare-feature: stock
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AvailabilityUpdate' }
+      responses:
+        '200':
+          description: Updated product.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CatalogProduct' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/search:
+    get:
+      tags: [Catalog and discovery]
+      operationId: searchOfferings
+      summary: Text search over services and products of all providers.
+      description: US-016, US-017; FR-017 to FR-019; AC-038 to AC-043, AC-086; P02-ASM-013. Case- and accent-insensitive substring match on offering names (P05-ASM-009). Zero results is a normal empty list (AC-040). Result order is not specified (P04-ASM-006).
+      x-vetcare-interface: IF-007
+      x-vetcare-contract: CTR-005
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search text; must be non-empty after trimming.
+          schema: { type: string, minLength: 1, maxLength: 120 }
+        - name: species
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/SpeciesFilter' }
+      responses:
+        '200':
+          description: Matching offerings.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [results]
+                properties:
+                  results:
+                    type: array
+                    items: { $ref: '#/components/schemas/SearchResult' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/providers/{providerId}:
+    get:
+      tags: [Catalog and discovery]
+      operationId: getPublicProviderProfile
+      summary: A provider's public profile with its offerings.
+      description: US-018; FR-020; AC-044, AC-045; SCR-UX-005. Owner session only.
+      x-vetcare-interface: IF-008
+      x-vetcare-contract: CTR-005
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema: { $ref: '#/components/schemas/Id' }
+      responses:
+        '200':
+          description: Public profile.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicProviderProfile' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/owner/pets:
+    get:
+      tags: [Booking]
+      operationId: listOwnPets
+      summary: The signed-in owner's pets.
+      description: US-019; FR-022; BR-005; SCR-UX-006 section 1.
+      x-vetcare-interface: IF-009
+      x-vetcare-contract: CTR-006
+      responses:
+        '200':
+          description: Own pets.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [pets]
+                properties:
+                  pets:
+                    type: array
+                    items: { $ref: '#/components/schemas/PetSummary' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/services/{serviceId}/booking-context:
+    get:
+      tags: [Booking]
+      operationId: getBookingContext
+      summary: Booking context and offered slots for one service and one week.
+      description: US-019, US-020; FR-021, FR-024, FR-025; AC-026, AC-046, AC-048 to AC-051, AC-108, AC-109; BR-010 to BR-013, BR-024; P02-ASM-006.
+      x-vetcare-interface: IF-010
+      x-vetcare-contract: CTR-006
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema: { $ref: '#/components/schemas/Id' }
+        - name: weekStart
+          in: query
+          required: false
+          description: Monday of the requested week (Bogotá date). Defaults to the current Bogotá week.
+          schema: { $ref: '#/components/schemas/LocalDate' }
+      responses:
+        '200':
+          description: Booking context.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BookingContext' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/owner/appointments:
+    post:
+      tags: [Booking]
+      operationId: bookAppointment
+      summary: Book a one-hour appointment.
+      description: |
+        US-019, US-020; FR-022, FR-023; AC-047, AC-052 to AC-054, AC-108, AC-109; EDGE-004, EDGE-007 to EDGE-009, EDGE-016, EDGE-030.
+        The server re-validates everything. `modality` is required only when the service is offered both ways;
+        `visitAddress` is required for a home visit. The appointment is created as `scheduled` with no confirmation (BR-014).
+      x-vetcare-interface: IF-011
+      x-vetcare-contract: CTR-006
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookAppointmentRequest' }
+      responses:
+        '201':
+          description: Created appointment.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnerAppointment' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: SLOT_UNAVAILABLE — the slot is no longer offered (EDGE-007, passed start or changed hours; MSG-SLOT-GONE).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422':
+          description: VALIDATION_FAILED, PET_NOT_ELIGIBLE (pet species differs from the service species) or NO_PETS.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+    get:
+      tags: [Appointments]
+      operationId: listOwnerAppointments
+      summary: The signed-in owner's appointments, including cancelled ones.
+      description: US-021; FR-026; AC-055, AC-056, AC-087; BR-035; P04-ASM-011; SCR-UX-007.
+      x-vetcare-interface: IF-012
+      x-vetcare-contract: CTR-007
+      responses:
+        '200':
+          description: Own appointments.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [appointments]
+                properties:
+                  appointments:
+                    type: array
+                    items: { $ref: '#/components/schemas/OwnerAppointment' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/appointments:
+    get:
+      tags: [Appointments]
+      operationId: listProviderAppointments
+      summary: Appointments booked with the signed-in provider, including cancelled ones.
+      description: US-024; FR-029; AC-063, AC-064, AC-088; P02-ASM-008; SCR-UX-008. Owner email and phone are never exposed.
+      x-vetcare-interface: IF-013
+      x-vetcare-contract: CTR-007
+      responses:
+        '200':
+          description: Own appointments.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [appointments]
+                properties:
+                  appointments:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProviderAppointment' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/products/{productId}/order-context:
+    get:
+      tags: [Orders]
+      operationId: getOrderContext
+      summary: Product data for the order form.
+      description: US-027; FR-032; SCR-UX-015. Owner session only. A not-available product is returned with `available` = false so the screen can show MSG-UNAVAILABLE.
+      x-vetcare-interface: IF-027
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: orders
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: Order context.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrderContext' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/owner/orders:
+    post:
+      tags: [Orders]
+      operationId: placeOrder
+      summary: Order one product in a quantity of 1 to 99, delivered to an address.
+      description: US-027; FR-032; AC-069 to AC-071, AC-089, AC-110; BR-019 to BR-022, BR-030; EDGE-018, EDGE-021, EDGE-029. The order is created as `confirmed`; the unit price is captured from the product; no pet is required.
+      x-vetcare-interface: IF-028
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PlaceOrderRequest' }
+      responses:
+        '201':
+          description: Created order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnerOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: PRODUCT_UNAVAILABLE — the product is not available or was removed (MSG-UNAVAILABLE).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+    get:
+      tags: [Orders]
+      operationId: listOwnerOrders
+      summary: The signed-in owner's orders.
+      description: US-029; FR-034; AC-085, AC-090, AC-091; SCR-UX-016.
+      x-vetcare-interface: IF-029
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: orders
+      responses:
+        '200':
+          description: Own orders, most recent first.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [orders]
+                properties:
+                  orders:
+                    type: array
+                    items: { $ref: '#/components/schemas/OwnerOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/owner/orders/{orderId}/cancel:
+    post:
+      tags: [Orders]
+      operationId: cancelOwnOrder
+      summary: The owner cancels an order that has not been dispatched.
+      description: US-031; FR-036; AC-096, AC-097; BR-029; EDGE-022.
+      x-vetcare-interface: IF-032
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: order_cancel_owner
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Cancelled order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OwnerOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/OrderStatusChanged' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/orders:
+    get:
+      tags: [Orders]
+      operationId: listProviderOrders
+      summary: Orders placed with the signed-in provider.
+      description: US-028; FR-033; AC-072, AC-073, AC-085; SCR-UX-017.
+      x-vetcare-interface: IF-030
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: orders
+      responses:
+        '200':
+          description: Own orders, most recent first.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [orders]
+                properties:
+                  orders:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProviderOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/orders/{orderId}/status:
+    put:
+      tags: [Orders]
+      operationId: advanceOrderStatus
+      summary: Move an order one step forward.
+      description: |
+        US-030; FR-035; AC-092 to AC-094; BR-023; EDGE-023, EDGE-026.
+        `in_delivery` is accepted only from `confirmed`, and `closed` only from `in_delivery`.
+        Any other current status returns ORDER_STATUS_CHANGED, so moving back or skipping is impossible.
+        Owners have no status operation, so they cannot change an order's status (AC-095).
+      x-vetcare-interface: IF-031
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: order_status
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdvanceOrderRequest' }
+      responses:
+        '200':
+          description: Updated order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProviderOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/OrderStatusChanged' }
+        '422': { $ref: '#/components/responses/ValidationFailed' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+  /api/provider/orders/{orderId}/cancel:
+    post:
+      tags: [Orders]
+      operationId: cancelProviderOrder
+      summary: The provider cancels an order that has not been dispatched.
+      description: US-032; FR-037; AC-098, AC-099; BR-029; EDGE-022.
+      x-vetcare-interface: IF-032
+      x-vetcare-contract: CTR-009
+      x-vetcare-feature: order_cancel_provider
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Cancelled order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProviderOrder' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/OrderStatusChanged' }
+        '500': { $ref: '#/components/responses/Unexpected' }
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: vetcare_session
+      description: Opaque random session token (HttpOnly; Secure; SameSite=Lax). Only its SHA-256 hash is stored on the server (P05-ASM-007).
+
+  headers:
+    SetSessionCookie:
+      description: '`vetcare_session=<token>; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=43200`'
+      schema: { type: string }
+    ClearSessionCookie:
+      description: '`vetcare_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`'
+      schema: { type: string }
+
+  parameters:
+    ProductId:
+      name: productId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Id' }
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Id' }
+
+  responses:
+    ValidationFailed:
+      description: VALIDATION_FAILED with the fields concerned.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+          example:
+            code: VALIDATION_FAILED
+            fields:
+              - field: password
+                reason: TOO_SHORT
+    Unauthenticated:
+      description: UNAUTHENTICATED (no session) or SESSION_EXPIRED (the session ended by inactivity or age; the client shows MSG-SESSION on SCR-UX-001; AC-114).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    ForbiddenOrigin:
+      description: FORBIDDEN_ORIGIN — a state-changing request without the application's Origin or without a JSON content type (CR-021).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: NOT_FOUND — the resource does not exist, belongs to another user, belongs to the other account type (AC-013, EDGE-020), or its feature is disabled (CR-006).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    OrderStatusChanged:
+      description: ORDER_STATUS_CHANGED — the order is no longer in the status this action requires (COMP-UX-020 status-changed alert).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Unexpected:
+      description: UNEXPECTED — any other failure (MSG-NET). No internal detail is returned (CR-005).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+    # ---------- CTR-001: error contract ----------
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code: { $ref: '#/components/schemas/OutcomeCode' }
+        fields:
+          type: array
+          description: Present only for VALIDATION_FAILED.
+          items: { $ref: '#/components/schemas/FieldError' }
+    OutcomeCode:
+      type: string
+      description: |
+        Closed list (CTR-001). HTTP status: VALIDATION_FAILED, PET_NOT_ELIGIBLE, NO_PETS → 422;
+        DUPLICATE_ACCOUNT_FOR_TYPE, SLOT_UNAVAILABLE, PRODUCT_UNAVAILABLE, ORDER_STATUS_CHANGED → 409;
+        INVALID_CREDENTIALS, UNAUTHENTICATED, SESSION_EXPIRED → 401; FORBIDDEN_ORIGIN → 403; NOT_FOUND → 404; UNEXPECTED → 500.
+      enum:
+        - VALIDATION_FAILED
+        - DUPLICATE_ACCOUNT_FOR_TYPE
+        - INVALID_CREDENTIALS
+        - UNAUTHENTICATED
+        - SESSION_EXPIRED
+        - FORBIDDEN_ORIGIN
+        - NOT_FOUND
+        - SLOT_UNAVAILABLE
+        - PET_NOT_ELIGIBLE
+        - NO_PETS
+        - PRODUCT_UNAVAILABLE
+        - ORDER_STATUS_CHANGED
+        - UNEXPECTED
+    FieldError:
+      type: object
+      additionalProperties: false
+      required: [field, reason]
+      properties:
+        field:
+          type: string
+          description: Dotted path of the request field, for example `email`, `pet.species`, `days.2.endHour`.
+        reason: { $ref: '#/components/schemas/ReasonCode' }
+    ReasonCode:
+      type: string
+      description: |
+        REQUIRED → MSG-REQ (or the field-specific choice message); INVALID_FORMAT → MSG-EMAIL, MSG-PHONE, MSG-INTEGER, MSG-DECIMAL;
+        OUT_OF_RANGE → MSG-PRICE, MSG-QTY; TOO_SHORT → MSG-PASSWORD; TOO_LONG → prevented by input maxlength (P05-ASM-004);
+        NOT_ON_THE_HOUR, END_NOT_AFTER_START → COMP-UX-018 messages; NOT_ALLOWED → value not permitted for this account
+        (for example a clinic modality from an independent veterinarian).
+      enum: [REQUIRED, INVALID_FORMAT, OUT_OF_RANGE, TOO_SHORT, TOO_LONG, NOT_ON_THE_HOUR, END_NOT_AFTER_START, NOT_ALLOWED]
+
+    # ---------- CTR-003: shared formats ----------
+    Id:
+      type: string
+      format: uuid
+    DateTime:
+      type: string
+      format: date-time
+      description: ISO 8601 with offset; emitted with the Bogotá offset, for example `2026-10-12T08:00:00-05:00`.
+    LocalDate:
+      type: string
+      format: date
+      description: Calendar date in Bogotá, `YYYY-MM-DD`.
+    Weekday:
+      type: integer
+      minimum: 1
+      maximum: 7
+      description: ISO 8601 weekday, 1 = Monday ... 7 = Sunday.
+    MoneyCop:
+      type: integer
+      minimum: 1
+      description: Whole Colombian pesos.
+    AccountType:
+      type: string
+      enum: [owner, provider]
+    ProviderType:
+      type: string
+      enum: [clinic, independent]
+    Species:
+      type: string
+      enum: [dog, cat]
+    SpeciesFilter:
+      type: string
+      enum: [all, dog, cat]
+      default: all
+    OfferedModality:
+      type: string
+      enum: [clinic, home, both]
+    ChosenModality:
+      type: string
+      enum: [clinic, home]
+    AppointmentStatus:
+      type: string
+      enum: [scheduled, cancelled]
+    OrderStatus:
+      type: string
+      enum: [confirmed, in_delivery, closed, cancelled]
+      description: UX labels (P04-ASM-018) — confirmed "Confirmado", in_delivery "En camino", closed "Entregado", cancelled "Cancelado".
+    Feature:
+      type: string
+      enum: [stock, orders, order_status, order_cancel_owner, order_cancel_provider]
+      description: Ordering release slices (P04-ASM-029); `orders` covers US-027, US-028 and US-029 together.
+    PersonName:
+      type: string
+      minLength: 1
+      maxLength: 120
+    Email:
+      type: string
+      format: email
+      maxLength: 254
+    Address:
+      type: string
+      minLength: 1
+      maxLength: 300
+    Phone:
+      type: string
+      pattern: '^[0-9 +]*[0-9][0-9 +]*$'
+      maxLength: 30
+    ProviderRef:
+      type: object
+      additionalProperties: false
+      required: [id, name, type]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        name: { type: string }
+        type: { $ref: '#/components/schemas/ProviderType' }
+
+    # ---------- CTR-002: auth and session ----------
+    PetInput:
+      type: object
+      additionalProperties: false
+      required: [name, species, breed, ageYears]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        species: { $ref: '#/components/schemas/Species' }
+        breed: { type: string, minLength: 1, maxLength: 80 }
+        ageYears:
+          type: integer
+          minimum: 0
+          description: Whole years; 0 if under one year (TD-10).
+        weightKg:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 999.9
+          description: Kilograms with at most one decimal (TD-10); more decimals → INVALID_FORMAT.
+        heightCm:
+          type: integer
+          minimum: 1
+          maximum: 32767
+          description: Whole centimeters (TD-10).
+    Password:
+      type: string
+      minLength: 8
+      maxLength: 128
+      description: At least 8 characters, no other rule (BR-039). Stored only as an Argon2id hash, never in plain text, never returned or logged (NFR-001; AC-005, AC-009).
+    OwnerSignUpRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, password, pet]
+      properties:
+        name: { $ref: '#/components/schemas/PersonName' }
+        email: { $ref: '#/components/schemas/Email' }
+        password: { $ref: '#/components/schemas/Password' }
+        pet: { $ref: '#/components/schemas/PetInput' }
+    ProviderSignUpRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, password, providerType]
+      properties:
+        name: { $ref: '#/components/schemas/PersonName' }
+        email: { $ref: '#/components/schemas/Email' }
+        password: { $ref: '#/components/schemas/Password' }
+        providerType: { $ref: '#/components/schemas/ProviderType' }
+        address: { $ref: '#/components/schemas/Address' }
+      if:
+        properties:
+          providerType: { const: clinic }
+      then:
+        required: [address]
+    SignInRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password, accountType]
+      properties:
+        email: { $ref: '#/components/schemas/Email' }
+        password: { type: string, minLength: 1, maxLength: 128 }
+        accountType: { $ref: '#/components/schemas/AccountType' }
+    SessionContext:
+      type: object
+      additionalProperties: false
+      required: [accountType, features]
+      properties:
+        accountType: { $ref: '#/components/schemas/AccountType' }
+        features:
+          type: array
+          items: { $ref: '#/components/schemas/Feature' }
+    SessionState:
+      type: object
+      additionalProperties: false
+      required: [state, features]
+      properties:
+        state:
+          type: string
+          enum: [active, none, expired]
+          description: '`expired` only when a session existed and ended by inactivity or age (not after sign-out).'
+        accountType: { $ref: '#/components/schemas/AccountType' }
+        features:
+          type: array
+          items: { $ref: '#/components/schemas/Feature' }
+
+    # ---------- CTR-004: provider profile and hours ----------
+    OwnProviderProfile:
+      type: object
+      additionalProperties: false
+      required: [providerType, publicName, contactPhone, contactEmail, address, profileCompleted]
+      properties:
+        providerType: { $ref: '#/components/schemas/ProviderType' }
+        publicName: { $ref: '#/components/schemas/PersonName' }
+        contactPhone:
+          oneOf:
+            - { $ref: '#/components/schemas/Phone' }
+            - { type: 'null' }
+        contactEmail: { $ref: '#/components/schemas/Email' }
+        address:
+          description: Always a string for a clinic; may be null for an independent veterinarian.
+          oneOf:
+            - { $ref: '#/components/schemas/Address' }
+            - { type: 'null' }
+        profileCompleted:
+          type: boolean
+          description: True once the profile has been saved with a phone; drives the SCR-UX-009 onboarding alert (P04-PROP-006).
+    ProviderProfileUpdate:
+      type: object
+      additionalProperties: false
+      required: [publicName, contactPhone, contactEmail]
+      properties:
+        publicName: { $ref: '#/components/schemas/PersonName' }
+        contactPhone: { $ref: '#/components/schemas/Phone' }
+        contactEmail: { $ref: '#/components/schemas/Email' }
+        address:
+          description: Required (non-null) for a clinic (AC-106); optional or null for an independent veterinarian (AC-024).
+          oneOf:
+            - { $ref: '#/components/schemas/Address' }
+            - { type: 'null' }
+    DayHours:
+      type: object
+      additionalProperties: false
+      required: [weekday, works]
+      properties:
+        weekday: { $ref: '#/components/schemas/Weekday' }
+        works: { type: boolean }
+        startHour: { type: integer, minimum: 0, maximum: 23 }
+        endHour:
+          type: integer
+          minimum: 1
+          maximum: 24
+          description: 24 = midnight at the end of the day. Must be later than startHour (END_NOT_AFTER_START).
+      if:
+        properties:
+          works: { const: true }
+      then:
+        required: [startHour, endHour]
+    WeeklyHours:
+      type: object
+      additionalProperties: false
+      required: [days]
+      properties:
+        days:
+          type: array
+          minItems: 7
+          maxItems: 7
+          description: One entry per weekday, Monday (1) to Sunday (7), each weekday once.
+          items: { $ref: '#/components/schemas/DayHours' }
+
+    # ---------- CTR-005: catalog, search, public profile ----------
+    PublishServiceRequest:
+      type: object
+      additionalProperties: false
+      required: [name, priceCop, species]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+        modality:
+          $ref: '#/components/schemas/OfferedModality'
+          description: Required for a clinic. An independent veterinarian omits it or sends `home` (AC-107).
+    PublishProductRequest:
+      type: object
+      additionalProperties: false
+      required: [name, priceCop, species]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+    AvailabilityUpdate:
+      type: object
+      additionalProperties: false
+      required: [available]
+      properties:
+        available: { type: boolean }
+    CatalogService:
+      type: object
+      additionalProperties: false
+      required: [id, kind, name, priceCop, species, modality]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        kind: { const: service }
+        name: { type: string }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+        modality: { $ref: '#/components/schemas/OfferedModality' }
+    CatalogProduct:
+      type: object
+      additionalProperties: false
+      required: [id, kind, name, priceCop, species, available]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        kind: { const: product }
+        name: { type: string }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+        available: { type: boolean }
+    OwnCatalog:
+      type: object
+      additionalProperties: false
+      required: [services, products]
+      properties:
+        services:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogService' }
+        products:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogProduct' }
+    SearchResult:
+      description: One offering with its provider (FR-019, P04-ASM-007). Products carry `available` (P02-ASM-016).
+      oneOf:
+        - { $ref: '#/components/schemas/ServiceSearchResult' }
+        - { $ref: '#/components/schemas/ProductSearchResult' }
+    ServiceSearchResult:
+      type: object
+      additionalProperties: false
+      required: [id, kind, name, priceCop, species, modality, provider]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        kind: { const: service }
+        name: { type: string }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+        modality: { $ref: '#/components/schemas/OfferedModality' }
+        provider: { $ref: '#/components/schemas/ProviderRef' }
+    ProductSearchResult:
+      type: object
+      additionalProperties: false
+      required: [id, kind, name, priceCop, species, available, provider]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        kind: { const: product }
+        name: { type: string }
+        priceCop: { $ref: '#/components/schemas/MoneyCop' }
+        species: { $ref: '#/components/schemas/Species' }
+        available: { type: boolean }
+        provider: { $ref: '#/components/schemas/ProviderRef' }
+    PublicProviderProfile:
+      type: object
+      additionalProperties: false
+      required: [id, name, type, contactEmail, services, products]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        name: { type: string }
+        type: { $ref: '#/components/schemas/ProviderType' }
+        address:
+          $ref: '#/components/schemas/Address'
+          description: Always present for a clinic; absent for an independent veterinarian without one (AC-045).
+        contactPhone:
+          $ref: '#/components/schemas/Phone'
+          description: Absent until the provider saves a phone.
+        contactEmail: { $ref: '#/components/schemas/Email' }
+        services:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogService' }
+        products:
+          type: array
+          items: { $ref: '#/components/schemas/CatalogProduct' }
+
+    # ---------- CTR-006: booking ----------
+    PetSummary:
+      type: object
+      additionalProperties: false
+      required: [id, name, species, breed]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        name: { type: string }
+        species: { $ref: '#/components/schemas/Species' }
+        breed: { type: string }
+    BookingContext:
+      type: object
+      additionalProperties: false
+      required: [now, weekStart, service, ownerHasPets, eligiblePetIds, providerHasHours, days]
+      properties:
+        now:
+          $ref: '#/components/schemas/DateTime'
+          description: Server time in Bogotá, so the client does not rely on the device clock.
+        weekStart: { $ref: '#/components/schemas/LocalDate' }
+        service:
+          type: object
+          additionalProperties: false
+          required: [id, name, species, priceCop, modality, provider]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+            species: { $ref: '#/components/schemas/Species' }
+            priceCop: { $ref: '#/components/schemas/MoneyCop' }
+            modality: { $ref: '#/components/schemas/OfferedModality' }
+            provider:
+              type: object
+              additionalProperties: false
+              required: [id, name, type]
+              properties:
+                id: { $ref: '#/components/schemas/Id' }
+                name: { type: string }
+                type: { $ref: '#/components/schemas/ProviderType' }
+                address:
+                  $ref: '#/components/schemas/Address'
+                  description: Always present for a clinic (MSG-PLACE-ADDR).
+                contactPhone: { $ref: '#/components/schemas/Phone' }
+        ownerHasPets:
+          type: boolean
+          description: False → the AC-048 info alert.
+        eligiblePetIds:
+          type: array
+          description: The owner's pets whose species equals the service species (BR-024, AC-108). Empty while pets exist → the AC-109 state.
+          items: { $ref: '#/components/schemas/Id' }
+        providerHasHours:
+          type: boolean
+          description: False → no slots are offered (AC-026).
+        days:
+          type: array
+          minItems: 7
+          maxItems: 7
+          items:
+            type: object
+            additionalProperties: false
+            required: [date, slots]
+            properties:
+              date: { $ref: '#/components/schemas/LocalDate' }
+              slots:
+                type: array
+                description: Offered one-hour slot starts, already filtered by BR-010 to BR-013 and P02-ASM-006.
+                items: { $ref: '#/components/schemas/DateTime' }
+    BookAppointmentRequest:
+      type: object
+      additionalProperties: false
+      required: [serviceId, petId, startsAt]
+      properties:
+        serviceId: { $ref: '#/components/schemas/Id' }
+        petId: { $ref: '#/components/schemas/Id' }
+        startsAt: { $ref: '#/components/schemas/DateTime' }
+        modality:
+          $ref: '#/components/schemas/ChosenModality'
+          description: Required only when the service is offered both ways (AC-054).
+        visitAddress:
+          $ref: '#/components/schemas/Address'
+          description: Required for a home visit (BR-015, AC-053).
+
+    # ---------- CTR-007: appointment views ----------
+    OwnerAppointment:
+      type: object
+      additionalProperties: false
+      required: [id, startsAt, endsAt, status, upcoming, service, modality, pet, provider, place]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        startsAt: { $ref: '#/components/schemas/DateTime' }
+        endsAt: { $ref: '#/components/schemas/DateTime' }
+        status: { $ref: '#/components/schemas/AppointmentStatus' }
+        upcoming:
+          type: boolean
+          description: Start after the server's Bogotá "now"; drives the Próximas / Anteriores grouping.
+        service:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+        modality: { $ref: '#/components/schemas/ChosenModality' }
+        pet:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+        provider:
+          type: object
+          additionalProperties: false
+          required: [id, name, type]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+            type: { $ref: '#/components/schemas/ProviderType' }
+            contactPhone: { $ref: '#/components/schemas/Phone' }
+        place:
+          type: object
+          additionalProperties: false
+          required: [kind, address]
+          description: Visit address for a home visit; the clinic's address (always present) for an in-clinic visit (P04-ASM-011).
+          properties:
+            kind: { $ref: '#/components/schemas/ChosenModality' }
+            address: { $ref: '#/components/schemas/Address' }
+    ProviderAppointment:
+      type: object
+      additionalProperties: false
+      required: [id, startsAt, endsAt, status, upcoming, service, modality, pet, ownerName]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        startsAt: { $ref: '#/components/schemas/DateTime' }
+        endsAt: { $ref: '#/components/schemas/DateTime' }
+        status: { $ref: '#/components/schemas/AppointmentStatus' }
+        upcoming: { type: boolean }
+        service:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+        modality: { $ref: '#/components/schemas/ChosenModality' }
+        pet:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+        ownerName: { type: string }
+        visitAddress:
+          $ref: '#/components/schemas/Address'
+          description: Present for home visits only (P02-ASM-008).
+
+    # ---------- CTR-009: orders ----------
+    OrderContext:
+      type: object
+      additionalProperties: false
+      required: [product, provider]
+      properties:
+        product:
+          type: object
+          additionalProperties: false
+          required: [id, name, species, priceCop, available]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+            species: { $ref: '#/components/schemas/Species' }
+            priceCop: { $ref: '#/components/schemas/MoneyCop' }
+            available: { type: boolean }
+        provider: { $ref: '#/components/schemas/ProviderRef' }
+    PlaceOrderRequest:
+      type: object
+      additionalProperties: false
+      required: [productId, quantity, deliveryAddress]
+      properties:
+        productId: { $ref: '#/components/schemas/Id' }
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 99
+          description: Out of range → OUT_OF_RANGE (MSG-QTY, AC-110).
+        deliveryAddress: { $ref: '#/components/schemas/Address' }
+    AdvanceOrderRequest:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [in_delivery, closed]
+    OrderBase:
+      type: object
+      required: [id, product, quantity, unitPriceCop, totalCop, deliveryAddress, status, placedAt]
+      properties:
+        id: { $ref: '#/components/schemas/Id' }
+        product:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Id' }
+            name: { type: string }
+        quantity: { type: integer, minimum: 1, maximum: 99 }
+        unitPriceCop: { $ref: '#/components/schemas/MoneyCop' }
+        totalCop:
+          type: integer
+          minimum: 1
+          description: unitPriceCop × quantity (BR-022).
+        deliveryAddress: { $ref: '#/components/schemas/Address' }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        placedAt: { $ref: '#/components/schemas/DateTime' }
+    OwnerOrder:
+      allOf:
+        - { $ref: '#/components/schemas/OrderBase' }
+      required: [provider]
+      properties:
+        provider: { $ref: '#/components/schemas/ProviderRef' }
+      unevaluatedProperties: false
+    ProviderOrder:
+      allOf:
+        - { $ref: '#/components/schemas/OrderBase' }
+      required: [ownerName]
+      properties:
+        ownerName:
+          type: string
+          description: The owner's name only; no email or phone (NFR-002).
+      unevaluatedProperties: false
