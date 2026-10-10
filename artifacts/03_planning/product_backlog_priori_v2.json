@@ -1,0 +1,2464 @@
+{
+  "backlog_metadata": {
+    "version": "2.0",
+    "previous_version": "1.0 (P03; metadata 3.0)",
+    "stage": "P03",
+    "status": "READY",
+    "source": "artifacts/02_requirements/product_backlog.json v3.0 (P02)",
+    "source_version": "P02 v2.0 + team decisions TD-01 to TD-20 (2026-10-10)",
+    "generated": "2026-10-10",
+    "schema_extensions": [
+      "epics[].p01_elements",
+      "items[].open_question_ids",
+      "backlog_metadata.global_requirements",
+      "backlog_metadata.planning",
+      "backlog_metadata.p02_status_values"
+    ],
+    "planning_fields_note": "Populated by P03 for committed stories; conditional and blocked stories keep sprint null.",
+    "global_requirements": {
+      "ids": [
+        "NFR-003",
+        "NFR-004",
+        "NFR-005"
+      ],
+      "note": "Apply to all items."
+    },
+    "version_note": "P03 prioritized-backlog version 2.0. Version 1.0 carried metadata version 3.0 (history/product_backlog_v3.0-P03.json).",
+    "team_decisions": "TD-16 (scope), TD-17 (assignments approved), TD-18 (sprint = 3 days), TD-19 (standing rule)",
+    "p02_status_values": [
+      "DEFINED",
+      "DEFINED_WITH_ASSUMPTIONS",
+      "PENDING_DECISION"
+    ],
+    "item_status_values": [
+      "PLANNED",
+      "CONDITIONAL",
+      "BLOCKED"
+    ],
+    "planning": {
+      "sprint": "SPRINT-001",
+      "release": "RELEASE-001",
+      "sprint_count": 1,
+      "status_meaning": {
+        "PLANNED": "Committed to SPRINT-001.",
+        "CONDITIONAL": "Targets RELEASE-001; enters SPRINT-001 only if capacity and dependencies permit; sprint stays null until then.",
+        "BLOCKED": "Not used in this version: no story is blocked."
+      },
+      "priority_values": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "priority_meaning": {
+        "P0": "Committed",
+        "P1": "Ordering package, first if capacity remains (TD-16)",
+        "P2": "Former Group A",
+        "P3": "Former Group B, excluding ordering"
+      },
+      "story_points": "Preliminary relative estimates (Fibonacci 1, 2, 3, 5, 8, 13); not hours; no team velocity exists.",
+      "assigned_developers": "Assignments APPROVED by the team (TD-17). Conditional ordering stories carry their approved assignees; they apply when the story enters the sprint. See PRIORITIZATION.md §7.",
+      "p02_status_preserved_in": "PRIORITIZATION.md §4 (Definition status column)"
+    }
+  },
+  "epics": [
+    {
+      "id": "EPIC-001",
+      "name": "Accounts and Access",
+      "description": "Self-registration as a pet owner or as a provider, sign-in choosing the account type, access to the interface of that type, and sign-out.",
+      "scope": "MVP_SUPPORTING",
+      "p01_elements": [
+        "P01-MVP-006",
+        "P01-NEED-009",
+        "A-P01Q-005",
+        "A-P01Q-012",
+        "A-P02Q-012",
+        "TD-03"
+      ]
+    },
+    {
+      "id": "EPIC-002",
+      "name": "Pet Management",
+      "description": "Registration and maintenance of the pet owner's pets.",
+      "scope": "MVP_SUPPORTING",
+      "p01_elements": [
+        "P01-MVP-005",
+        "P01-NEED-002",
+        "A-P01Q-010",
+        "A-P01Q-031",
+        "A-P02Q-011"
+      ]
+    },
+    {
+      "id": "EPIC-003",
+      "name": "Provider Profile and Working Hours",
+      "description": "The provider's public profile and the days and hours in which it accepts appointments.",
+      "scope": "MVP_SUPPORTING",
+      "p01_elements": [
+        "P01-MVP-008",
+        "P01-MVP-010",
+        "P01-NEED-010",
+        "P01-NEED-012",
+        "A-P01Q-021",
+        "A-P01Q-025",
+        "A-P01Q-030",
+        "A-P02Q-007",
+        "A-P02Q-010"
+      ]
+    },
+    {
+      "id": "EPIC-004",
+      "name": "Provider Catalog",
+      "description": "Publication and maintenance of the provider's services and products, with prices.",
+      "scope": "MVP_CORE",
+      "p01_elements": [
+        "P01-MVP-003",
+        "P01-NEED-006",
+        "P01-NEED-007",
+        "A-P01Q-002",
+        "A-P01Q-008",
+        "A-P01Q-009",
+        "A-P01Q-023",
+        "A-P01Q-028",
+        "A-P02Q-002",
+        "A-P02Q-006"
+      ]
+    },
+    {
+      "id": "EPIC-005",
+      "name": "Search and Discovery",
+      "description": "Text search of services and products across all providers in Bogotá, species filter, and provider profiles.",
+      "scope": "MVP_CORE",
+      "p01_elements": [
+        "P01-MVP-001",
+        "P01-NEED-001",
+        "P01-NEED-003",
+        "P01-NEED-010",
+        "A-P01Q-003",
+        "A-P01Q-011",
+        "A-P01Q-021",
+        "A-P01Q-022",
+        "A-P02Q-013"
+      ]
+    },
+    {
+      "id": "EPIC-006",
+      "name": "Appointment Scheduling",
+      "description": "Booking of one-hour appointments for a pet within the provider's working hours, at the clinic or at home.",
+      "scope": "MVP_CORE",
+      "p01_elements": [
+        "P01-MVP-002",
+        "P01-NEED-004",
+        "P01-SUCCESS-007",
+        "A-P01Q-017",
+        "A-P01Q-019",
+        "A-P01Q-022",
+        "A-P01Q-025",
+        "A-P01Q-031",
+        "A-P02Q-005"
+      ]
+    },
+    {
+      "id": "EPIC-007",
+      "name": "Appointment Management",
+      "description": "Viewing, cancelling and rescheduling appointments, by the owner and by the provider; automatic cancellations.",
+      "scope": "MVP_SUPPORTING",
+      "p01_elements": [
+        "P01-MVP-007",
+        "P01-NEED-004",
+        "P01-NEED-008",
+        "A-P01Q-019",
+        "A-P01Q-026",
+        "A-P02Q-008",
+        "A-P02Q-016"
+      ]
+    },
+    {
+      "id": "EPIC-008",
+      "name": "Product Ordering",
+      "description": "Direct ordering of one product per order, in a chosen quantity, to the owner's address without payment; order statuses, order cancellation and a product stock indicator.",
+      "scope": "MVP_SUPPORTING",
+      "p01_elements": [
+        "P01-MVP-009",
+        "P01-NEED-011",
+        "P01-NEED-012",
+        "A-P01Q-024",
+        "A-P02Q-003",
+        "A-P02Q-P036",
+        "TD-12",
+        "TD-13"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "US-001",
+      "title": "Sign up as a pet owner with my first pet",
+      "epic_id": "EPIC-001",
+      "requirement_ids": [
+        "FR-001",
+        "FR-005",
+        "NFR-001"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to create an account with my name, email and password and the data of at least one pet",
+        "so_that": "I can use the platform to find services and book appointments for my pet"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-001",
+          "given": "a person without a pet owner account",
+          "when": "they submit a name, an email, a password of at least 8 characters and one pet with at least its name, species, age and breed",
+          "then": "a pet owner account is created with that pet registered"
+        },
+        {
+          "id": "AC-002",
+          "given": "a person completing pet owner sign-up",
+          "when": "they try to finish without registering any pet",
+          "then": "the account is not created and they are told that at least one pet is required"
+        },
+        {
+          "id": "AC-003",
+          "given": "a person completing pet owner sign-up",
+          "when": "the name, email or password, or the pet's name, species, age or breed, is missing",
+          "then": "the account is not created and the missing field is indicated"
+        },
+        {
+          "id": "AC-004",
+          "given": "an email that already belongs to another pet owner account",
+          "when": "a person tries to sign up as a pet owner with that email",
+          "then": "the account is not created (P02-ASM-002)"
+        },
+        {
+          "id": "AC-005",
+          "given": "a pet owner account has just been created",
+          "when": "its stored credentials are inspected",
+          "then": "the password is not stored in plain text"
+        },
+        {
+          "id": "AC-074",
+          "given": "an email that belongs to a provider account",
+          "when": "a person signs up as a pet owner with that email",
+          "then": "the pet owner account is created"
+        },
+        {
+          "id": "AC-075",
+          "given": "a person registering a pet",
+          "when": "they choose the pet's species",
+          "then": "only dog or cat can be chosen"
+        },
+        {
+          "id": "AC-102",
+          "given": "a person completing pet owner sign-up",
+          "when": "the password has fewer than 8 characters",
+          "then": "the account is not created and the password is indicated as too short"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-001",
+        "BR-003",
+        "BR-032",
+        "BR-036",
+        "BR-037",
+        "BR-039"
+      ],
+      "edge_case_ids": [
+        "EDGE-001",
+        "EDGE-002",
+        "EDGE-028"
+      ],
+      "dependency_ids": [],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-006",
+          "P01-MVP-005",
+          "P01-NEED-002",
+          "P01-NEED-009",
+          "P01-SUCCESS-001",
+          "P01-SUCCESS-005",
+          "A-P01Q-010",
+          "A-P01Q-012",
+          "A-P02Q-006",
+          "A-P02Q-011",
+          "A-P02Q-012",
+          "TD-04",
+          "TD-07",
+          "TD-10"
+        ]
+      }
+    },
+    {
+      "id": "US-002",
+      "title": "Sign up as a provider",
+      "epic_id": "EPIC-001",
+      "requirement_ids": [
+        "FR-002",
+        "NFR-001"
+      ],
+      "user_story": {
+        "as_a": "veterinary clinic or independent veterinarian",
+        "i_want": "to create a provider account indicating which of the two I am and, for a clinic, its address",
+        "so_that": "I can publish my services and products to pet owners"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-006",
+          "given": "a person without a provider account",
+          "when": "they submit a name, an email, a password of at least 8 characters and the provider type (clinic or independent veterinarian) and, for a clinic, its address",
+          "then": "a provider account of that type is created"
+        },
+        {
+          "id": "AC-007",
+          "given": "a person completing provider sign-up",
+          "when": "they do not indicate the provider type",
+          "then": "the account is not created and the missing type is indicated"
+        },
+        {
+          "id": "AC-008",
+          "given": "an email that already belongs to another provider account",
+          "when": "a person tries to sign up as a provider with that email",
+          "then": "the account is not created (P02-ASM-002)"
+        },
+        {
+          "id": "AC-009",
+          "given": "a provider account has just been created",
+          "when": "its stored credentials are inspected",
+          "then": "the password is not stored in plain text"
+        },
+        {
+          "id": "AC-076",
+          "given": "an email that belongs to a pet owner account",
+          "when": "a person signs up as a provider with that email",
+          "then": "the provider account is created"
+        },
+        {
+          "id": "AC-103",
+          "given": "a person completing provider sign-up",
+          "when": "the password has fewer than 8 characters",
+          "then": "the account is not created and the password is indicated as too short"
+        },
+        {
+          "id": "AC-104",
+          "given": "a person signing up as a clinic",
+          "when": "they do not enter an address",
+          "then": "the account is not created and the address is indicated as required"
+        },
+        {
+          "id": "AC-105",
+          "given": "a person signing up as an independent veterinarian",
+          "when": "they do not enter an address",
+          "then": "the provider account is created"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-001",
+        "BR-002",
+        "BR-036",
+        "BR-026",
+        "BR-039"
+      ],
+      "edge_case_ids": [
+        "EDGE-002",
+        "EDGE-028"
+      ],
+      "dependency_ids": [],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-006",
+          "P01-NEED-009",
+          "P01-SUCCESS-002",
+          "P01-SUCCESS-005",
+          "A-P01Q-005",
+          "A-P01Q-011",
+          "A-P01Q-012",
+          "A-P02Q-012",
+          "TD-04",
+          "TD-08",
+          "TD-09"
+        ]
+      }
+    },
+    {
+      "id": "US-003",
+      "title": "Sign in to my interface",
+      "epic_id": "EPIC-001",
+      "requirement_ids": [
+        "FR-003",
+        "FR-004",
+        "NFR-002",
+        "NFR-005"
+      ],
+      "user_story": {
+        "as_a": "registered user (pet owner or provider)",
+        "i_want": "to sign in with my email and password, choosing the account type I want to enter as",
+        "so_that": "I can use the interface that corresponds to that account type"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-010",
+          "given": "a registered pet owner",
+          "when": "they sign in as a pet owner with the correct email and password",
+          "then": "they reach the pet owner interface"
+        },
+        {
+          "id": "AC-011",
+          "given": "a registered provider",
+          "when": "they sign in as a provider with the correct email and password",
+          "then": "they reach the provider interface"
+        },
+        {
+          "id": "AC-012",
+          "given": "a registered user",
+          "when": "they sign in with an incorrect email or password, or as an account type they have not registered",
+          "then": "access is not granted"
+        },
+        {
+          "id": "AC-013",
+          "given": "a signed-in user of one account type",
+          "when": "they try to use a function of the other account type",
+          "then": "access to that function is denied"
+        },
+        {
+          "id": "AC-077",
+          "given": "a person with a pet owner account and a provider account under the same email",
+          "when": "they sign in choosing one of the two types",
+          "then": "they reach the interface of the account of that type"
+        },
+        {
+          "id": "AC-114",
+          "given": "a signed-in user",
+          "when": "60 minutes pass without activity, or 12 hours pass since they signed in",
+          "then": "their next action requires signing in again"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-001",
+        "BR-036"
+      ],
+      "edge_case_ids": [
+        "EDGE-003",
+        "EDGE-020",
+        "EDGE-032"
+      ],
+      "dependency_ids": [],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-006",
+          "P01-NEED-009",
+          "P01-SUCCESS-005",
+          "A-P01Q-012",
+          "A-P02Q-012",
+          "TD-05"
+        ]
+      }
+    },
+    {
+      "id": "US-004",
+      "title": "Add a pet",
+      "epic_id": "EPIC-002",
+      "requirement_ids": [
+        "FR-005"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to register another pet",
+        "so_that": "I can book services for it"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-014",
+          "given": "a signed-in pet owner",
+          "when": "they submit a new pet with at least its name, species, age and breed",
+          "then": "the pet is added to their list of pets"
+        },
+        {
+          "id": "AC-015",
+          "given": "a signed-in pet owner adding a pet",
+          "when": "the pet's name, species, age or breed is missing",
+          "then": "the pet is not added and the missing field is indicated"
+        },
+        {
+          "id": "AC-078",
+          "given": "a signed-in pet owner adding a pet",
+          "when": "they choose its species",
+          "then": "only dog or cat can be chosen"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-032",
+        "BR-037"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-005",
+          "P01-NEED-002",
+          "P01-SUCCESS-001",
+          "A-P01Q-031",
+          "A-P02Q-006",
+          "A-P02Q-011",
+          "TD-07",
+          "TD-10"
+        ]
+      }
+    },
+    {
+      "id": "US-005",
+      "title": "View my pets",
+      "epic_id": "EPIC-002",
+      "requirement_ids": [
+        "FR-006",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to see the list of my registered pets",
+        "so_that": "I can check, edit or remove them and choose one when booking"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-016",
+          "given": "a signed-in pet owner with registered pets",
+          "when": "they open their list of pets",
+          "then": "they see each of their pets with its name and registered data"
+        },
+        {
+          "id": "AC-017",
+          "given": "a signed-in pet owner who has removed all their pets",
+          "when": "they open their list of pets",
+          "then": "they are told that no pets are registered"
+        },
+        {
+          "id": "AC-018",
+          "given": "two different pet owners",
+          "when": "one of them opens their list of pets",
+          "then": "only their own pets are shown"
+        }
+      ],
+      "business_rule_ids": [],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 1,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-005",
+          "P01-NEED-002",
+          "A-P01Q-031"
+        ]
+      }
+    },
+    {
+      "id": "US-006",
+      "title": "Edit a pet",
+      "epic_id": "EPIC-002",
+      "requirement_ids": [
+        "FR-007",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to edit the data of one of my pets",
+        "so_that": "the information about my pet stays correct"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-019",
+          "given": "a signed-in pet owner viewing one of their pets",
+          "when": "they change one of its fields and save",
+          "then": "the pet shows the updated data"
+        },
+        {
+          "id": "AC-020",
+          "given": "a signed-in pet owner editing a pet",
+          "when": "they leave its name, species, age or breed empty and save",
+          "then": "the change is not saved and the field is indicated"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-037"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-002"
+      ],
+      "open_question_ids": [],
+      "priority": "P3",
+      "story_points": 1,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-005",
+          "P01-NEED-002",
+          "P01-SUCCESS-001",
+          "A-P01Q-031",
+          "A-P02Q-011",
+          "TD-07"
+        ]
+      }
+    },
+    {
+      "id": "US-007",
+      "title": "Remove a pet",
+      "epic_id": "EPIC-002",
+      "requirement_ids": [
+        "FR-008"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to remove a pet from my account",
+        "so_that": "my list only shows the pets I still have"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-021",
+          "given": "a signed-in pet owner with several pets",
+          "when": "they remove one of them",
+          "then": "the pet no longer appears in their list and cannot be chosen for new appointments"
+        },
+        {
+          "id": "AC-022",
+          "given": "a signed-in pet owner with only one pet",
+          "when": "they remove it",
+          "then": "the pet is removed and the owner cannot book appointments until they register a pet"
+        },
+        {
+          "id": "AC-079",
+          "given": "a pet with upcoming appointments",
+          "when": "its owner removes it",
+          "then": "those appointments are cancelled and shown as cancelled to the owner and the provider"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-004",
+        "BR-005",
+        "BR-034",
+        "BR-035"
+      ],
+      "edge_case_ids": [
+        "EDGE-011"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-002"
+      ],
+      "open_question_ids": [],
+      "priority": "P3",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-005",
+          "P01-NEED-002",
+          "P01-SUCCESS-001",
+          "A-P01Q-031",
+          "A-P02Q-008",
+          "A-P02Q-P038"
+        ]
+      }
+    },
+    {
+      "id": "US-008",
+      "title": "Maintain my public profile",
+      "epic_id": "EPIC-003",
+      "requirement_ids": [
+        "FR-009"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to set my name, my contact phone and email and my address (mandatory for a clinic, optional for an independent veterinarian)",
+        "so_that": "pet owners can identify and reach me"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-023",
+          "given": "a signed-in provider",
+          "when": "they save a name, a phone, an email and an address",
+          "then": "their public profile shows that information"
+        },
+        {
+          "id": "AC-024",
+          "given": "a signed-in independent veterinarian",
+          "when": "they save their profile without an address",
+          "then": "the profile is saved and shown without an address"
+        },
+        {
+          "id": "AC-106",
+          "given": "a signed-in clinic",
+          "when": "it tries to save its profile without an address",
+          "then": "the profile is not saved and the address is indicated as required; the clinic can change its address but not remove it"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-025",
+        "BR-026",
+        "BR-038"
+      ],
+      "edge_case_ids": [
+        "EDGE-017",
+        "EDGE-027"
+      ],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-008",
+          "P01-NEED-010",
+          "P01-SUCCESS-002",
+          "A-P01Q-021",
+          "A-P01Q-030",
+          "A-P02Q-010",
+          "TD-08",
+          "TD-09"
+        ]
+      }
+    },
+    {
+      "id": "US-009",
+      "title": "Set my working days and hours",
+      "epic_id": "EPIC-003",
+      "requirement_ids": [
+        "FR-010"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to define the days and hours in which I accept appointments",
+        "so_that": "owners can only book me when I work"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-025",
+          "given": "a signed-in provider",
+          "when": "they define their working hours for each working day, which may differ between days",
+          "then": "pet owners are offered appointment slots only within those days and hours"
+        },
+        {
+          "id": "AC-026",
+          "given": "a provider with no working days and hours defined",
+          "when": "a pet owner tries to book one of its services",
+          "then": "no appointment slots are offered"
+        },
+        {
+          "id": "AC-080",
+          "given": "a signed-in provider defining working hours",
+          "when": "a start or end time is not on the hour",
+          "then": "the hours are not saved and the time is indicated"
+        },
+        {
+          "id": "AC-081",
+          "given": "a provider with upcoming appointments",
+          "when": "they change their working hours so that some appointments fall outside them",
+          "then": "those appointments are cancelled and shown as cancelled to both parties"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-011",
+        "BR-025",
+        "BR-033",
+        "BR-034",
+        "BR-035"
+      ],
+      "edge_case_ids": [
+        "EDGE-013",
+        "EDGE-014",
+        "EDGE-025"
+      ],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 5,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-010",
+          "P01-NEED-012",
+          "P01-SUCCESS-002",
+          "A-P01Q-025",
+          "A-P02Q-007",
+          "A-P02Q-008"
+        ]
+      }
+    },
+    {
+      "id": "US-010",
+      "title": "Publish a service",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-011"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to publish a service with its name, price, the species it applies to and where I offer it",
+        "so_that": "pet owners can find it and book appointments"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-027",
+          "given": "a signed-in clinic",
+          "when": "it publishes a service with a name, a price, one species (dog or cat) and a modality (clinic, home, or both)",
+          "then": "the service appears in their catalog, on their profile and in search results"
+        },
+        {
+          "id": "AC-028",
+          "given": "a signed-in provider publishing a service",
+          "when": "they do not indicate exactly one species",
+          "then": "the service is not published and the species is indicated as required"
+        },
+        {
+          "id": "AC-029",
+          "given": "a signed-in provider publishing a service",
+          "when": "they do not indicate a modality",
+          "then": "the service is not published and the modality is indicated as required"
+        },
+        {
+          "id": "AC-082",
+          "given": "a signed-in provider publishing a service",
+          "when": "they do not indicate a price",
+          "then": "the service is not published and the price is indicated as required (P02-ASM-014)"
+        },
+        {
+          "id": "AC-107",
+          "given": "a signed-in independent veterinarian",
+          "when": "they publish a service",
+          "then": "the service is offered only at the owner's home; the clinic and both modalities cannot be chosen"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-006",
+        "BR-007",
+        "BR-025",
+        "BR-027",
+        "BR-032"
+      ],
+      "edge_case_ids": [
+        "EDGE-017"
+      ],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-006",
+          "P01-SUCCESS-002",
+          "A-P01Q-008",
+          "A-P01Q-009",
+          "A-P02Q-002",
+          "A-P02Q-006",
+          "TD-08",
+          "TD-09"
+        ]
+      }
+    },
+    {
+      "id": "US-011",
+      "title": "Update a service",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-012",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to change the details of one of my services",
+        "so_that": "my catalog stays up to date"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-030",
+          "given": "a signed-in provider with a published service",
+          "when": "they change its details and save",
+          "then": "the updated details appear in their catalog, on their profile and in search results"
+        },
+        {
+          "id": "AC-031",
+          "given": "a signed-in provider",
+          "when": "they try to change a service of another provider",
+          "then": "the change is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-006",
+        "BR-007"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-003"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-007",
+          "P01-SUCCESS-002",
+          "A-P01Q-023"
+        ]
+      }
+    },
+    {
+      "id": "US-012",
+      "title": "Remove a service",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-013"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to remove a service I no longer offer",
+        "so_that": "pet owners cannot book it"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-032",
+          "given": "a signed-in provider with a published service",
+          "when": "they remove it",
+          "then": "the service no longer appears in their catalog, on their profile or in search results, and new appointments for it cannot be booked"
+        },
+        {
+          "id": "AC-083",
+          "given": "a removed service that had upcoming appointments",
+          "when": "the owners and the provider open their appointments",
+          "then": "those appointments are shown as cancelled"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-034",
+        "BR-035"
+      ],
+      "edge_case_ids": [
+        "EDGE-012"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-003"
+      ],
+      "open_question_ids": [],
+      "priority": "P3",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-007",
+          "P01-SUCCESS-002",
+          "A-P02Q-008"
+        ]
+      }
+    },
+    {
+      "id": "US-013",
+      "title": "Publish a product",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-014"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to publish a product with its name, price and the species it applies to",
+        "so_that": "pet owners can find it and order it"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-033",
+          "given": "a signed-in provider",
+          "when": "they publish a product with a name, a price and one species (dog or cat)",
+          "then": "the product appears in their catalog, on their profile and in search results"
+        },
+        {
+          "id": "AC-034",
+          "given": "a signed-in provider publishing a product",
+          "when": "they do not indicate exactly one species",
+          "then": "the product is not published and the species is indicated as required"
+        },
+        {
+          "id": "AC-084",
+          "given": "a signed-in provider publishing a product",
+          "when": "they do not indicate a price",
+          "then": "the product is not published and the price is indicated as required (P02-ASM-014)"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-006",
+        "BR-025",
+        "BR-027",
+        "BR-032"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-006",
+          "P01-SUCCESS-002",
+          "A-P01Q-002",
+          "A-P01Q-028",
+          "A-P02Q-002",
+          "A-P02Q-006"
+        ]
+      }
+    },
+    {
+      "id": "US-014",
+      "title": "Update a product",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-015",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to change the details of one of my products",
+        "so_that": "my catalog stays up to date"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-035",
+          "given": "a signed-in provider with a published product",
+          "when": "they change its details and save",
+          "then": "the updated details appear in their catalog, on their profile and in search results"
+        },
+        {
+          "id": "AC-036",
+          "given": "a signed-in provider",
+          "when": "they try to change a product of another provider",
+          "then": "the change is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-006"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-004"
+      ],
+      "open_question_ids": [],
+      "priority": "P3",
+      "story_points": 1,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-007",
+          "P01-SUCCESS-002"
+        ]
+      }
+    },
+    {
+      "id": "US-015",
+      "title": "Remove a product",
+      "epic_id": "EPIC-004",
+      "requirement_ids": [
+        "FR-016"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to remove a product I no longer offer",
+        "so_that": "pet owners cannot order it"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-037",
+          "given": "a signed-in provider with a published product",
+          "when": "they remove it",
+          "then": "the product no longer appears in their catalog, on their profile or in search results, and it cannot be ordered"
+        },
+        {
+          "id": "AC-085",
+          "given": "a removed product with orders that were placed before its removal",
+          "when": "the owner or the provider opens their orders",
+          "then": "those orders keep their current status (P02-ASM-012)"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-030"
+      ],
+      "edge_case_ids": [
+        "EDGE-019"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-004"
+      ],
+      "open_question_ids": [],
+      "priority": "P3",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-003",
+          "P01-NEED-007",
+          "P01-SUCCESS-002",
+          "A-P02Q-003"
+        ]
+      }
+    },
+    {
+      "id": "US-016",
+      "title": "Search services and products",
+      "epic_id": "EPIC-005",
+      "requirement_ids": [
+        "FR-017",
+        "FR-019"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to search by text the services and products offered by all providers",
+        "so_that": "I can find what my pet needs in one place without using other channels"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-038",
+          "given": "services and products published by several providers",
+          "when": "a signed-in pet owner searches by text",
+          "then": "the results include offerings from all providers whose name matches the text (P02-ASM-013), with no filtering by the owner's location"
+        },
+        {
+          "id": "AC-039",
+          "given": "a list of search results",
+          "when": "the pet owner looks at a result",
+          "then": "it shows its price, whether it is offered by a clinic or an independent veterinarian and, for a service, whether it is offered at the clinic, at home, or both"
+        },
+        {
+          "id": "AC-040",
+          "given": "no offering matches the search",
+          "when": "the pet owner searches",
+          "then": "they are told that there are no results"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-009",
+        "BR-027"
+      ],
+      "edge_case_ids": [
+        "EDGE-015"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-003",
+        "DEP-004"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-001",
+          "P01-NEED-001",
+          "P01-NEED-003",
+          "P01-SUCCESS-003",
+          "P01-SUCCESS-007",
+          "A-P01Q-003",
+          "A-P01Q-011",
+          "A-P01Q-022",
+          "A-P02Q-002",
+          "A-P02Q-013"
+        ]
+      }
+    },
+    {
+      "id": "US-017",
+      "title": "Filter by species",
+      "epic_id": "EPIC-005",
+      "requirement_ids": [
+        "FR-018"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to filter the results by the species a service or product is for",
+        "so_that": "I only see offerings that apply to the animal I am looking for"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-041",
+          "given": "search results that include offerings for dogs and for cats",
+          "when": "the pet owner selects a species filter (dog or cat)",
+          "then": "only offerings for that species are shown"
+        },
+        {
+          "id": "AC-042",
+          "given": "a pet owner who has no registered pet of a given species",
+          "when": "they filter by that species",
+          "then": "the offerings for that species are shown anyway"
+        },
+        {
+          "id": "AC-043",
+          "given": "a species filter is applied",
+          "when": "the pet owner removes the filter",
+          "then": "offerings for both species are shown again"
+        },
+        {
+          "id": "AC-086",
+          "given": "a text search with results",
+          "when": "the pet owner also applies a species filter",
+          "then": "only results that match both the text and the species are shown"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-006",
+        "BR-008",
+        "BR-032"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-003",
+        "DEP-004"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-001",
+          "P01-NEED-003",
+          "P01-SUCCESS-003",
+          "P01-SUCCESS-007",
+          "A-P01Q-022",
+          "A-P02Q-006",
+          "A-P02Q-013"
+        ]
+      }
+    },
+    {
+      "id": "US-018",
+      "title": "View a provider's profile",
+      "epic_id": "EPIC-005",
+      "requirement_ids": [
+        "FR-020"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to see a provider's details and everything it offers",
+        "so_that": "I can decide whether to book or order and know how to reach it"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-044",
+          "given": "a provider that has completed its profile",
+          "when": "a pet owner opens it",
+          "then": "they see its name, address, phone, email, provider type, and its services and products with their prices"
+        },
+        {
+          "id": "AC-045",
+          "given": "a provider without an address",
+          "when": "a pet owner opens its profile",
+          "then": "the profile is shown without an address"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-026",
+        "BR-027",
+        "BR-038"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-005"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-008",
+          "P01-NEED-010",
+          "P01-SUCCESS-003",
+          "A-P01Q-011",
+          "A-P01Q-021",
+          "A-P01Q-030",
+          "A-P02Q-002",
+          "A-P02Q-010"
+        ]
+      }
+    },
+    {
+      "id": "US-019",
+      "title": "Book an appointment for my pet",
+      "epic_id": "EPIC-006",
+      "requirement_ids": [
+        "FR-021",
+        "FR-022",
+        "FR-024",
+        "FR-025"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to book a one-hour appointment for one of my pets for a service I found",
+        "so_that": "my pet receives the service"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-046",
+          "given": "a signed-in pet owner with at least one pet viewing a service",
+          "when": "they start a booking",
+          "then": "they are shown available one-hour slots only within the provider's working days and hours"
+        },
+        {
+          "id": "AC-047",
+          "given": "a pet owner who has chosen one of their pets and an available slot",
+          "when": "they book",
+          "then": "the appointment is scheduled immediately, with no confirmation by the provider, and appears in the owner's and the provider's appointments"
+        },
+        {
+          "id": "AC-048",
+          "given": "a signed-in pet owner with no registered pets",
+          "when": "they try to book a service",
+          "then": "the booking is not allowed and they are told to register a pet first"
+        },
+        {
+          "id": "AC-049",
+          "given": "a clinic that already has an appointment in a slot within its working hours",
+          "when": "another pet owner views that clinic's slots",
+          "then": "that slot is still offered"
+        },
+        {
+          "id": "AC-050",
+          "given": "an independent veterinarian that already has an appointment in a slot",
+          "when": "another pet owner views that veterinarian's slots",
+          "then": "that slot is not offered"
+        },
+        {
+          "id": "AC-051",
+          "given": "a pet owner viewing available slots",
+          "when": "the list is shown",
+          "then": "slots whose start time has already passed are not offered (P02-ASM-006)"
+        },
+        {
+          "id": "AC-108",
+          "given": "a pet owner with pets of different species booking a service for one species",
+          "when": "they choose the pet",
+          "then": "only their pets of the service's species can be chosen"
+        },
+        {
+          "id": "AC-109",
+          "given": "a pet owner with no pet of the service's species",
+          "when": "they try to book that service",
+          "then": "the booking is not allowed and they are told the service is only for the other species"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-005",
+        "BR-010",
+        "BR-011",
+        "BR-012",
+        "BR-013",
+        "BR-014",
+        "BR-024"
+      ],
+      "edge_case_ids": [
+        "EDGE-004",
+        "EDGE-005",
+        "EDGE-006",
+        "EDGE-007",
+        "EDGE-009",
+        "EDGE-016",
+        "EDGE-030"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-002",
+        "DEP-005",
+        "DEP-006"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 8,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-002",
+          "P01-NEED-004",
+          "P01-SUCCESS-004",
+          "P01-SUCCESS-007",
+          "A-P01Q-019",
+          "A-P01Q-022",
+          "A-P01Q-025",
+          "A-P01Q-031",
+          "A-P02Q-005",
+          "TD-06"
+        ]
+      }
+    },
+    {
+      "id": "US-020",
+      "title": "Book a home visit",
+      "epic_id": "EPIC-006",
+      "requirement_ids": [
+        "FR-022",
+        "FR-023"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to give my address when I book a service at home",
+        "so_that": "the provider knows where to attend my pet"
+      },
+      "scope": "MVP_CORE",
+      "acceptance_criteria": [
+        {
+          "id": "AC-052",
+          "given": "a pet owner booking a service offered at home",
+          "when": "they enter the visit address and book",
+          "then": "the appointment is scheduled with that address, and the provider can see it"
+        },
+        {
+          "id": "AC-053",
+          "given": "a pet owner booking a service at home",
+          "when": "they do not enter an address",
+          "then": "the appointment is not booked and the address is indicated as required"
+        },
+        {
+          "id": "AC-054",
+          "given": "a clinic service offered both at the clinic and at home",
+          "when": "the pet owner books it",
+          "then": "they choose the modality, and an address is required only if they choose home (P02-ASM-005)"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-007",
+        "BR-015"
+      ],
+      "edge_case_ids": [
+        "EDGE-008"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-006"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-002",
+          "P01-NEED-004",
+          "P01-SUCCESS-004",
+          "A-P01Q-017",
+          "TD-09"
+        ]
+      }
+    },
+    {
+      "id": "US-021",
+      "title": "View my appointments",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-026",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to see my appointments",
+        "so_that": "I know when and where each one takes place, including changes made by the provider"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-055",
+          "given": "a signed-in pet owner with appointments",
+          "when": "they open their appointments",
+          "then": "each one shows the service, provider, pet, date and time, modality and status"
+        },
+        {
+          "id": "AC-056",
+          "given": "an appointment that the provider has rescheduled",
+          "when": "the pet owner opens their appointments",
+          "then": "it shows the new date and time (no notification is sent: P01-OOS-004)"
+        },
+        {
+          "id": "AC-087",
+          "given": "an appointment cancelled by the owner, by the provider or automatically",
+          "when": "the pet owner opens their appointments",
+          "then": "it is shown as cancelled"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-017",
+        "BR-035"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-004",
+          "A-P01Q-019",
+          "A-P01Q-026",
+          "A-P02Q-016",
+          "AVISO-R1"
+        ]
+      }
+    },
+    {
+      "id": "US-022",
+      "title": "Cancel my appointment",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-027"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to cancel an appointment",
+        "so_that": "I am not expected when I can no longer attend"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-057",
+          "given": "a pet owner with an appointment that has not started",
+          "when": "they cancel it",
+          "then": "it is shown as cancelled in the owner's and the provider's appointments"
+        },
+        {
+          "id": "AC-058",
+          "given": "a cancelled appointment with an independent veterinarian",
+          "when": "another pet owner views that veterinarian's slots",
+          "then": "the freed slot is offered again"
+        },
+        {
+          "id": "AC-059",
+          "given": "an appointment whose start time has passed",
+          "when": "the pet owner tries to cancel it",
+          "then": "the cancellation is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-013",
+        "BR-016",
+        "BR-035"
+      ],
+      "edge_case_ids": [
+        "EDGE-010"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-004",
+          "P01-SUCCESS-006",
+          "A-P01Q-019",
+          "A-P02Q-016"
+        ]
+      }
+    },
+    {
+      "id": "US-023",
+      "title": "Reschedule my appointment",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-028"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to move an appointment to another date and time",
+        "so_that": "I can keep the appointment when my plans change"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-060",
+          "given": "a pet owner with an appointment that has not started",
+          "when": "they choose another available slot",
+          "then": "the appointment moves to the new date and time in both parties' appointments"
+        },
+        {
+          "id": "AC-061",
+          "given": "a pet owner rescheduling",
+          "when": "the slots are shown",
+          "then": "only slots available under the same rules as a new booking are offered"
+        },
+        {
+          "id": "AC-062",
+          "given": "an appointment whose start time has passed",
+          "when": "the pet owner tries to reschedule it",
+          "then": "the change is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-016",
+        "BR-018"
+      ],
+      "edge_case_ids": [
+        "EDGE-009",
+        "EDGE-010"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-004",
+          "P01-SUCCESS-006",
+          "A-P01Q-019"
+        ]
+      }
+    },
+    {
+      "id": "US-024",
+      "title": "See my scheduled appointments",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-029",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to see the appointments owners have booked with me",
+        "so_that": "I know what I have to attend and where"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-063",
+          "given": "a signed-in provider with booked appointments",
+          "when": "they open their appointments space",
+          "then": "they see each appointment with its service, date and time, pet, owner's name, modality, status and, for home visits, the address (P02-ASM-008)"
+        },
+        {
+          "id": "AC-064",
+          "given": "a signed-in provider",
+          "when": "they open their appointments space",
+          "then": "appointments of other providers are not shown"
+        },
+        {
+          "id": "AC-088",
+          "given": "an appointment cancelled by the owner, by the provider or automatically",
+          "when": "the provider opens their appointments space",
+          "then": "it is shown as cancelled"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-035"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-008",
+          "P01-SUCCESS-006",
+          "A-P01Q-017",
+          "A-P01Q-026",
+          "A-P02Q-016"
+        ]
+      }
+    },
+    {
+      "id": "US-025",
+      "title": "Cancel an appointment as a provider",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-030"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to cancel an appointment booked with me",
+        "so_that": "I am not expected to attend an appointment I cannot keep"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-065",
+          "given": "a provider with an appointment that has not started",
+          "when": "they cancel it",
+          "then": "it is shown as cancelled in the provider's appointments, and the pet owner sees it as cancelled when they open their appointments"
+        },
+        {
+          "id": "AC-066",
+          "given": "an appointment whose start time has passed",
+          "when": "the provider tries to cancel it",
+          "then": "the cancellation is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-017",
+        "BR-035"
+      ],
+      "edge_case_ids": [
+        "EDGE-010"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-008",
+          "P01-SUCCESS-006",
+          "A-P01Q-026",
+          "A-P02Q-016"
+        ]
+      }
+    },
+    {
+      "id": "US-026",
+      "title": "Reschedule an appointment as a provider",
+      "epic_id": "EPIC-007",
+      "requirement_ids": [
+        "FR-031"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to move an appointment booked with me to another date and time",
+        "so_that": "I can keep it when my schedule changes"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-067",
+          "given": "a provider with an appointment that has not started",
+          "when": "they move it to another available slot within their working hours",
+          "then": "the appointment shows the new date and time in both parties' appointments"
+        },
+        {
+          "id": "AC-068",
+          "given": "an appointment whose start time has passed",
+          "when": "the provider tries to reschedule it",
+          "then": "the change is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-011",
+        "BR-017",
+        "BR-018"
+      ],
+      "edge_case_ids": [
+        "EDGE-010"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-007"
+      ],
+      "open_question_ids": [],
+      "priority": "P2",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-007",
+          "P01-NEED-008",
+          "P01-SUCCESS-006",
+          "A-P01Q-026"
+        ]
+      }
+    },
+    {
+      "id": "US-027",
+      "title": "Order a product to my address",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-032"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to order a product to my address",
+        "so_that": "I receive it without paying online or going elsewhere"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-069",
+          "given": "a signed-in pet owner viewing an available product",
+          "when": "they choose a quantity from 1 to 99, enter a delivery address and place the order",
+          "then": "the order for that product and quantity is registered directly with status Confirmed, with no request, reservation or payment step, the total (price × quantity) was shown before ordering, and both the owner and the provider can see it"
+        },
+        {
+          "id": "AC-070",
+          "given": "a pet owner placing an order",
+          "when": "they do not enter a delivery address",
+          "then": "the order is not placed and the address is indicated as required"
+        },
+        {
+          "id": "AC-071",
+          "given": "a signed-in pet owner with no registered pets",
+          "when": "they order a product",
+          "then": "the order is placed (pets are required only to book services: P02-ASM-009)"
+        },
+        {
+          "id": "AC-089",
+          "given": "a product marked as not available",
+          "when": "a pet owner tries to order it",
+          "then": "the order is not allowed"
+        },
+        {
+          "id": "AC-110",
+          "given": "a pet owner placing an order",
+          "when": "the quantity is less than 1 or greater than 99",
+          "then": "the order is not placed and the quantity is indicated as invalid"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-019",
+        "BR-020",
+        "BR-021",
+        "BR-022",
+        "BR-023",
+        "BR-027",
+        "BR-028",
+        "BR-030"
+      ],
+      "edge_case_ids": [
+        "EDGE-018",
+        "EDGE-021",
+        "EDGE-029"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-004",
+        "DEP-010"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "David",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-011",
+          "P01-SUCCESS-008",
+          "A-P01Q-024",
+          "A-P02Q-003",
+          "TD-12",
+          "TD-13"
+        ]
+      }
+    },
+    {
+      "id": "US-028",
+      "title": "See the product orders placed with me",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-033",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to see the orders owners place for my products",
+        "so_that": "I know what to deliver and where"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-072",
+          "given": "a provider with orders placed for its products",
+          "when": "they open their orders",
+          "then": "they see each order with the product, the quantity, the owner's name, the delivery address and the status"
+        },
+        {
+          "id": "AC-073",
+          "given": "a signed-in provider",
+          "when": "they open their orders",
+          "then": "orders placed with other providers are not shown"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-023",
+        "BR-028"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-009"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-012",
+          "P01-SUCCESS-008",
+          "A-P01Q-024",
+          "A-P02Q-003",
+          "A-P02Q-P036",
+          "TD-12"
+        ]
+      }
+    },
+    {
+      "id": "US-029",
+      "title": "See my orders",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-034",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to see my product orders and their status",
+        "so_that": "I know whether each order is confirmed, on its way or delivered"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-090",
+          "given": "a signed-in pet owner with orders",
+          "when": "they open their orders",
+          "then": "each order shows the product, the quantity, the provider, the delivery address and the status"
+        },
+        {
+          "id": "AC-091",
+          "given": "two different pet owners",
+          "when": "one of them opens their orders",
+          "then": "only their own orders are shown"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-023"
+      ],
+      "edge_case_ids": [],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-009"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "David",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-011",
+          "A-P02Q-003",
+          "TD-12"
+        ]
+      }
+    },
+    {
+      "id": "US-030",
+      "title": "Update the status of an order",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-035"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to move an order forward when I dispatch it and when it is delivered",
+        "so_that": "the owner knows where their order is"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-092",
+          "given": "an order with status Confirmed",
+          "when": "the provider marks it as dispatched",
+          "then": "its status becomes Dispatched/In delivery, and the owner sees the new status"
+        },
+        {
+          "id": "AC-093",
+          "given": "an order with status Dispatched/In delivery",
+          "when": "the provider marks it as delivered",
+          "then": "its status becomes Closed"
+        },
+        {
+          "id": "AC-094",
+          "given": "an order in any status",
+          "when": "the provider tries to move it back to an earlier status or skip a status",
+          "then": "the change is not allowed"
+        },
+        {
+          "id": "AC-095",
+          "given": "a signed-in pet owner viewing one of their orders",
+          "when": "they try to change its status",
+          "then": "the change is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-023"
+      ],
+      "edge_case_ids": [
+        "EDGE-023",
+        "EDGE-024",
+        "EDGE-026"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-009"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 3,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-012",
+          "A-P02Q-003"
+        ]
+      }
+    },
+    {
+      "id": "US-031",
+      "title": "Cancel my order",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-036"
+      ],
+      "user_story": {
+        "as_a": "pet owner",
+        "i_want": "to cancel an order that has not been dispatched",
+        "so_that": "I do not receive a product I no longer want"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-096",
+          "given": "a pet owner with an order with status Confirmed",
+          "when": "they cancel it",
+          "then": "the order is cancelled and shown as cancelled to the owner and the provider (P02-ASM-011)"
+        },
+        {
+          "id": "AC-097",
+          "given": "an order with status Dispatched/In delivery or Closed",
+          "when": "the pet owner tries to cancel it",
+          "then": "the cancellation is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-029"
+      ],
+      "edge_case_ids": [
+        "EDGE-022"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-009"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "David",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-011",
+          "A-P02Q-003"
+        ]
+      }
+    },
+    {
+      "id": "US-032",
+      "title": "Cancel an order as a provider",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-037"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to cancel an order placed with me that has not been dispatched",
+        "so_that": "I am not expected to deliver an order I cannot fulfil"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-098",
+          "given": "a provider with an order with status Confirmed",
+          "when": "they cancel it",
+          "then": "the order is cancelled and shown as cancelled to the provider and the owner (P02-ASM-011)"
+        },
+        {
+          "id": "AC-099",
+          "given": "an order with status Dispatched/In delivery or Closed",
+          "when": "the provider tries to cancel it",
+          "then": "the cancellation is not allowed"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-029"
+      ],
+      "edge_case_ids": [
+        "EDGE-022"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-009"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 1,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-012",
+          "A-P02Q-003"
+        ]
+      }
+    },
+    {
+      "id": "US-033",
+      "title": "Indicate whether a product is in stock",
+      "epic_id": "EPIC-008",
+      "requirement_ids": [
+        "FR-038"
+      ],
+      "user_story": {
+        "as_a": "provider",
+        "i_want": "to mark each of my products as available or not available",
+        "so_that": "owners cannot order products I do not have"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-100",
+          "given": "a published product",
+          "when": "the provider marks it as not available",
+          "then": "owners can still see it but cannot order it (P02-ASM-016)"
+        },
+        {
+          "id": "AC-101",
+          "given": "a product marked as not available",
+          "when": "the provider marks it as available again",
+          "then": "owners can order it"
+        },
+        {
+          "id": "AC-111",
+          "given": "a signed-in provider",
+          "when": "they publish a new product",
+          "then": "the product is published as available"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-030",
+        "BR-031"
+      ],
+      "edge_case_ids": [
+        "EDGE-021"
+      ],
+      "dependency_ids": [
+        "DEP-001",
+        "DEP-004"
+      ],
+      "open_question_ids": [],
+      "priority": "P1",
+      "story_points": 2,
+      "release": "RELEASE-001",
+      "sprint": null,
+      "assigned_developers": [
+        "Casanova",
+        "Sebas"
+      ],
+      "status": "CONDITIONAL",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-009",
+          "P01-NEED-012",
+          "A-P02Q-003",
+          "TD-13"
+        ]
+      }
+    },
+    {
+      "id": "US-034",
+      "title": "Sign out",
+      "epic_id": "EPIC-001",
+      "requirement_ids": [
+        "FR-039",
+        "NFR-002"
+      ],
+      "user_story": {
+        "as_a": "signed-in user (pet owner or provider)",
+        "i_want": "to sign out from the menu of my interface",
+        "so_that": "nobody else can use my account on this device, and I can sign in again with another account type"
+      },
+      "scope": "MVP_SUPPORTING",
+      "acceptance_criteria": [
+        {
+          "id": "AC-112",
+          "given": "a signed-in pet owner or provider",
+          "when": "they select sign out in the menu",
+          "then": "the session ends without a confirmation dialog and they are taken to the sign-in screen"
+        },
+        {
+          "id": "AC-113",
+          "given": "a user who has signed out",
+          "when": "they try to open a screen of their interface",
+          "then": "they are asked to sign in again"
+        }
+      ],
+      "business_rule_ids": [
+        "BR-040"
+      ],
+      "edge_case_ids": [
+        "EDGE-031"
+      ],
+      "dependency_ids": [
+        "DEP-001"
+      ],
+      "open_question_ids": [],
+      "priority": "P0",
+      "story_points": 1,
+      "release": "RELEASE-001",
+      "sprint": "SPRINT-001",
+      "assigned_developers": [
+        "David",
+        "Jhonier"
+      ],
+      "status": "PLANNED",
+      "traceability": {
+        "p01_elements": [
+          "P01-MVP-006",
+          "TD-03"
+        ]
+      }
+    }
+  ]
+}
