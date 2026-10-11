@@ -6,8 +6,10 @@
 **Input Artifacts:**
 
 * `Code`
-* `Tests`
-* `Architecture`
+* Last version of `artifacts/07_qa/TEST_EXECUTION_REPORT.md`, if available
+* Test suites, execution logs, coverage reports and actual repository contents.
+* Last version of `artifacts/05_architecture/ARCHITECTURE.md`
+* Last version of `artifacts/05_architecture/ARCHITECTURE_VALIDATION.md`
 * `prompts/system/SYSTEM_PROMPT.md`
 
 **Output Artifacts:**
