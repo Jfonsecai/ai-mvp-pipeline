@@ -6,8 +6,8 @@ CR-002, CR-015.
 
 ## How to add a module or story
 
-1. Check the story's row in ARCHITECTURE section 14.1 and its operations in `API_SPEC.yaml`
-   (`artifacts/05_arquitecture/API_SPEC_V1.yaml`, `x-vetcare-interface`).
+1. Check the story's row in ARCHITECTURE section 14.1 and its operations in
+   `artifacts/05_architecture/API_SPEC_V1.yaml` (`x-vetcare-interface`).
 2. Create `src/modules/<module>/` with `createRouter(deps)` returning an Express `Router`.
    Paths are relative to `/api` and exactly as in API_SPEC (for example `/auth/sign-in`).
    `deps` is `{ config, db, clock, logger, guard }`.
@@ -19,6 +19,14 @@ CR-002, CR-015.
 6. Use `withTransaction(db, ...)` (`src/shared/transaction.js`) for multi-row writes and take the
    locks listed in DATA_MODEL section 7. Read time only from `clock.now()`.
 7. Add tests; validate responses against the API_SPEC schemas (CR-026).
+
+### Request validation convention (US-002 kickoff, foundation warning W-2)
+
+Each module validates its own request shape before business logic: reject unknown properties,
+normalize text values only where the approved contract permits it, and report errors by throwing
+`Outcome('VALIDATION_FAILED', { fields: [{ field, reason }] })`. Use the CTR-001 reason codes and
+field names from API_SPEC. Do not put module-specific rules in `src/shared/` or trust client
+validation. Keep validators small and alongside the operation that owns those rules.
 
 ```js
 import { Router } from 'express';

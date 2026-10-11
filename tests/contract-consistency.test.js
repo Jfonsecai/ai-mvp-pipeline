@@ -63,7 +63,7 @@ test('enumerations equal the CHECK constraints of the first migration (DATA_MODE
 });
 
 test('first migration is DATA_MODEL Appendix A verbatim (ADR-018)', () => {
-  const model = read('artifacts/05_arquitecture/DATA_MODEL_V1.md').replace(/\r\n/g, '\n');
+  const model = read('artifacts/05_architecture/DATA_MODEL_V1.md').replace(/\r\n/g, '\n');
   const appendix = model.slice(model.indexOf('## Appendix A'), model.indexOf('## Appendix B'));
   const ddl = appendix.match(/```sql\n([\s\S]*?)\n```/)[1];
   assert.ok(migration.replace(/\r\n/g, '\n').trimEnd().endsWith(ddl.trimEnd()), 'migrations/001_initial_schema.sql must end with the Appendix A DDL');

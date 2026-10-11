@@ -19,6 +19,7 @@
     "migrate:status": "node --env-file-if-exists=.env scripts/migrate.js --status"
   },
   "dependencies": {
+    "argon2": "^0.45.1",
     "express": "^5.3.0",
     "pg": "^8.23.1"
   },

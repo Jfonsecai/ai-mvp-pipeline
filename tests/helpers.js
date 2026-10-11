@@ -11,7 +11,7 @@ export const read = (relativePath) => readFileSync(join(ROOT, relativePath), 'ut
 
 // Authoritative architecture inputs, as named in the repository today. If a newer version is
 // added, update these two paths in the same change (the consistency tests then run against it).
-export const API_SPEC_PATH = 'artifacts/05_arquitecture/API_SPEC_V1.yaml';
+export const API_SPEC_PATH = 'artifacts/05_architecture/API_SPEC_V1.yaml';
 export const UX_SPEC_PATH = 'artifacts/04_ux/UX_SPEC_V2.md';
 
 export const APP_ORIGIN = 'https://vetcare.test';

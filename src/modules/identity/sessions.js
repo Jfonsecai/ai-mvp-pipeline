@@ -1,8 +1,7 @@
 // COMP-004 Identity and Access - session resolution (IF-014, ADR-007, TB-3).
 //
-// FOUNDATION SCOPE: this file only *resolves* an existing session so every other component can
-// learn "who is calling" in one way. Creating sessions (sign-up, sign-in), ending them (sign-out),
-// password hashing and the session endpoints belong to US-001, US-002, US-003 and US-034.
+// Session resolution and token primitives shared by identity operations. Provider sign-up (US-002)
+// uses the token helpers below; owner sign-up, sign-in and sign-out are delivered by their stories.
 //
 // Token convention (P05-ASM-007): the cookie carries a random token of at least 32 bytes
 // (base64url); the database stores only its SHA-256 hash, so reading the table does not reveal
