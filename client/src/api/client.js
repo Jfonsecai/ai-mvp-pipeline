@@ -52,6 +52,9 @@ export async function apiFetch(path, { method = 'GET', body, fetchImpl = globalT
 
   if (!response.ok) {
     const code = typeof payload?.code === 'string' ? payload.code : 'UNEXPECTED';
+    if ((code === 'SESSION_EXPIRED' || code === 'UNAUTHENTICATED') && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('vetcare:session-ended', { detail: { code } }));
+    }
     throw new ApiError(code, response.status, Array.isArray(payload?.fields) ? payload.fields : undefined);
   }
   if (payload === null) throw new ApiError('UNEXPECTED', response.status);

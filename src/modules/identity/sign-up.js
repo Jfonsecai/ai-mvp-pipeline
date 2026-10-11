@@ -1,5 +1,6 @@
 // COMP-004 Identity — provider sign-up (IF-001, US-002).
 import { Router } from 'express';
+import { randomBytes } from 'node:crypto';
 import argon2 from 'argon2';
 import { Outcome } from '../../shared/outcomes.js';
 import { withTransaction } from '../../shared/transaction.js';
@@ -67,6 +68,28 @@ export function validateProviderSignUp(input) {
 const ownerFields = new Set(['name', 'email', 'password', 'pet']);
 const petFields = new Set(['name', 'species', 'breed', 'ageYears', 'weightKg', 'heightCm']);
 
+const signInFields = new Set(['email', 'password', 'accountType']);
+// A process-local dummy hash keeps missing-account failures on the same expensive verification
+// path as an incorrect password, without embedding a credential or reusable token.
+const dummyPasswordHash = await argon2.hash(randomBytes(32), { type: argon2.argon2id });
+
+export function validateSignIn(input) {
+  const fields = [];
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return { fields: [{ field: 'form', reason: 'REQUIRED' }] };
+  for (const key of Object.keys(input)) if (!signInFields.has(key)) fields.push({ field: key, reason: 'NOT_ALLOWED' });
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : '';
+  const password = typeof input.password === 'string' ? input.password : '';
+  if (input.email !== undefined && typeof input.email !== 'string') fields.push({ field: 'email', reason: 'INVALID_FORMAT' });
+  else if (!email) fields.push({ field: 'email', reason: 'REQUIRED' });
+  else if (characterLength(email) > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fields.push({ field: 'email', reason: 'INVALID_FORMAT' });
+  if (input.password !== undefined && typeof input.password !== 'string') fields.push({ field: 'password', reason: 'INVALID_FORMAT' });
+  else if (!password) fields.push({ field: 'password', reason: 'REQUIRED' });
+  else if (characterLength(password) > 128) fields.push({ field: 'password', reason: 'TOO_LONG' });
+  if (input.accountType === undefined || input.accountType === '') fields.push({ field: 'accountType', reason: 'REQUIRED' });
+  else if (!['owner', 'provider'].includes(input.accountType)) fields.push({ field: 'accountType', reason: 'NOT_ALLOWED' });
+  return fields.length ? { fields } : { value: { email, password, accountType: input.accountType } };
+}
+
 export function validateOwnerSignUp(input) {
   const fields = [];
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
@@ -127,6 +150,42 @@ export function validateOwnerSignUp(input) {
 
 export function createIdentityRouter({ db, config, clock }) {
   const router = Router();
+
+  router.post('/auth/sign-in', async (req, res) => {
+    const validated = validateSignIn(req.body);
+    if (validated.fields) throw new Outcome('VALIDATION_FAILED', { fields: validated.fields });
+    const { email, password, accountType } = validated.value;
+    const { rows } = await db.query(
+      'SELECT id, password_hash FROM account WHERE email = $1 AND account_type = $2',
+      [email, accountType],
+    );
+    const account = rows[0];
+    const passwordMatches = await argon2.verify(account?.password_hash ?? dummyPasswordHash, password);
+    if (!account || !passwordMatches) {
+      throw new Outcome('INVALID_CREDENTIALS');
+    }
+
+    const token = generateSessionToken();
+    const now = clock.now();
+    const expiresAt = new Date(now.getTime() + config.sessionAbsoluteHours * 60 * 60 * 1000);
+    await db.query(
+      `INSERT INTO session (token_hash, account_id, created_at, last_seen_at, absolute_expires_at)
+       VALUES ($1, $2, $3, $3, $4)`,
+      [hashSessionToken(token), account.id, now, expiresAt],
+    );
+    const maxAge = config.sessionAbsoluteHours * 60 * 60;
+    res.set('Set-Cookie', `${SESSION_COOKIE_NAME}=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`);
+    res.status(200).json({ accountType, features: config.features });
+  });
+
+  router.get('/session', (req, res) => {
+    const session = req.session;
+    res.status(200).json({
+      state: session.state,
+      ...(session.state === 'active' ? { accountType: session.accountType } : {}),
+      features: config.features,
+    });
+  });
 
   router.post('/auth/sign-up/owner', async (req, res) => {
     const validated = validateOwnerSignUp(req.body);

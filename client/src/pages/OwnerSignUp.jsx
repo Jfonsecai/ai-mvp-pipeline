@@ -28,7 +28,7 @@ function localErrors(values) {
   return errors;
 }
 
-export default function OwnerSignUp() {
+export default function OwnerSignUp({ onAuthenticated }) {
   const navigate = useNavigate();
   const formRef = useRef(null);
   const [values, setValues] = useState({ name: '', email: '', password: '', petName: '', species: '', breed: '', ageYears: '', weightKg: '', heightCm: '' });
@@ -61,7 +61,8 @@ export default function OwnerSignUp() {
     };
     const payload = { name: values.name.trim(), email: values.email.trim(), password: values.password, ...(pet ? { pet } : {}) };
     try {
-      await apiFetch('/api/auth/sign-up/owner', { method: 'POST', body: payload });
+      const session = await apiFetch('/api/auth/sign-up/owner', { method: 'POST', body: payload });
+      onAuthenticated({ state: 'active', ...session });
       navigate('/owner/home', { replace: true, state: { name: payload.name, pet: pet && { name: pet.name, species: pet.species } } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_FAILED') {

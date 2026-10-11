@@ -1,7 +1,7 @@
 // COMP-004 Identity and Access - session resolution (IF-014, ADR-007, TB-3).
 //
-// Session resolution and token primitives shared by identity operations. Provider sign-up (US-002)
-// uses the token helpers below; owner sign-up, sign-in and sign-out are delivered by their stories.
+// Session resolution and token primitives shared by identity operations. Owner/provider sign-up
+// and sign-in use the token helpers below; sign-out remains US-034 scope.
 //
 // Token convention (P05-ASM-007): the cookie carries a random token of at least 32 bytes
 // (base64url); the database stores only its SHA-256 hash, so reading the table does not reveal

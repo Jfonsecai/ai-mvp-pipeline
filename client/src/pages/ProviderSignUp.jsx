@@ -23,7 +23,7 @@ function localErrors(values) {
   return errors;
 }
 
-export default function ProviderSignUp() {
+export default function ProviderSignUp({ onAuthenticated }) {
   const navigate = useNavigate();
   const [values, setValues] = useState({ name: '', email: '', password: '', providerType: '', address: '' });
   const [errors, setErrors] = useState({});
@@ -55,7 +55,8 @@ export default function ProviderSignUp() {
       ...(values.providerType === 'clinic' ? { address: values.address.trim() } : {}),
     };
     try {
-      await apiFetch('/api/auth/sign-up/provider', { method: 'POST', body: payload });
+      const session = await apiFetch('/api/auth/sign-up/provider', { method: 'POST', body: payload });
+      onAuthenticated({ state: 'active', ...session });
       navigate('/provider/profile', { replace: true, state: { name: payload.name, providerType: payload.providerType, address: payload.address } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_FAILED') {

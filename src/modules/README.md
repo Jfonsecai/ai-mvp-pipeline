@@ -52,13 +52,14 @@ export function createRouter({ db, clock, guard }) {
 
 ## Planned modules and the tables they own
 
-Only COMP-004's session *resolution* exists. Everything else is created by the stories listed.
+The identity, first-pet and provider-signup operations listed below are implemented. Other module
+operations are delivered by their stories.
 
 | Module | Component | Tables (DATA_MODEL) | Stories (committed) | Exists now |
 |---|---|---|---|---|
-| `identity/` | COMP-004 Identity and Access | `account`, `session` | US-001, US-002, US-003, US-034 | `sessions.js`: session resolution only (IF-014) |
-| `pets/` | COMP-005 Pets | `pet` | US-001 (first pet) | no |
-| `provider/` | COMP-006 Provider Profile and Working Hours | `provider_profile`, `working_hours` | US-002, US-008, US-009 | no |
+| `identity/` | COMP-004 Identity and Access | `account`, `session` | US-001, US-002, US-003, US-034 | `sign-up.js`: owner/provider signup, sign-in, session state; `sessions.js`: IF-014 resolution |
+| `pets/` | COMP-005 Pets | `pet` | US-001 (first pet) | `owner-pet.js`: IF-015 create first pet |
+| `provider/` | COMP-006 Provider Profile and Working Hours | `provider_profile`, `working_hours` | US-002, US-008, US-009 | `profile.js`: IF-016 signup profile command |
 | `catalog/` | COMP-007 Catalog | `offering` | US-010, US-013 (+ US-033) | no |
 | `search/` | COMP-008 Search and Discovery | none (read-only) | US-016, US-017, US-018 | no |
 | `scheduling/` | COMP-009 Scheduling | `appointment` | US-019, US-020, US-021, US-024 | no |
