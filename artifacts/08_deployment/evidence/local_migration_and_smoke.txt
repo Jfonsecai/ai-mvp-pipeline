@@ -1,0 +1,86 @@
+### MIGRATIONS (documented procedure, direct connection)
+-- before:
+.env not found. Continuing without it.
+pending  001_initial_schema.sql
+-- apply:
+.env not found. Continuing without it.
+applied 001_initial_schema.sql
+Applied 1 migration(s).
+-- again (must be idempotent):
+.env not found. Continuing without it.
+skip    001_initial_schema.sql (already applied)
+Nothing to apply.
+-- after:
+.env not found. Continuing without it.
+applied  001_initial_schema.sql
+
+### START API (scripts/dev-server.js, the same app as src/index.js)
+
+### SMOKE api checks, direct against the API (APP_ORIGIN matches -> SMOKE-06 runs)
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+PASS SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+6 passed, 0 failed, 0 skipped (not verified) against http://127.0.0.1:3055
+smoke_exit=0
+
+### SMOKE all checks through the emulated Vercel-like router
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+PASS SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+PASS SMOKE-07 GET / serves the client entry page from public/
+PASS SMOKE-08 a client deep link returns the entry page (SPA rewrite, P05-ASM-012)
+PASS SMOKE-09 an unknown /api path stays a JSON NOT_FOUND and is not rewritten to the client
+9 passed, 0 failed, 0 skipped (not verified) against http://127.0.0.1:3057
+smoke_exit=0
+
+### SMOKE without APP_ORIGIN: SMOKE-06 must be reported as SKIP (not as pass)
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+5 passed, 0 failed, 1 skipped (not verified) against http://127.0.0.1:3055
+smoke_exit=0
+
+### NEGATIVE: database unreachable (API started with a bad DATABASE_URL)
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+FAIL SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+     reason: status 500, code UNEXPECTED
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+4 passed, 1 failed, 1 skipped (not verified) against http://127.0.0.1:3056
+smoke_exit=1
+
+### NEGATIVE: nothing listening at BASE_URL
+FAIL SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+     reason: fetch failed
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+0 passed, 5 failed, 1 skipped (not verified) against http://127.0.0.1:3999
+smoke_exit=1
+
+### NEGATIVE: static checks against the bare API (no client, no rewrite) must fail
+FAIL SMOKE-07 GET / serves the client entry page from public/
+     reason: status 404
+FAIL SMOKE-08 a client deep link returns the entry page (SPA rewrite, P05-ASM-012)
+     reason: status 404; fallback is hash routing (P05-ASM-012)
+PASS SMOKE-09 an unknown /api path stays a JSON NOT_FOUND and is not rewritten to the client
+1 passed, 2 failed, 0 skipped (not verified) against http://127.0.0.1:3055
+smoke_exit=1
+
+### NEGATIVE: missing BASE_URL
+BASE_URL is required, for example BASE_URL=https://example.vercel.app
+smoke_exit=2
+
+### API log lines (3055): errors only
+0
+### secrets/connection data in API log (3056, bad DB)?
+0

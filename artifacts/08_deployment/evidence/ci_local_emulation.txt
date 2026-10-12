@@ -1,0 +1,2462 @@
+::skip:: Checkout (action actions/checkout@v4: not emulated)
+::skip:: Set up Node.js (version from .nvmrc) (action actions/setup-node@v4: not emulated)
+
+=== STEP: Install dependencies (lockfile only)
+
+added 116 packages, and audited 118 packages in 17s
+
+38 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+=== STEP RESULT: Install dependencies (lockfile only) -> exit 0
+
+=== STEP: Require the test database
+test database reachable, locale folds accents
+=== STEP RESULT: Require the test database -> exit 0
+
+=== STEP: Build (client bundle into public/)
+
+> vetcare@0.1.0 build
+> npm run build --workspace client
+
+
+> vetcare-client@0.1.0 build
+> vite build
+
+[36mvite v8.3.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 40 modules transformed.
+rendering chunks...
+computing gzip size...
+../public/index.html                   0.40 kB │ gzip:  0.27 kB
+../public/assets/index-pgEQph93.css   19.88 kB │ gzip:  3.45 kB
+../public/assets/index-CoTgvBCE.js   335.65 kB │ gzip: 98.32 kB
+
+[32m✓ built in 1.14s[39m
+=== STEP RESULT: Build (client bundle into public/) -> exit 0
+
+=== STEP: Tests (project suite)
+
+> vetcare@0.1.0 test
+> node --env-file-if-exists=.env --test tests/*.test.js
+
+.env not found. Continuing without it.
+TAP version 13
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:44.896Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":377}
+# {"time":"2026-10-12T21:55:45.314Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":402}
+# {"time":"2026-10-12T21:55:45.563Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":238}
+# {"time":"2026-10-12T21:55:46.092Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":201,"durationMs":521}
+# {"time":"2026-10-12T21:55:46.562Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":201,"durationMs":440}
+# {"time":"2026-10-12T21:55:46.707Z","severity":"info","event":"request","method":"GET","path":"/api/provider/appointments","status":200,"durationMs":97}
+# {"time":"2026-10-12T21:55:46.722Z","severity":"info","event":"request","method":"GET","path":"/api/provider/appointments","status":401,"outcome":"UNAUTHENTICATED","durationMs":2}
+# {"time":"2026-10-12T21:55:46.740Z","severity":"info","event":"request","method":"GET","path":"/api/provider/appointments","status":404,"outcome":"NOT_FOUND","durationMs":14}
+# {"time":"2026-10-12T21:55:48.534Z","severity":"info","event":"request","method":"GET","path":"/api/provider/appointments","status":200,"durationMs":1787}
+# Subtest: US-024 / IF-013: providers see their appointments, home address and cancelled state without owner contact data
+ok 1 - US-024 / IF-013: providers see their appointments, home address and cancelled state without owner contact data
+  ---
+  duration_ms: 4617.1898
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: calendar helpers: weekdays, Mondays, day arithmetic across months and years, real dates only
+ok 2 - calendar helpers: weekdays, Mondays, day arithmetic across months and years, real dates only
+  ---
+  duration_ms: 1.8682
+  type: 'test'
+  ...
+# Subtest: Bogota instants: whole-hour wall-clock times map to the right UTC instants, round-trip with the offset
+ok 3 - Bogota instants: whole-hour wall-clock times map to the right UTC instants, round-trip with the offset
+  ---
+  duration_ms: 0.3196
+  type: 'test'
+  ...
+# Subtest: AC-046 / BR-011: slots start on whole hours from opening up to one hour before closing
+ok 4 - AC-046 / BR-011: slots start on whole hours from opening up to one hour before closing
+  ---
+  duration_ms: 4.9114
+  type: 'test'
+  ...
+# Subtest: EDGE-005: only the provider's own working days offer slots; each weekday uses its own range
+ok 5 - EDGE-005: only the provider's own working days offer slots; each weekday uses its own range
+  ---
+  duration_ms: 5.1498
+  type: 'test'
+  ...
+# Subtest: boundaries: closing hour 24 offers 23:00; opening hour 0 offers 00:00; a one-hour day offers exactly one slot
+ok 6 - boundaries: closing hour 24 offers 23:00; opening hour 0 offers 00:00; a one-hour day offers exactly one slot
+  ---
+  duration_ms: 11.3373
+  type: 'test'
+  ...
+# Subtest: AC-051 / EDGE-009: a slot whose start is not after now is not offered; one millisecond earlier it still is
+ok 7 - AC-051 / EDGE-009: a slot whose start is not after now is not offered; one millisecond earlier it still is
+  ---
+  duration_ms: 17.9518
+  type: 'test'
+  ...
+# Subtest: AC-049 / BR-012: a clinic keeps offering a slot however many appointments it has
+ok 8 - AC-049 / BR-012: a clinic keeps offering a slot however many appointments it has
+  ---
+  duration_ms: 13.0368
+  type: 'test'
+  ...
+# Subtest: AC-050 / EDGE-006 / BR-013: an independent veterinarian does not offer a booked slot, only that one
+ok 9 - AC-050 / EDGE-006 / BR-013: an independent veterinarian does not offer a booked slot, only that one
+  ---
+  duration_ms: 4.9251
+  type: 'test'
+  ...
+# Subtest: isSlotOffered: not on the hour, wrong weekday and outside hours are refused
+ok 10 - isSlotOffered: not on the hour, wrong weekday and outside hours are refused
+  ---
+  duration_ms: 1.255
+  type: 'test'
+  ...
+# Subtest: weekStart validation: absent is allowed; only real Mondays in a sane range
+ok 11 - weekStart validation: absent is allowed; only real Mondays in a sane range
+  ---
+  duration_ms: 1.9669
+  type: 'test'
+  ...
+# Subtest: booking request validation: shape, ids, whole-hour instants with any offset and unknown fields
+ok 12 - booking request validation: shape, ids, whole-hour instants with any offset and unknown fields
+  ---
+  duration_ms: 2.695
+  type: 'test'
+  ...
+# Subtest: service modality determines the allowed appointment modality (BR-007)
+ok 13 - service modality determines the allowed appointment modality (BR-007)
+  ---
+  duration_ms: 0.8053
+  type: 'test'
+  ...
+# Subtest: identifiers: only canonical UUIDs
+ok 14 - identifiers: only canonical UUIDs
+  ---
+  duration_ms: 0.2578
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:44.011Z","severity":"info","event":"request","method":"GET","path":"/api/owner/pets","status":401,"outcome":"UNAUTHENTICATED","durationMs":15}
+# {"time":"2026-10-12T21:55:44.026Z","severity":"info","event":"request","method":"GET","path":"/api/owner/pets","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:44.041Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":401,"outcome":"UNAUTHENTICATED","durationMs":3}
+# {"time":"2026-10-12T21:55:44.045Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:44.277Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":401,"outcome":"UNAUTHENTICATED","durationMs":221}
+# {"time":"2026-10-12T21:55:44.283Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# Subtest: the three booking operations need a session and the owner role (401 / 404), before anything else
+ok 15 - the three booking operations need a session and the owner role (401 / 404), before anything else
+  ---
+  duration_ms: 398.1826
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.302Z","severity":"info","event":"request","method":"GET","path":"/api/services/abc/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:44.334Z","severity":"info","event":"request","method":"GET","path":"/api/services/1/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:44.342Z","severity":"info","event":"request","method":"GET","path":"/api/services/x'--/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# {"time":"2026-10-12T21:55:44.350Z","severity":"info","event":"request","method":"GET","path":"/api/services/%2500/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:44.356Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222222242228222222222222222/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:44.361Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222x/booking-context","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:44.371Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.376Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.386Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":422,"outcome":"VALIDATION_FAILED","durationMs":3}
+# {"time":"2026-10-12T21:55:44.391Z","severity":"info","event":"request","method":"GET","path":"/api/services/22222222-2222-4222-8222-222222222222/booking-context","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# Subtest: malformed service ids and weekStart values are refused without touching the database
+ok 16 - malformed service ids and weekStart values are refused without touching the database
+  ---
+  duration_ms: 105.1821
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.406Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.417Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.427Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.432Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.438Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.442Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.447Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.451Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":403,"outcome":"FORBIDDEN_ORIGIN","durationMs":1}
+# {"time":"2026-10-12T21:55:44.457Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":403,"outcome":"FORBIDDEN_ORIGIN","durationMs":1}
+# Subtest: invalid booking requests are refused with field reasons before any query; Origin and JSON are enforced
+ok 17 - invalid booking requests are refused with field reasons before any query; Origin and JSON are enforced
+  ---
+  duration_ms: 65.3167
+  type: 'test'
+  ...
+# Subtest: home visit address input is trimmed and validated against the Address contract
+ok 18 - home visit address input is trimmed and validated against the Address contract
+  ---
+  duration_ms: 0.9007
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.518Z","severity":"info","event":"request","method":"POST","path":"/api/owner/appointments","status":404,"outcome":"NOT_FOUND","durationMs":10}
+# Subtest: a well-formed request for an unknown service is NOT_FOUND
+ok 19 - a well-formed request for an unknown service is NOT_FOUND
+  ---
+  duration_ms: 59.9326
+  type: 'test'
+  ...
+# Subtest: contract: the operations, parameters and request fields match API_SPEC
+ok 20 - contract: the operations, parameters and request fields match API_SPEC
+  ---
+  duration_ms: 301.7613
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:44.370Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":126}
+# {"time":"2026-10-12T21:55:44.400Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":9}
+# {"time":"2026-10-12T21:55:44.416Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":7}
+# Subtest: a clinic product is stored as an available product and listed only in that provider catalog (AC-033, AC-111)
+ok 21 - a clinic product is stored as an available product and listed only in that provider catalog (AC-033, AC-111)
+  ---
+  duration_ms: 490.6547
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.435Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":10}
+# Subtest: an independent veterinarian product is stored under its own provider (AC-033)
+ok 22 - an independent veterinarian product is stored under its own provider (AC-033)
+  ---
+  duration_ms: 18.0584
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.448Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.457Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.467Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.475Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.484Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.494Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.507Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":8}
+# {"time":"2026-10-12T21:55:44.515Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":404,"outcome":"NOT_FOUND","durationMs":5}
+# Subtest: rejected products write nothing: missing species (AC-034), missing price (AC-084), bad values, wrong role
+ok 23 - rejected products write nothing: missing species (AC-034), missing price (AC-084), bad values, wrong role
+  ---
+  duration_ms: 79.4349
+  type: 'test'
+  ...
+# Subtest: the offering constraints stay a second layer behind the API (product shape)
+ok 24 - the offering constraints stay a second layer behind the API (product shape)
+  ---
+  duration_ms: 6.0079
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: product validator trims the name and accepts a name, a positive COP price and one species
+ok 25 - product validator trims the name and accepts a name, a positive COP price and one species
+  ---
+  duration_ms: 3.221
+  type: 'test'
+  ...
+# Subtest: AC-034: a missing, null, blank or unsupported species is rejected and species is flagged
+ok 26 - AC-034: a missing, null, blank or unsupported species is rejected and species is flagged
+  ---
+  duration_ms: 1.0664
+  type: 'test'
+  ...
+# Subtest: AC-084: a missing, null or blank price is rejected and price is flagged; invalid prices are refused
+ok 27 - AC-084: a missing, null or blank price is rejected and price is flagged; invalid prices are refused
+  ---
+  duration_ms: 0.4511
+  type: 'test'
+  ...
+# Subtest: name, shape and unknown-field rules (modality and available cannot be supplied for a product)
+ok 28 - name, shape and unknown-field rules (modality and available cannot be supplied for a product)
+  ---
+  duration_ms: 0.5931
+  type: 'test'
+  ...
+# Subtest: the shared checks keep the US-010 service validator behavior
+ok 29 - the shared checks keep the US-010 service validator behavior
+  ---
+  duration_ms: 0.4111
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.284Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":241}
+# {"time":"2026-10-12T21:55:44.305Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":2}
+# Subtest: AC-033 / AC-111: a clinic publishes a product that is available and listed in its catalog
+ok 30 - AC-033 / AC-111: a clinic publishes a product that is available and listed in its catalog
+  ---
+  duration_ms: 627.7484
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.575Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":4}
+# Subtest: AC-033: an independent veterinarian can also publish a product (no modality rule applies)
+ok 31 - AC-033: an independent veterinarian can also publish a product (no modality rule applies)
+  ---
+  duration_ms: 22.2339
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.609Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.622Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":3}
+# {"time":"2026-10-12T21:55:44.634Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":422,"outcome":"VALIDATION_FAILED","durationMs":3}
+# Subtest: AC-034 / AC-084: invalid products are refused with 422 field reasons and nothing is written
+ok 32 - AC-034 / AC-084: invalid products are refused with 422 field reasons and nothing is written
+  ---
+  duration_ms: 57.0491
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.652Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":401,"outcome":"UNAUTHENTICATED","durationMs":3}
+# {"time":"2026-10-12T21:55:44.673Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":404,"outcome":"NOT_FOUND","durationMs":13}
+# {"time":"2026-10-12T21:55:44.695Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":403,"outcome":"FORBIDDEN_ORIGIN","durationMs":9}
+# Subtest: BR-025: product publication is provider-only, needs a session and a same-origin JSON request
+ok 33 - BR-025: product publication is provider-only, needs a session and a same-origin JSON request
+  ---
+  duration_ms: 62.2226
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:44.420Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":247}
+# {"time":"2026-10-12T21:55:44.447Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":7}
+# {"time":"2026-10-12T21:55:44.458Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":5}
+# Subtest: clinic service publication persists and appears only in the provider catalog
+ok 34 - clinic service publication persists and appears only in the provider catalog
+  ---
+  duration_ms: 549.6929
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.474Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":8}
+# {"time":"2026-10-12T21:55:44.483Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":5}
+# Subtest: independent veterinarian publication always stores home modality
+ok 35 - independent veterinarian publication always stores home modality
+  ---
+  duration_ms: 25.428
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.497Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.507Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.517Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.529Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":5}
+# {"time":"2026-10-12T21:55:44.538Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":4}
+# {"time":"2026-10-12T21:55:44.545Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":401,"outcome":"UNAUTHENTICATED","durationMs":2}
+# {"time":"2026-10-12T21:55:44.551Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# Subtest: invalid publication and non-provider access are rejected without writes
+ok 36 - invalid publication and non-provider access are rejected without writes
+  ---
+  duration_ms: 66.2908
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: service validator requires a name, positive COP price, one species, and clinic modality
+ok 37 - service validator requires a name, positive COP price, one species, and clinic modality
+  ---
+  duration_ms: 6.0902
+  type: 'test'
+  ...
+# Subtest: independent veterinarians can publish home services only
+ok 38 - independent veterinarians can publish home services only
+  ---
+  duration_ms: 2.1949
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.284Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":282}
+# {"time":"2026-10-12T21:55:44.321Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":200,"durationMs":5}
+# Subtest: provider can publish a service and read only its own catalog
+ok 39 - provider can publish a service and read only its own catalog
+  ---
+  duration_ms: 428.069
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.343Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":401,"outcome":"UNAUTHENTICATED","durationMs":1}
+# {"time":"2026-10-12T21:55:44.350Z","severity":"info","event":"request","method":"GET","path":"/api/provider/offerings","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:44.357Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# Subtest: service routes require a provider session and reject owner accounts
+ok 40 - service routes require a provider session and reject owner accounts
+  ---
+  duration_ms: 30.0587
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: apiFetch: returns the JSON body of a successful response
+ok 41 - apiFetch: returns the JSON body of a successful response
+  ---
+  duration_ms: 4.3578
+  type: 'test'
+  ...
+# Subtest: apiFetch: sends JSON with same-origin credentials and no extra headers
+ok 42 - apiFetch: sends JSON with same-origin credentials and no extra headers
+  ---
+  duration_ms: 0.5775
+  type: 'test'
+  ...
+# Subtest: apiFetch: 204 resolves to null
+ok 43 - apiFetch: 204 resolves to null
+  ---
+  duration_ms: 0.2887
+  type: 'test'
+  ...
+# Subtest: apiFetch: a CTR-001 error body becomes an ApiError with code, status and fields
+ok 44 - apiFetch: a CTR-001 error body becomes an ApiError with code, status and fields
+  ---
+  duration_ms: 0.9233
+  type: 'test'
+  ...
+# Subtest: apiFetch: non-JSON or foreign error bodies and network failures are UNEXPECTED
+ok 45 - apiFetch: non-JSON or foreign error bodies and network failures are UNEXPECTED
+  ---
+  duration_ms: 0.9233
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: API_SPEC.yaml is the OpenAPI 3.1 document the foundation was built from
+ok 46 - API_SPEC.yaml is the OpenAPI 3.1 document the foundation was built from
+  ---
+  duration_ms: 1.4256
+  type: 'test'
+  ...
+# Subtest: enumerations equal API_SPEC.yaml components.schemas
+ok 47 - enumerations equal API_SPEC.yaml components.schemas
+  ---
+  duration_ms: 1.2226
+  type: 'test'
+  ...
+# Subtest: outcome codes and reason codes equal API_SPEC.yaml
+ok 48 - outcome codes and reason codes equal API_SPEC.yaml
+  ---
+  duration_ms: 0.2501
+  type: 'test'
+  ...
+# Subtest: HTTP status per outcome code equals the mapping in API_SPEC.yaml
+ok 49 - HTTP status per outcome code equals the mapping in API_SPEC.yaml
+  ---
+  duration_ms: 0.4891
+  type: 'test'
+  ...
+# Subtest: enumerations equal the CHECK constraints of the first migration (DATA_MODEL Appendix A)
+ok 50 - enumerations equal the CHECK constraints of the first migration (DATA_MODEL Appendix A)
+  ---
+  duration_ms: 0.4346
+  type: 'test'
+  ...
+# Subtest: first migration is DATA_MODEL Appendix A verbatim (ADR-018)
+ok 51 - first migration is DATA_MODEL Appendix A verbatim (ADR-018)
+  ---
+  duration_ms: 0.7146
+  type: 'test'
+  ...
+# Subtest: the eight DATA_MODEL tables are created
+ok 52 - the eight DATA_MODEL tables are created
+  ---
+  duration_ms: 0.324
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: migrate: applies the initial schema once and is idempotent
+ok 53 - migrate: applies the initial schema once and is idempotent
+  ---
+  duration_ms: 155.6262
+  type: 'test'
+  ...
+# Subtest: migrate: an applied file that was edited is rejected; a failing file rolls back
+ok 54 - migrate: an applied file that was edited is rejected; a failing file rolls back
+  ---
+  duration_ms: 89.8848
+  type: 'test'
+  ...
+# Subtest: schema: a second booking of an independent veterinarian slot is rejected (BR-013, 23505)
+ok 55 - schema: a second booking of an independent veterinarian slot is rejected (BR-013, 23505)
+  ---
+  duration_ms: 45.2888
+  type: 'test'
+  ...
+# Subtest: schema: a clinic profile without an address is rejected (TD-08, 23514)
+ok 56 - schema: a clinic profile without an address is rejected (TD-08, 23514)
+  ---
+  duration_ms: 1.8494
+  type: 'test'
+  ...
+# Subtest: withTransaction: commits on success and rolls back on failure
+ok 57 - withTransaction: commits on success and rolls back on failure
+  ---
+  duration_ms: 34.9886
+  type: 'test'
+  ...
+# Subtest: resolveSession against the real schema: active, ended, idle-expired
+ok 58 - resolveSession against the real schema: active, ended, idle-expired
+  ---
+  duration_ms: 15.569
+  type: 'test'
+  ...
+# Subtest: createDatabase: ping works with a URL; without one it fails with a message that has no connection details
+ok 59 - createDatabase: ping works with a URL; without one it fails with a message that has no connection details
+  ---
+  duration_ms: 133.1994
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: tokens.css defines exactly the 68 tokens of UX_SPEC section 4, with the same values
+ok 60 - tokens.css defines exactly the 68 tokens of UX_SPEC section 4, with the same values
+  ---
+  duration_ms: 7.6453
+  type: 'test'
+  ...
+# Subtest: base styles use only tokens (no raw colors or sizes) - CR-012
+ok 61 - base styles use only tokens (no raw colors or sizes) - CR-012
+  ---
+  duration_ms: 1.0147
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: health: liveness needs no database and exposes nothing else
+ok 62 - health: liveness needs no database and exposes nothing else
+  ---
+  duration_ms: 103.2079
+  type: 'test'
+  ...
+# Subtest: health/db: ok when the database answers
+ok 63 - health/db: ok when the database answers
+  ---
+  duration_ms: 15.2796
+  type: 'test'
+  ...
+# Subtest: health/db: a database failure is UNEXPECTED (500) with no internal detail
+ok 64 - health/db: a database failure is UNEXPECTED (500) with no internal detail
+  ---
+  duration_ms: 17.1194
+  type: 'test'
+  ...
+# Subtest: responses: JSON, no-store, no X-Powered-By
+ok 65 - responses: JSON, no-store, no X-Powered-By
+  ---
+  duration_ms: 6.2831
+  type: 'test'
+  ...
+# Subtest: unknown routes: NOT_FOUND as JSON (never Express HTML), under /api and outside it
+ok 66 - unknown routes: NOT_FOUND as JSON (never Express HTML), under /api and outside it
+  ---
+  duration_ms: 23.481
+  type: 'test'
+  ...
+# Subtest: origin guard: state-changing requests need the application Origin (CR-021)
+ok 67 - origin guard: state-changing requests need the application Origin (CR-021)
+  ---
+  duration_ms: 189.0058
+  type: 'test'
+  ...
+# Subtest: origin guard: a body must be JSON
+ok 68 - origin guard: a body must be JSON
+  ---
+  duration_ms: 9.1341
+  type: 'test'
+  ...
+# Subtest: origin guard: GET requests do not need an Origin
+ok 69 - origin guard: GET requests do not need an Origin
+  ---
+  duration_ms: 4.9109
+  type: 'test'
+  ...
+# Subtest: malformed JSON body: VALIDATION_FAILED, not an HTML error page
+ok 70 - malformed JSON body: VALIDATION_FAILED, not an HTML error page
+  ---
+  duration_ms: 10.3193
+  type: 'test'
+  ...
+# Subtest: oversized JSON body: VALIDATION_FAILED
+ok 71 - oversized JSON body: VALIDATION_FAILED
+  ---
+  duration_ms: 9.4987
+  type: 'test'
+  ...
+# Subtest: guard: public route works without a session
+ok 72 - guard: public route works without a session
+  ---
+  duration_ms: 12.0407
+  type: 'test'
+  ...
+# Subtest: guard: no session -> UNAUTHENTICATED; unknown or signed-out token too
+ok 73 - guard: no session -> UNAUTHENTICATED; unknown or signed-out token too
+  ---
+  duration_ms: 21.7107
+  type: 'test'
+  ...
+# Subtest: guard: idle-expired session -> SESSION_EXPIRED
+ok 74 - guard: idle-expired session -> SESSION_EXPIRED
+  ---
+  duration_ms: 5.2048
+  type: 'test'
+  ...
+# Subtest: guard: the other account type gets NOT_FOUND, like a nonexistent resource (CR-006)
+ok 75 - guard: the other account type gets NOT_FOUND, like a nonexistent resource (CR-006)
+  ---
+  duration_ms: 20.0477
+  type: 'test'
+  ...
+# Subtest: guard: identity comes from the session context (TB-3)
+ok 76 - guard: identity comes from the session context (TB-3)
+  ---
+  duration_ms: 13.8561
+  type: 'test'
+  ...
+# Subtest: feature switch: a disabled slice is NOT_FOUND even with a valid session (CR-023)
+ok 77 - feature switch: a disabled slice is NOT_FOUND even with a valid session (CR-023)
+  ---
+  duration_ms: 21.1444
+  type: 'test'
+  ...
+# Subtest: feature switch: checked before the session, so the operation does not exist at all
+ok 78 - feature switch: checked before the session, so the operation does not exist at all
+  ---
+  duration_ms: 8.4608
+  type: 'test'
+  ...
+# Subtest: errors: a business Outcome keeps its code and status
+ok 79 - errors: a business Outcome keeps its code and status
+  ---
+  duration_ms: 5.8809
+  type: 'test'
+  ...
+# Subtest: errors: unexpected sync and async failures are UNEXPECTED JSON with no leak
+ok 80 - errors: unexpected sync and async failures are UNEXPECTED JSON with no leak
+  ---
+  duration_ms: 13.952
+  type: 'test'
+  ...
+# Subtest: logging: request lines carry method, path, status and outcome only
+ok 81 - logging: request lines carry method, path, status and outcome only
+  ---
+  duration_ms: 4.105
+  type: 'test'
+  ...
+# Subtest: logging: unexpected errors log name/code (and message outside production) but never reach the response
+ok 82 - logging: unexpected errors log name/code (and message outside production) but never reach the response
+  ---
+  duration_ms: 0.4334
+  type: 'test'
+  ...
+# Subtest: logging: production logs omit the error message
+ok 83 - logging: production logs omit the error message
+  ---
+  duration_ms: 18.2606
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:44.913Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":201,"durationMs":507}
+# {"time":"2026-10-12T21:55:45.400Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":409,"outcome":"DUPLICATE_ACCOUNT_FOR_TYPE","durationMs":423}
+# Subtest: owner sign-up creates the first pet and allows an existing provider email, but rejects duplicate owners
+ok 84 - owner sign-up creates the first pet and allows an existing provider email, but rejects duplicate owners
+  ---
+  duration_ms: 1490.7509
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: owner validator trims text and normalizes the email
+ok 85 - owner validator trims text and normalizes the email
+  ---
+  duration_ms: 6.0146
+  type: 'test'
+  ...
+# Subtest: owner validator rejects missing fields, unsupported species and invalid pet measurements
+ok 86 - owner validator rejects missing fields, unsupported species and invalid pet measurements
+  ---
+  duration_ms: 0.9424
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.628Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":201,"durationMs":630}
+# Subtest: owner sign-up atomically writes account, first pet and session with hashed credentials
+ok 87 - owner sign-up atomically writes account, first pet and session with hashed credentials
+  ---
+  duration_ms: 1004.398
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.940Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":422,"outcome":"VALIDATION_FAILED","durationMs":4}
+# {"time":"2026-10-12T21:55:45.345Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":409,"outcome":"DUPLICATE_ACCOUNT_FOR_TYPE","durationMs":385}
+# Subtest: owner sign-up rejects invalid data before database writes and maps duplicate owner accounts
+ok 88 - owner sign-up rejects invalid data before database writes and maps duplicate owner accounts
+  ---
+  duration_ms: 442.33
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.365Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# Subtest: owner sign-up without any pet rejects the request and creates no account
+ok 89 - owner sign-up without any pet rejects the request and creates no account
+  ---
+  duration_ms: 19.2287
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:45.396Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":518}
+# {"time":"2026-10-12T21:55:45.424Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":13}
+# {"time":"2026-10-12T21:55:45.443Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":10}
+# {"time":"2026-10-12T21:55:45.452Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":4}
+# {"time":"2026-10-12T21:55:45.503Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":7}
+# {"time":"2026-10-12T21:55:45.513Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":4}
+# {"time":"2026-10-12T21:55:45.525Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":6}
+# Subtest: a new clinic reads its sign-up profile, saves new data (AC-023) and cannot remove its address (AC-106, EDGE-027)
+ok 90 - a new clinic reads its sign-up profile, saves new data (AC-023) and cannot remove its address (AC-106, EDGE-027)
+  ---
+  duration_ms: 1591.0069
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.992Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":448}
+# {"time":"2026-10-12T21:55:46.011Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":11}
+# {"time":"2026-10-12T21:55:46.040Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":12}
+# {"time":"2026-10-12T21:55:46.065Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":13}
+# Subtest: an independent veterinarian saves with and without an address (AC-024)
+ok 91 - an independent veterinarian saves with and without an address (AC-024)
+  ---
+  duration_ms: 536.6839
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.486Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":409}
+# {"time":"2026-10-12T21:55:48.551Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":2058}
+# {"time":"2026-10-12T21:55:48.578Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":25}
+# {"time":"2026-10-12T21:55:48.585Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":4}
+# {"time":"2026-10-12T21:55:48.604Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":15}
+# {"time":"2026-10-12T21:55:48.609Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":401,"outcome":"UNAUTHENTICATED","durationMs":1}
+# Subtest: providers only reach their own profile and a failed validation changes nothing
+ok 92 - providers only reach their own profile and a failed validation changes nothing
+  ---
+  duration_ms: 2540.2721
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:48.756Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":142}
+# Subtest: database constraints back the profile rules (clinic address, phone characters)
+ok 93 - database constraints back the profile rules (clinic address, phone characters)
+  ---
+  duration_ms: 153.7069
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: validator trims text, accepts a complete profile and maps a blank address to null
+ok 94 - validator trims text, accepts a complete profile and maps a blank address to null
+  ---
+  duration_ms: 6.6036
+  type: 'test'
+  ...
+# Subtest: validator reports required, format, length and unknown-field reasons per field (BR-038)
+ok 95 - validator reports required, format, length and unknown-field reasons per field (BR-038)
+  ---
+  duration_ms: 1.5355
+  type: 'test'
+  ...
+# Subtest: only a clinic requires an address (BR-026, EDGE-017)
+ok 96 - only a clinic requires an address (BR-026, EDGE-017)
+  ---
+  duration_ms: 5.1542
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:44.884Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":7}
+# Subtest: GET returns the signed-in provider profile shape of CTR-004 with profileCompleted false until a phone is saved
+ok 97 - GET returns the signed-in provider profile shape of CTR-004 with profileCompleted false until a phone is saved
+  ---
+  duration_ms: 429.0124
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.212Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":26}
+# {"time":"2026-10-12T21:55:45.230Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":1}
+# Subtest: AC-023: a provider saves name, phone, email and address and the profile shows them
+ok 98 - AC-023: a provider saves name, phone, email and address and the profile shows them
+  ---
+  duration_ms: 73.1536
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.251Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:45.266Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:45.288Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:45.296Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":2}
+# Subtest: AC-024: an independent veterinarian saves without an address and the profile has none
+ok 99 - AC-024: an independent veterinarian saves without an address and the profile has none
+  ---
+  duration_ms: 62.1101
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.330Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:45.351Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":4}
+# {"time":"2026-10-12T21:55:45.362Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# {"time":"2026-10-12T21:55:45.371Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":4}
+# Subtest: AC-106 / EDGE-027: a clinic cannot remove its address; nothing is saved; it can change it
+ok 100 - AC-106 / EDGE-027: a clinic cannot remove its address; nothing is saved; it can change it
+  ---
+  duration_ms: 77.154
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.387Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":2}
+# Subtest: invalid input is rejected with field reasons before any write
+ok 101 - invalid input is rejected with field reasons before any write
+  ---
+  duration_ms: 12.8285
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.400Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":401,"outcome":"UNAUTHENTICATED","durationMs":1}
+# {"time":"2026-10-12T21:55:45.413Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:45.418Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:45.423Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:45.427Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":403,"outcome":"FORBIDDEN_ORIGIN","durationMs":1}
+# Subtest: BR-025: access is own-profile and provider-only; the provider type cannot be changed
+ok 102 - BR-025: access is own-profile and provider-only; the provider type cannot be changed
+  ---
+  duration_ms: 38.23
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:45.435Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:45.443Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# Subtest: a provider without a profile row gets NOT_FOUND
+ok 103 - a provider without a profile row gets NOT_FOUND
+  ---
+  duration_ms: 16.2497
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:48.555Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/owner","status":201,"durationMs":1745}
+# {"time":"2026-10-12T21:55:48.712Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":148}
+# {"time":"2026-10-12T21:55:48.750Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":33}
+# {"time":"2026-10-12T21:55:48.781Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":17}
+# {"time":"2026-10-12T21:55:48.885Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":96}
+# {"time":"2026-10-12T21:55:48.920Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":31}
+# {"time":"2026-10-12T21:55:48.955Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":29}
+# {"time":"2026-10-12T21:55:48.974Z","severity":"info","event":"request","method":"GET","path":"/api/providers/accb0535-2478-464f-956d-743984749079","status":200,"durationMs":14}
+# Subtest: AC-044: data saved by the provider (US-008) and its published offerings appear on the owner view
+ok 104 - AC-044: data saved by the provider (US-008) and its published offerings appear on the owner view
+  ---
+  duration_ms: 2689.8629
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.181Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":192}
+# {"time":"2026-10-12T21:55:49.197Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":13}
+# {"time":"2026-10-12T21:55:49.205Z","severity":"info","event":"request","method":"GET","path":"/api/providers/12214e61-62ef-4025-bad7-313cf2c6d0f7","status":200,"durationMs":4}
+# {"time":"2026-10-12T21:55:49.229Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":18}
+# {"time":"2026-10-12T21:55:49.233Z","severity":"info","event":"request","method":"GET","path":"/api/providers/12214e61-62ef-4025-bad7-313cf2c6d0f7","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.242Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.259Z","severity":"info","event":"request","method":"GET","path":"/api/providers/12214e61-62ef-4025-bad7-313cf2c6d0f7","status":200,"durationMs":14}
+# {"time":"2026-10-12T21:55:49.263Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/profile","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:49.266Z","severity":"info","event":"request","method":"GET","path":"/api/providers/12214e61-62ef-4025-bad7-313cf2c6d0f7","status":200,"durationMs":2}
+# Subtest: AC-045: an independent veterinarian without an address is shown without one; an address added later appears
+ok 105 - AC-045: an independent veterinarian without an address is shown without one; an address added later appears
+  ---
+  duration_ms: 286.95
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.355Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":86}
+# {"time":"2026-10-12T21:55:49.359Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:49.455Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":93}
+# {"time":"2026-10-12T21:55:49.463Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.476Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":8}
+# {"time":"2026-10-12T21:55:49.484Z","severity":"info","event":"request","method":"POST","path":"/api/provider/services","status":201,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.499Z","severity":"info","event":"request","method":"POST","path":"/api/provider/products","status":201,"durationMs":7}
+# {"time":"2026-10-12T21:55:49.540Z","severity":"info","event":"request","method":"GET","path":"/api/providers/df6f3e4e-1bd0-4a33-aa34-8fbf4e1083c7","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.546Z","severity":"info","event":"request","method":"GET","path":"/api/providers/105e5414-a8f3-4acb-a652-8a308759d233","status":200,"durationMs":2}
+# Subtest: each profile lists only its own provider offerings and keeps unavailable products visible
+ok 106 - each profile lists only its own provider offerings and keeps unavailable products visible
+  ---
+  duration_ms: 280.5601
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.694Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":143}
+# {"time":"2026-10-12T21:55:49.703Z","severity":"info","event":"request","method":"GET","path":"/api/provider/profile","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.716Z","severity":"info","event":"request","method":"GET","path":"/api/providers/8183eeaf-57d5-435d-9d60-5913b0709f91","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# {"time":"2026-10-12T21:55:49.721Z","severity":"info","event":"request","method":"GET","path":"/api/providers/88109d97-02a1-490e-a089-64b658dfbeb0","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# {"time":"2026-10-12T21:55:49.725Z","severity":"info","event":"request","method":"GET","path":"/api/providers/nope","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:49.730Z","severity":"info","event":"request","method":"GET","path":"/api/providers/1'%20OR%20'1'%3D'1","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:49.736Z","severity":"info","event":"request","method":"GET","path":"/api/providers/AA7C8723-5D09-4DDF-A2EE-5619D00BC5E5","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.738Z","severity":"info","event":"request","method":"GET","path":"/api/providers/aa7c8723-5d09-4ddf-a2ee-5619d00bc5e5","status":401,"outcome":"UNAUTHENTICATED","durationMs":0}
+# {"time":"2026-10-12T21:55:49.743Z","severity":"info","event":"request","method":"GET","path":"/api/providers/aa7c8723-5d09-4ddf-a2ee-5619d00bc5e5","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# Subtest: unknown, non-provider and malformed identifiers are NOT_FOUND; access is owner-only
+ok 107 - unknown, non-provider and malformed identifiers are NOT_FOUND; access is owner-only
+  ---
+  duration_ms: 196.0441
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:46.610Z","severity":"info","event":"request","method":"GET","path":"/api/providers/11111111-1111-4111-8111-111111111111","status":200,"durationMs":12}
+# Subtest: AC-044: a clinic profile shows name, address, phone, email, type, services and products with prices
+ok 108 - AC-044: a clinic profile shows name, address, phone, email, type, services and products with prices
+  ---
+  duration_ms: 176.3076
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.663Z","severity":"info","event":"request","method":"GET","path":"/api/providers/11111111-1111-4111-8111-111111111111","status":200,"durationMs":2}
+# Subtest: the response keys equal API_SPEC PublicProviderProfile, CatalogService and CatalogProduct
+ok 109 - the response keys equal API_SPEC PublicProviderProfile, CatalogService and CatalogProduct
+  ---
+  duration_ms: 22.2312
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.685Z","severity":"info","event":"request","method":"GET","path":"/api/providers/22222222-2222-4222-8222-222222222222","status":200,"durationMs":4}
+# Subtest: AC-045 / BR-026: an independent veterinarian without an address has no address key at all
+ok 110 - AC-045 / BR-026: an independent veterinarian without an address has no address key at all
+  ---
+  duration_ms: 22.4174
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.712Z","severity":"info","event":"request","method":"GET","path":"/api/providers/44444444-4444-4444-8444-444444444444","status":200,"durationMs":5}
+# Subtest: BR-038: a provider that has not saved a phone is shown without one, never as null
+ok 111 - BR-038: a provider that has not saved a phone is shown without one, never as null
+  ---
+  duration_ms: 28.4074
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.742Z","severity":"info","event":"request","method":"GET","path":"/api/providers/11111111-1111-4111-8111-111111111111","status":200,"durationMs":2}
+# Subtest: nothing beyond the public fields is exposed (no hours, no account data, no timestamps)
+ok 112 - nothing beyond the public fields is exposed (no hours, no account data, no timestamps)
+  ---
+  duration_ms: 27.4236
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.769Z","severity":"info","event":"request","method":"GET","path":"/api/providers/99999999-9999-4999-8999-999999999999","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# {"time":"2026-10-12T21:55:46.778Z","severity":"info","event":"request","method":"GET","path":"/api/providers/33333333-3333-4333-8333-333333333333","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.784Z","severity":"info","event":"request","method":"GET","path":"/api/providers/abc","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.794Z","severity":"info","event":"request","method":"GET","path":"/api/providers/1","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.821Z","severity":"info","event":"request","method":"GET","path":"/api/providers/x'%3B%20DROP%20TABLE%20offering%3B--","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.829Z","severity":"info","event":"request","method":"GET","path":"/api/providers/%2500","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.835Z","severity":"info","event":"request","method":"GET","path":"/api/providers/99999999-9999-4999-8999-99999999999","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.845Z","severity":"info","event":"request","method":"GET","path":"/api/providers/not-a-uuid-at-all-not-a-uuid-at-all","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# {"time":"2026-10-12T21:55:46.856Z","severity":"info","event":"request","method":"GET","path":"/api/providers/%7B11111111-1111-4111-8111-111111111111%7D","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# Subtest: unknown, malformed and non-provider identifiers are a uniform NOT_FOUND; malformed ones never reach the database
+ok 113 - unknown, malformed and non-provider identifiers are a uniform NOT_FOUND; malformed ones never reach the database
+  ---
+  duration_ms: 112.0183
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.871Z","severity":"info","event":"request","method":"GET","path":"/api/providers/ABCDEF12-3456-4789-8ABC-DEF012345678","status":200,"durationMs":2}
+# Subtest: an upper-case UUID resolves to the same provider
+ok 114 - an upper-case UUID resolves to the same provider
+  ---
+  duration_ms: 16.1772
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.909Z","severity":"info","event":"request","method":"GET","path":"/api/providers/11111111-1111-4111-8111-111111111111","status":401,"outcome":"UNAUTHENTICATED","durationMs":3}
+# {"time":"2026-10-12T21:55:46.925Z","severity":"info","event":"request","method":"GET","path":"/api/providers/11111111-1111-4111-8111-111111111111","status":404,"outcome":"NOT_FOUND","durationMs":6}
+# Subtest: DEP-001: the profile is owner-only (anonymous 401, provider 404 even for its own id)
+ok 115 - DEP-001: the profile is owner-only (anonymous 401, provider 404 even for its own id)
+  ---
+  duration_ms: 54.7023
+  type: 'test'
+  ...
+# Subtest: IF-019 provider facts: returns the stored facts or null
+ok 116 - IF-019 provider facts: returns the stored facts or null
+  ---
+  duration_ms: 12.3564
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:48.889Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":243}
+# {"time":"2026-10-12T21:55:49.103Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":409,"outcome":"DUPLICATE_ACCOUNT_FOR_TYPE","durationMs":194}
+# Subtest: provider sign-up integration: other account type is allowed, same provider type is rejected
+ok 117 - provider sign-up integration: other account type is allowed, same provider type is rejected
+  ---
+  duration_ms: 2784.3901
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: provider sign-up validator normalizes text and email and allows an independent vet without address
+ok 118 - provider sign-up validator normalizes text and email and allows an independent vet without address
+  ---
+  duration_ms: 3.582
+  type: 'test'
+  ...
+# Subtest: provider sign-up validator reports missing type, short password and clinic address
+ok 119 - provider sign-up validator reports missing type, short password and clinic address
+  ---
+  duration_ms: 1.2911
+  type: 'test'
+  ...
+# Subtest: provider sign-up validator enforces types and counts Unicode password characters
+ok 120 - provider sign-up validator enforces types and counts Unicode password characters
+  ---
+  duration_ms: 0.555
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.843Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":201,"durationMs":397}
+# Subtest: provider sign-up creates account, profile and hashed-token session atomically and returns cookie
+ok 121 - provider sign-up creates account, profile and hashed-token session atomically and returns cookie
+  ---
+  duration_ms: 887.7456
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.203Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":422,"outcome":"VALIDATION_FAILED","durationMs":4}
+# Subtest: provider sign-up rejects invalid fields before database writes
+ok 122 - provider sign-up rejects invalid fields before database writes
+  ---
+  duration_ms: 23.1935
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.218Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# Subtest: provider sign-up indicates a missing provider type and creates nothing
+ok 123 - provider sign-up indicates a missing provider type and creates nothing
+  ---
+  duration_ms: 14.3616
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.354Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-up/provider","status":409,"outcome":"DUPLICATE_ACCOUNT_FOR_TYPE","durationMs":124}
+# Subtest: provider sign-up maps duplicate provider email and rolls back
+ok 124 - provider sign-up maps duplicate provider email and rolls back
+  ---
+  duration_ms: 137.276
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:48.557Z","severity":"info","event":"request","method":"GET","path":"/api/provider/working-hours","status":200,"durationMs":1846}
+# {"time":"2026-10-12T21:55:48.687Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/working-hours","status":200,"durationMs":115}
+# Subtest: working hours persist and cancel only upcoming appointments outside the new Bogotá schedule
+ok 125 - working hours persist and cancel only upcoming appointments outside the new Bogotá schedule
+  ---
+  duration_ms: 2442.3141
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: working-hours validator requires exactly one valid entry for every weekday
+ok 126 - working-hours validator requires exactly one valid entry for every weekday
+  ---
+  duration_ms: 6.8488
+  type: 'test'
+  ...
+# Subtest: working-hours validator rejects non-hour values and closing times not after opening
+ok 127 - working-hours validator rejects non-hour values and closing times not after opening
+  ---
+  duration_ms: 1.505
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.500Z","severity":"info","event":"request","method":"GET","path":"/api/provider/working-hours","status":200,"durationMs":15}
+# {"time":"2026-10-12T21:55:46.548Z","severity":"info","event":"request","method":"GET","path":"/api/provider/working-hours","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# Subtest: GET returns all seven days and provider routes enforce role authorization
+ok 128 - GET returns all seven days and provider routes enforce role authorization
+  ---
+  duration_ms: 234.6758
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.620Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/working-hours","status":422,"outcome":"VALIDATION_FAILED","durationMs":36}
+# {"time":"2026-10-12T21:55:46.653Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/working-hours","status":200,"durationMs":9}
+# Subtest: PUT rejects invalid hours before writes and replaces the complete week transactionally
+ok 129 - PUT rejects invalid hours before writes and replaces the complete week transactionally
+  ---
+  duration_ms: 105.4489
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:46.668Z","severity":"info","event":"request","method":"PUT","path":"/api/provider/working-hours","status":404,"outcome":"NOT_FOUND","durationMs":2}
+# Subtest: PUT rolls back when the provider profile does not exist
+ok 130 - PUT rolls back when the provider profile does not exist
+  ---
+  duration_ms: 14.3492
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:49.288Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":54}
+# {"time":"2026-10-12T21:55:49.314Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.325Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":7}
+# {"time":"2026-10-12T21:55:49.336Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# Subtest: AC-041: a dog or cat filter returns only offerings of that species (services and products)
+ok 131 - AC-041: a dog or cat filter returns only offerings of that species (services and products)
+  ---
+  duration_ms: 2195.6041
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.351Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.358Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.365Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.374Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# Subtest: AC-043: "all" and no filter show both species again, with identical results
+ok 132 - AC-043: "all" and no filter show both species again, with identical results
+  ---
+  duration_ms: 32.4528
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.385Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":4}
+# {"time":"2026-10-12T21:55:49.397Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.408Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":7}
+# {"time":"2026-10-12T21:55:49.417Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.428Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":7}
+# {"time":"2026-10-12T21:55:49.441Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":9}
+# {"time":"2026-10-12T21:55:49.450Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":7}
+# Subtest: AC-086: text and species must both match
+ok 133 - AC-086: text and species must both match
+  ---
+  duration_ms: 75.5884
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.466Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.473Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.483Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# Subtest: AC-042 / BR-008: results follow the offering species, not the owner pets
+ok 134 - AC-042 / BR-008: results follow the offering species, not the owner pets
+  ---
+  duration_ms: 32.8098
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.495Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.503Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.536Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":29}
+# {"time":"2026-10-12T21:55:49.543Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":404,"outcome":"NOT_FOUND","durationMs":4}
+# {"time":"2026-10-12T21:55:49.545Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":401,"outcome":"UNAUTHENTICATED","durationMs":0}
+# Subtest: filtered results keep the CTR-005 shapes, and the filter is validated and owner-only
+ok 135 - filtered results keep the CTR-005 shapes, and the filter is validated and owner-only
+  ---
+  duration_ms: 60.2212
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: species filter validation: absent means all; all, dog and cat are accepted; anything else is refused
+ok 136 - species filter validation: absent means all; all, dog and cat are accepted; anything else is refused
+  ---
+  duration_ms: 7.6071
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.278Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":10}
+# {"time":"2026-10-12T21:55:47.313Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":2}
+# Subtest: AC-041: a dog or cat filter adds exactly one species condition and returns only that species
+ok 137 - AC-041: a dog or cat filter adds exactly one species condition and returns only that species
+  ---
+  duration_ms: 133.7979
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.336Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:47.349Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":1}
+# Subtest: AC-043: "all" and an absent filter apply no species condition and show both species
+ok 138 - AC-043: "all" and an absent filter apply no species condition and show both species
+  ---
+  duration_ms: 34.9881
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.362Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":1}
+# Subtest: AC-086: the text condition is kept together with the species condition
+ok 139 - AC-086: the text condition is kept together with the species condition
+  ---
+  duration_ms: 11.2727
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.369Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":1}
+# Subtest: AC-042 / BR-008: the filter depends only on the request, never on the owner or their pets
+ok 140 - AC-042 / BR-008: the filter depends only on the request, never on the owner or their pets
+  ---
+  duration_ms: 7.32
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.377Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:47.381Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:47.386Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:47.390Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":0}
+# Subtest: an invalid species is refused with 422 before any query; q and species errors are reported together
+ok 141 - an invalid species is refused with 422 before any query; q and species errors are reported together
+  ---
+  duration_ms: 20.7344
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.396Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":404,"outcome":"NOT_FOUND","durationMs":0}
+# {"time":"2026-10-12T21:55:47.399Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":401,"outcome":"UNAUTHENTICATED","durationMs":0}
+# Subtest: the filter does not weaken the owner-only boundary
+ok 142 - the filter does not weaken the owner-only boundary
+  ---
+  duration_ms: 8.9957
+  type: 'test'
+  ...
+# Subtest: the species parameter matches API_SPEC (optional, SpeciesFilter all|dog|cat, default all)
+ok 143 - the species parameter matches API_SPEC (optional, SpeciesFilter all|dog|cat, default all)
+  ---
+  duration_ms: 138.2058
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:49.412Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":80}
+# Subtest: AC-038 / AC-039: matching offerings span clinic and independent providers and include details
+ok 144 - AC-038 / AC-039: matching offerings span clinic and independent providers and include details
+  ---
+  duration_ms: 2254.5871
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.447Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.461Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":8}
+# Subtest: search matches case and accents but keeps ñ distinct
+ok 145 - search matches case and accents but keeps ñ distinct
+  ---
+  duration_ms: 36.1241
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.474Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":6}
+# {"time":"2026-10-12T21:55:49.484Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":5}
+# Subtest: LIKE metacharacters are searched literally and no matches return an empty list
+ok 146 - LIKE metacharacters are searched literally and no matches return an empty list
+  ---
+  duration_ms: 21.961
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:49.494Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":401,"outcome":"UNAUTHENTICATED","durationMs":3}
+# {"time":"2026-10-12T21:55:49.501Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":404,"outcome":"NOT_FOUND","durationMs":3}
+# {"time":"2026-10-12T21:55:49.510Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":6}
+# Subtest: search is owner-only and validates required query text
+ok 147 - search is owner-only and validates required query text
+  ---
+  duration_ms: 26.8628
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: search query requires trimmed text and enforces the 120-character contract
+ok 148 - search query requires trimmed text and enforces the 120-character contract
+  ---
+  duration_ms: 2.6844
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.743Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":7}
+# Subtest: AC-038 / AC-039: owners receive services and products from all providers with contract details
+ok 149 - AC-038 / AC-039: owners receive services and products from all providers with contract details
+  ---
+  duration_ms: 84.6374
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.777Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":1}
+# Subtest: search literal percent and underscore are not treated as LIKE wildcards
+ok 150 - search literal percent and underscore are not treated as LIKE wildcards
+  ---
+  duration_ms: 18.0516
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.792Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":200,"durationMs":1}
+# Subtest: AC-040: no matches return a normal empty result list
+ok 151 - AC-040: no matches return a normal empty result list
+  ---
+  duration_ms: 14.6376
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:47.813Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":401,"outcome":"UNAUTHENTICATED","durationMs":3}
+# {"time":"2026-10-12T21:55:47.822Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":404,"outcome":"NOT_FOUND","durationMs":1}
+# {"time":"2026-10-12T21:55:47.827Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# {"time":"2026-10-12T21:55:47.832Z","severity":"info","event":"request","method":"GET","path":"/api/search","status":422,"outcome":"VALIDATION_FAILED","durationMs":1}
+# Subtest: search is restricted to owner sessions and rejects invalid query text
+ok 152 - search is restricted to owner sessions and rejects invalid query text
+  ---
+  duration_ms: 39.8038
+  type: 'test'
+  ...
+# Subtest: search parameters and response fields conform to API_SPEC
+ok 153 - search parameters and response fields conform to API_SPEC
+  ---
+  duration_ms: 145.8932
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: token: 32 random bytes encoded, and a 32-byte SHA-256 hash
+ok 154 - token: 32 random bytes encoded, and a 32-byte SHA-256 hash
+  ---
+  duration_ms: 3.6343
+  type: 'test'
+  ...
+# Subtest: cookie: reads one named cookie from the header
+ok 155 - cookie: reads one named cookie from the header
+  ---
+  duration_ms: 0.436
+  type: 'test'
+  ...
+# Subtest: resolve: no token or unknown token -> none
+ok 156 - resolve: no token or unknown token -> none
+  ---
+  duration_ms: 1.0176
+  type: 'test'
+  ...
+# Subtest: resolve: an ended session (sign-out) -> none, even if it would also be expired
+ok 157 - resolve: an ended session (sign-out) -> none, even if it would also be expired
+  ---
+  duration_ms: 0.7294
+  type: 'test'
+  ...
+# Subtest: resolve: idle for 60 minutes -> expired; 59 minutes -> active
+ok 158 - resolve: idle for 60 minutes -> expired; 59 minutes -> active
+  ---
+  duration_ms: 2.8749
+  type: 'test'
+  ...
+# Subtest: resolve: past the 12-hour absolute expiry -> expired even if recently used
+ok 159 - resolve: past the 12-hour absolute expiry -> expired even if recently used
+  ---
+  duration_ms: 0.5521
+  type: 'test'
+  ...
+# Subtest: resolve: active returns account and type, and records the last use
+ok 160 - resolve: active returns account and type, and records the last use
+  ---
+  duration_ms: 0.5587
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: config: defaults, origin normalization and frozen result
+ok 161 - config: defaults, origin normalization and frozen result
+  ---
+  duration_ms: 3.2417
+  type: 'test'
+  ...
+# Subtest: config: rejects missing or invalid values (fail fast)
+ok 162 - config: rejects missing or invalid values (fail fast)
+  ---
+  duration_ms: 1.2893
+  type: 'test'
+  ...
+# Subtest: config: error messages never echo the connection string
+ok 163 - config: error messages never echo the connection string
+  ---
+  duration_ms: 0.3866
+  type: 'test'
+  ...
+# Subtest: features: parses a comma list, trims, deduplicates and rejects unknown names
+ok 164 - features: parses a comma list, trims, deduplicates and rejects unknown names
+  ---
+  duration_ms: 0.5943
+  type: 'test'
+  ...
+# Subtest: outcomes: closed list with the HTTP statuses of API_SPEC
+ok 165 - outcomes: closed list with the HTTP statuses of API_SPEC
+  ---
+  duration_ms: 0.515
+  type: 'test'
+  ...
+# Subtest: clock: Bogota calendar parts and ISO output (UTC-5, no DST)
+ok 166 - clock: Bogota calendar parts and ISO output (UTC-5, no DST)
+  ---
+  duration_ms: 0.5974
+  type: 'test'
+  ...
+# Subtest: clock: injectable
+ok 167 - clock: injectable
+  ---
+  duration_ms: 0.187
+  type: 'test'
+  ...
+# Subtest: money: whole pesos greater than 0 that fit the integer column
+ok 168 - money: whole pesos greater than 0 that fit the integer column
+  ---
+  duration_ms: 0.1962
+  type: 'test'
+  ...
+# Subtest: logger: drops sensitive field names and writes one JSON line
+ok 169 - logger: drops sensitive field names and writes one JSON line
+  ---
+  duration_ms: 0.7228
+  type: 'test'
+  ...
+# Subtest: logger: level filtering
+ok 170 - logger: level filtering
+  ---
+  duration_ms: 0.4979
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:49.239Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":5}
+# {"time":"2026-10-12T21:55:49.549Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-in","status":200,"durationMs":291}
+# {"time":"2026-10-12T21:55:49.563Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":9}
+# {"time":"2026-10-12T21:55:49.575Z","severity":"info","event":"request","method":"GET","path":"/api/_test/provider-only","status":404,"outcome":"NOT_FOUND","durationMs":6}
+# {"time":"2026-10-12T21:55:49.723Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-in","status":200,"durationMs":144}
+# {"time":"2026-10-12T21:55:49.730Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":3}
+# {"time":"2026-10-12T21:55:49.736Z","severity":"info","event":"request","method":"GET","path":"/api/_test/provider-only","status":200,"durationMs":2}
+# {"time":"2026-10-12T21:55:49.824Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-in","status":401,"outcome":"INVALID_CREDENTIALS","durationMs":85}
+# {"time":"2026-10-12T21:55:49.904Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-in","status":401,"outcome":"INVALID_CREDENTIALS","durationMs":77}
+# {"time":"2026-10-12T21:55:49.976Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-in","status":401,"outcome":"INVALID_CREDENTIALS","durationMs":68}
+# {"time":"2026-10-12T21:55:50.025Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":1}
+# {"time":"2026-10-12T21:55:50.027Z","severity":"info","event":"request","method":"GET","path":"/api/_test/provider-only","status":401,"outcome":"SESSION_EXPIRED","durationMs":1}
+# Subtest: sign-in selects the requested account type, hides credential failures, guards roles and reports expiry
+ok 171 - sign-in selects the requested account type, hides credential failures, guards roles and reports expiry
+  ---
+  duration_ms: 2113.7673
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# Subtest: sign-in validator normalizes the email and validates the selected account type
+ok 172 - sign-in validator normalizes the email and validates the selected account type
+  ---
+  duration_ms: 2.6075
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:48.891Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-out","status":204,"durationMs":59}
+# {"time":"2026-10-12T21:55:48.906Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":5}
+# Subtest: sign-out ends only the cookie session in PostgreSQL and blocks it on protected routes
+ok 173 - sign-out ends only the cookie session in PostgreSQL and blocks it on protected routes
+  ---
+  duration_ms: 835.2097
+  type: 'test'
+  ...
+# .env not found. Continuing without it.
+# {"time":"2026-10-12T21:55:48.275Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-out","status":204,"durationMs":3}
+# {"time":"2026-10-12T21:55:48.283Z","severity":"info","event":"request","method":"GET","path":"/api/session","status":200,"durationMs":1}
+# {"time":"2026-10-12T21:55:48.288Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-out","status":204,"durationMs":0}
+# Subtest: sign-out ends the current session and always clears the cookie
+ok 174 - sign-out ends the current session and always clears the cookie
+  ---
+  duration_ms: 61.1213
+  type: 'test'
+  ...
+# {"time":"2026-10-12T21:55:48.301Z","severity":"info","event":"request","method":"POST","path":"/api/auth/sign-out","status":204,"durationMs":0}
+# Subtest: sign-out without a session succeeds and clears any stale cookie
+ok 175 - sign-out without a session succeeds and clears any stale cookie
+  ---
+  duration_ms: 12.1394
+  type: 'test'
+  ...
+1..175
+# tests 175
+# suites 0
+# pass 175
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8800.2955
+=== STEP RESULT: Tests (project suite) -> exit 0
+
+=== STEP: Tests (P07 QA suite)
+TAP version 13
+# Subtest: success responses conform to API_SPEC_V1.yaml
+    # Subtest: TEST-CT-001 US-001/US-002/US-003: sign-up, sign-in and session responses
+    ok 1 - TEST-CT-001 US-001/US-002/US-003: sign-up, sign-in and session responses
+      ---
+      duration_ms: 1309.1207
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-002 US-008/US-009: provider profile and working hours
+    ok 2 - TEST-CT-002 US-008/US-009: provider profile and working hours
+      ---
+      duration_ms: 140.5887
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-003 US-010/US-013: publish responses and own catalog
+    ok 3 - TEST-CT-003 US-010/US-013: publish responses and own catalog
+      ---
+      duration_ms: 68.2952
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-004 US-016/US-017/US-018: search results, public profile and pets
+    ok 4 - TEST-CT-004 US-016/US-017/US-018: search results, public profile and pets
+      ---
+      duration_ms: 82.2008
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-005 US-019/US-020/US-021/US-024: booking context, booking and both appointment lists
+    ok 5 - TEST-CT-005 US-019/US-020/US-021/US-024: booking context, booking and both appointment lists
+      ---
+      duration_ms: 520.1071
+      type: 'test'
+      ...
+    1..5
+ok 1 - success responses conform to API_SPEC_V1.yaml
+  ---
+  duration_ms: 3848.3322
+  type: 'suite'
+  ...
+# Subtest: error responses follow CTR-001 and the documented statuses
+    # Subtest: TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorResponse bodies with the catalogued status
+    ok 1 - TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorResponse bodies with the catalogued status
+      ---
+      duration_ms: 757.9754
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-011 CTR-001: NO_PETS is returned with the documented status
+    ok 2 - TEST-CT-011 CTR-001: NO_PETS is returned with the documented status
+      ---
+      duration_ms: 271.6741
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-012: every ValidationFailed field entry uses a catalogued reason code
+    ok 3 - TEST-CT-012: every ValidationFailed field entry uses a catalogued reason code
+      ---
+      duration_ms: 83.7947
+      type: 'test'
+      ...
+    1..3
+ok 2 - error responses follow CTR-001 and the documented statuses
+  ---
+  duration_ms: 1115.332
+  type: 'suite'
+  ...
+# Subtest: API_SPEC_V1.yaml consistency with the running application
+    # Subtest: TEST-CT-020: every path the application serves is documented, and no implemented route is missing from the specification
+    ok 1 - TEST-CT-020: every path the application serves is documented, and no implemented route is missing from the specification
+      ---
+      duration_ms: 3.5047
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-021 NFR / CR-005: API responses are never cacheable and carry no technology banner
+    ok 2 - TEST-CT-021 NFR / CR-005: API responses are never cacheable and carry no technology banner
+      ---
+      duration_ms: 39.7618
+      type: 'test'
+      ...
+    1..2
+ok 3 - API_SPEC_V1.yaml consistency with the running application
+  ---
+  duration_ms: 44.1142
+  type: 'suite'
+  ...
+# Subtest: US-019 slots offered (AC-046, AC-051, AC-026, AC-025)
+    # Subtest: TEST-BK-001 AC-046 AC-025: slots are one-hour starts only inside the working days and hours, for the whole week
+    ok 1 - TEST-BK-001 AC-046 AC-025: slots are one-hour starts only inside the working days and hours, for the whole week
+      ---
+      duration_ms: 875.5847
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+    ok 2 - TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+      ---
+      duration_ms: 700.5892
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-003 AC-026: a provider with no working hours offers no slots in any week
+    ok 3 - TEST-BK-003 AC-026: a provider with no working hours offers no slots in any week
+      ---
+      duration_ms: 726.9593
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-004 AC-025: different hours per day are respected, including a late shift ending at midnight (Bogota day, not UTC day)
+    ok 4 - TEST-BK-004 AC-025: different hours per day are respected, including a late shift ending at midnight (Bogota day, not UTC day)
+      ---
+      duration_ms: 815.1414
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-005 AC-046: the owner can look at other weeks; weekStart must be a real Monday
+    ok 5 - TEST-BK-005 AC-046: the owner can look at other weeks; weekStart must be a real Monday
+      ---
+      duration_ms: 604.8605
+      type: 'test'
+      ...
+    1..5
+ok 4 - US-019 slots offered (AC-046, AC-051, AC-026, AC-025)
+  ---
+  duration_ms: 3961.622
+  type: 'suite'
+  ...
+# Subtest: US-019 booking (AC-047..AC-050, AC-108, AC-109, AC-048)
+    # Subtest: TEST-BK-010 AC-047: booking schedules immediately and appears at once in the owner's and the provider's appointments
+    ok 1 - TEST-BK-010 AC-047: booking schedules immediately and appears at once in the owner's and the provider's appointments
+      ---
+      duration_ms: 642.464
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-011 AC-049 BR-012: a clinic keeps offering a slot that already has appointments and accepts several owners
+    ok 2 - TEST-BK-011 AC-049 BR-012: a clinic keeps offering a slot that already has appointments and accepts several owners
+      ---
+      duration_ms: 1186.5077
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-012 AC-050 BR-013: an independent veterinarian's booked slot is no longer offered and cannot be booked again, across services
+    ok 3 - TEST-BK-012 AC-050 BR-013: an independent veterinarian's booked slot is no longer offered and cannot be booked again, across services
+      ---
+      duration_ms: 982.5403
+      type: 'test'
+      ...
+# (node:11528) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+# (Use `node --trace-deprecation ...` to show where the warning was created)
+    # Subtest: TEST-BK-013 BR-013: eight simultaneous bookings of one independent slot produce exactly one appointment
+    ok 4 - TEST-BK-013 BR-013: eight simultaneous bookings of one independent slot produce exactly one appointment
+      ---
+      duration_ms: 1862.3699
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-014 BR-012: eight simultaneous bookings of one clinic slot all succeed
+    ok 5 - TEST-BK-014 BR-012: eight simultaneous bookings of one clinic slot all succeed
+      ---
+      duration_ms: 1499.7217
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-015 AC-108 AC-109: only pets of the service's species can be chosen, and an owner without one is told it is not allowed
+    ok 6 - TEST-BK-015 AC-108 AC-109: only pets of the service's species can be chosen, and an owner without one is told it is not allowed
+      ---
+      duration_ms: 2826.8915
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-016 AC-048 BR-005: an owner with no registered pet cannot book and is told to register one
+    ok 7 - TEST-BK-016 AC-048 BR-005: an owner with no registered pet cannot book and is told to register one
+      ---
+      duration_ms: 753.0245
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-017 BR-005: the pet must belong to the signed-in owner (another owner's pet is NOT_FOUND)
+    ok 8 - TEST-BK-017 BR-005: the pet must belong to the signed-in owner (another owner's pet is NOT_FOUND)
+      ---
+      duration_ms: 349.07
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour and non-existent services are refused
+    ok 9 - TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour and non-existent services are refused
+      ---
+      duration_ms: 370.4584
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-019 AC-050: a slot freed by the provider's schedule change can be offered and booked again (cancelled appointments do not block)
+    ok 10 - TEST-BK-019 AC-050: a slot freed by the provider's schedule change can be offered and booked again (cancelled appointments do not block)
+      ---
+      duration_ms: 477.8427
+      type: 'test'
+      ...
+    1..10
+ok 5 - US-019 booking (AC-047..AC-050, AC-108, AC-109, AC-048)
+  ---
+  duration_ms: 10953.087
+  type: 'suite'
+  ...
+# Subtest: US-020 home visits (AC-052..AC-054)
+    # Subtest: TEST-BK-030 AC-052: a home appointment is booked with the visit address and the provider can see it
+    ok 1 - TEST-BK-030 AC-052: a home appointment is booked with the visit address and the provider can see it
+      ---
+      duration_ms: 188.7899
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-031 AC-053: a home service booked without an address (absent, empty or blank) is not booked and the address is indicated
+    ok 2 - TEST-BK-031 AC-053: a home service booked without an address (absent, empty or blank) is not booked and the address is indicated
+      ---
+      duration_ms: 144.4009
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-032 AC-054: a clinic service offered both ways needs a chosen modality, and an address only for home
+    ok 3 - TEST-BK-032 AC-054: a clinic service offered both ways needs a chosen modality, and an address only for home
+      ---
+      duration_ms: 169.1976
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-033 BR-007: the chosen modality must be one the service offers
+    ok 4 - TEST-BK-033 BR-007: the chosen modality must be one the service offers
+      ---
+      duration_ms: 317.0037
+      type: 'test'
+      ...
+    1..4
+ok 6 - US-020 home visits (AC-052..AC-054)
+  ---
+  duration_ms: 819.7569
+  type: 'suite'
+  ...
+# Subtest: AC-081 consistency under concurrency (CR-009)
+    # Subtest: TEST-BK-050 AC-081 BR-011: bookings racing with a working-hours change never leave a scheduled appointment outside the final hours
+    ok 1 - TEST-BK-050 AC-081 BR-011: bookings racing with a working-hours change never leave a scheduled appointment outside the final hours
+      ---
+      duration_ms: 1716.3217
+      type: 'test'
+      ...
+    1..1
+ok 7 - AC-081 consistency under concurrency (CR-009)
+  ---
+  duration_ms: 1716.4769
+  type: 'suite'
+  ...
+# Subtest: US-021 / US-024 appointment lists (AC-055, AC-056, AC-063, AC-064, AC-087, AC-088)
+    # Subtest: TEST-BK-040 AC-055 AC-063: each appointment shows service, provider/owner, pet, date and time, modality, status (and the address for home visits)
+    ok 1 - TEST-BK-040 AC-055 AC-063: each appointment shows service, provider/owner, pet, date and time, modality, status (and the address for home visits)
+      ---
+      duration_ms: 185.5933
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-041 AC-064 AC-055: lists contain only the signed-in party's appointments
+    ok 2 - TEST-BK-041 AC-064 AC-055: lists contain only the signed-in party's appointments
+      ---
+      duration_ms: 514.1498
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-042 AC-081 AC-087 AC-088: changing hours cancels exactly the upcoming appointments outside them, shown as cancelled to both parties
+    ok 3 - TEST-BK-042 AC-081 AC-087 AC-088: changing hours cancels exactly the upcoming appointments outside them, shown as cancelled to both parties
+      ---
+      duration_ms: 304.9882
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-043 AC-081: appointments that already took place are left alone when hours change
+    ok 4 - TEST-BK-043 AC-081: appointments that already took place are left alone when hours change
+      ---
+      duration_ms: 167.0067
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-044 AC-055: upcoming appointments come first (soonest first), then past ones (most recent first)
+    ok 5 - TEST-BK-044 AC-055: upcoming appointments come first (soonest first), then past ones (most recent first)
+      ---
+      duration_ms: 184.0123
+      type: 'test'
+      ...
+    1..5
+ok 8 - US-021 / US-024 appointment lists (AC-055, AC-056, AC-063, AC-064, AC-087, AC-088)
+  ---
+  duration_ms: 1356.0964
+  type: 'suite'
+  ...
+# Subtest: US-001 owner sign-up
+    # Subtest: TEST-ID-001 AC-001: a valid sign-up creates the owner, registers the pet and signs the owner in
+    ok 1 - TEST-ID-001 AC-001: a valid sign-up creates the owner, registers the pet and signs the owner in
+      ---
+      duration_ms: 266.3025
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-002 AC-002: sign-up without a pet creates no account and says a pet is required
+    ok 2 - TEST-ID-002 AC-002: sign-up without a pet creates no account and says a pet is required
+      ---
+      duration_ms: 17.0555
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing name is rejected and indicated as name
+    ok 3 - TEST-ID-003 AC-003: a missing name is rejected and indicated as name
+      ---
+      duration_ms: 10.4605
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing email is rejected and indicated as email
+    ok 4 - TEST-ID-003 AC-003: a missing email is rejected and indicated as email
+      ---
+      duration_ms: 12.7177
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing password is rejected and indicated as password
+    ok 5 - TEST-ID-003 AC-003: a missing password is rejected and indicated as password
+      ---
+      duration_ms: 13.6277
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet name is rejected and indicated as pet.name
+    ok 6 - TEST-ID-003 AC-003: a missing pet name is rejected and indicated as pet.name
+      ---
+      duration_ms: 10.3287
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet species is rejected and indicated as pet.species
+    ok 7 - TEST-ID-003 AC-003: a missing pet species is rejected and indicated as pet.species
+      ---
+      duration_ms: 9.4305
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet age is rejected and indicated as pet.ageYears
+    ok 8 - TEST-ID-003 AC-003: a missing pet age is rejected and indicated as pet.ageYears
+      ---
+      duration_ms: 18.4264
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet breed is rejected and indicated as pet.breed
+    ok 9 - TEST-ID-003 AC-003: a missing pet breed is rejected and indicated as pet.breed
+      ---
+      duration_ms: 10.2362
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-004 AC-004: a second owner account with the same email is rejected and the first stays usable
+    ok 10 - TEST-ID-004 AC-004: a second owner account with the same email is rejected and the first stays usable
+      ---
+      duration_ms: 1083.2626
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-005 AC-005: the stored credential is an Argon2id hash, never the password
+    ok 11 - TEST-ID-005 AC-005: the stored credential is an Argon2id hash, never the password
+      ---
+      duration_ms: 227.2974
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-006 AC-074: an email that belongs to a provider can still sign up as an owner
+    ok 12 - TEST-ID-006 AC-074: an email that belongs to a provider can still sign up as an owner
+      ---
+      duration_ms: 633.2678
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-007 AC-075: only dog or cat can be chosen as the pet species
+    ok 13 - TEST-ID-007 AC-075: only dog or cat can be chosen as the pet species
+      ---
+      duration_ms: 694.4323
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-008 AC-102: the password minimum is 8 characters (7 rejected, 8 accepted, counted as characters)
+    ok 14 - TEST-ID-008 AC-102: the password minimum is 8 characters (7 rejected, 8 accepted, counted as characters)
+      ---
+      duration_ms: 289.1255
+      type: 'test'
+      ...
+    1..14
+ok 9 - US-001 owner sign-up
+  ---
+  duration_ms: 3464.1267
+  type: 'suite'
+  ...
+# Subtest: US-002 provider sign-up
+    # Subtest: TEST-ID-010 AC-006 AC-105: clinic with address and independent veterinarian without address are created
+    ok 1 - TEST-ID-010 AC-006 AC-105: clinic with address and independent veterinarian without address are created
+      ---
+      duration_ms: 518.2135
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-011 AC-007: a missing or unknown provider type is rejected and indicated
+    ok 2 - TEST-ID-011 AC-007: a missing or unknown provider type is rejected and indicated
+      ---
+      duration_ms: 17.8869
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-012 AC-008: a second provider account with the same email is rejected
+    ok 3 - TEST-ID-012 AC-008: a second provider account with the same email is rejected
+      ---
+      duration_ms: 466.3413
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-013 AC-009: the stored provider credential is an Argon2id hash
+    ok 4 - TEST-ID-013 AC-009: the stored provider credential is an Argon2id hash
+      ---
+      duration_ms: 228.2946
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-014 AC-076: an email that belongs to an owner can sign up as a provider
+    ok 5 - TEST-ID-014 AC-076: an email that belongs to an owner can sign up as a provider
+      ---
+      duration_ms: 485.2027
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-015 AC-103: provider password shorter than 8 characters is rejected
+    ok 6 - TEST-ID-015 AC-103: provider password shorter than 8 characters is rejected
+      ---
+      duration_ms: 10.1273
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-016 AC-104: a clinic without an address (absent, empty or blank) is rejected
+    ok 7 - TEST-ID-016 AC-104: a clinic without an address (absent, empty or blank) is rejected
+      ---
+      duration_ms: 22.4415
+      type: 'test'
+      ...
+    1..7
+ok 10 - US-002 provider sign-up
+  ---
+  duration_ms: 1750.939
+  type: 'suite'
+  ...
+# Subtest: US-003 sign-in and account types
+    # Subtest: TEST-ID-020 AC-010 AC-011: owners and providers sign in with the correct credentials and reach their own interface
+    ok 1 - TEST-ID-020 AC-010 AC-011: owners and providers sign in with the correct credentials and reach their own interface
+      ---
+      duration_ms: 879.8565
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-021 AC-012: wrong password, unknown email and unregistered account type give the same refusal
+    ok 2 - TEST-ID-021 AC-012: wrong password, unknown email and unregistered account type give the same refusal
+      ---
+      duration_ms: 706.0757
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-022 AC-013: a session of one account type cannot use functions of the other type
+    ok 3 - TEST-ID-022 AC-013: a session of one account type cannot use functions of the other type
+      ---
+      duration_ms: 671.0157
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-023 AC-077: the same email as owner and provider reaches the interface of the chosen type
+    ok 4 - TEST-ID-023 AC-077: the same email as owner and provider reaches the interface of the chosen type
+      ---
+      duration_ms: 1984.2508
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-025 AC-010: e-mail addresses are matched case-insensitively and ignoring surrounding spaces at sign-in
+    ok 5 - TEST-ID-025 AC-010: e-mail addresses are matched case-insensitively and ignoring surrounding spaces at sign-in
+      ---
+      duration_ms: 1111.7183
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-024 AC-012: sign-in validates its input (missing and malformed fields are VALIDATION_FAILED)
+    ok 6 - TEST-ID-024 AC-012: sign-in validates its input (missing and malformed fields are VALIDATION_FAILED)
+      ---
+      duration_ms: 5.8707
+      type: 'test'
+      ...
+    1..6
+ok 11 - US-003 sign-in and account types
+  ---
+  duration_ms: 5360.3142
+  type: 'suite'
+  ...
+# Subtest: AC-114 session lifetime
+    # Subtest: TEST-ID-030 AC-114: 60 minutes without activity requires a new sign-in, activity renews the idle window
+    ok 1 - TEST-ID-030 AC-114: 60 minutes without activity requires a new sign-in, activity renews the idle window
+      ---
+      duration_ms: 572.9838
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-031 AC-114: 12 hours after sign-in the next action requires signing in again, however active the user was
+    ok 2 - TEST-ID-031 AC-114: 12 hours after sign-in the next action requires signing in again, however active the user was
+      ---
+      duration_ms: 2387.3299
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-032 AC-114: signing in again after expiry yields a working session
+    ok 3 - TEST-ID-032 AC-114: signing in again after expiry yields a working session
+      ---
+      duration_ms: 239.8455
+      type: 'test'
+      ...
+    1..3
+ok 12 - AC-114 session lifetime
+  ---
+  duration_ms: 3200.5342
+  type: 'suite'
+  ...
+# Subtest: US-034 sign-out
+    # Subtest: TEST-ID-040 AC-112 AC-113: sign-out ends the session without confirmation and protected screens then require sign-in
+    ok 1 - TEST-ID-040 AC-112 AC-113: sign-out ends the session without confirmation and protected screens then require sign-in
+      ---
+      duration_ms: 140.6651
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-041 AC-112: sign-out only ends the session of that cookie, and signing in again with another type works
+    ok 2 - TEST-ID-041 AC-112: sign-out only ends the session of that cookie, and signing in again with another type works
+      ---
+      duration_ms: 649.7474
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-042 AC-112 EDGE-031: signing out is idempotent and works without or with a stale cookie
+    ok 3 - TEST-ID-042 AC-112 EDGE-031: signing out is idempotent and works without or with a stale cookie
+      ---
+      duration_ms: 139.7118
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-043 AC-113: a copied cookie of a signed-out session is useless even for provider functions
+    ok 4 - TEST-ID-043 AC-113: a copied cookie of a signed-out session is useless even for provider functions
+      ---
+      duration_ms: 145.1259
+      type: 'test'
+      ...
+    1..4
+ok 13 - US-034 sign-out
+  ---
+  duration_ms: 1075.8254
+  type: 'suite'
+  ...
+# Subtest: US-008 provider public profile
+    # Subtest: TEST-PC-001 AC-023 AC-044: saved name, phone, email and address appear on the public profile the owner sees
+    ok 1 - TEST-PC-001 AC-023 AC-044: saved name, phone, email and address appear on the public profile the owner sees
+      ---
+      duration_ms: 341.7669
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-002 AC-024 AC-045: an independent veterinarian without address saves and is shown without one; adding it later shows it
+    ok 2 - TEST-PC-002 AC-024 AC-045: an independent veterinarian without address saves and is shown without one; adding it later shows it
+      ---
+      duration_ms: 357.1412
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-003 AC-106: a clinic can change its address but cannot remove it; the failed save changes nothing
+    ok 3 - TEST-PC-003 AC-106: a clinic can change its address but cannot remove it; the failed save changes nothing
+      ---
+      duration_ms: 351.8796
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-004 AC-023: required name, phone and email are enforced and phone characters are validated
+    ok 4 - TEST-PC-004 AC-023: required name, phone and email are enforced and phone characters are validated
+      ---
+      duration_ms: 409.3798
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-005 AC-023: a provider edits only its own profile (other providers are unaffected)
+    ok 5 - TEST-PC-005 AC-023: a provider edits only its own profile (other providers are unaffected)
+      ---
+      duration_ms: 673.678
+      type: 'test'
+      ...
+    1..5
+ok 14 - US-008 provider public profile
+  ---
+  duration_ms: 3046.0446
+  type: 'suite'
+  ...
+# Subtest: US-009 working days and hours
+    # Subtest: TEST-PC-010 AC-025: hours can differ per day and are returned exactly as saved
+    ok 1 - TEST-PC-010 AC-025: hours can differ per day and are returned exactly as saved
+      ---
+      duration_ms: 383.3018
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-011 AC-080: a start or end that is not on the hour is rejected and the time is indicated
+    ok 2 - TEST-PC-011 AC-080: a start or end that is not on the hour is rejected and the time is indicated
+      ---
+      duration_ms: 288.6805
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-012 AC-025: invalid ranges are rejected (end not after start, outside 0-24, wrong number of days)
+    ok 3 - TEST-PC-012 AC-025: invalid ranges are rejected (end not after start, outside 0-24, wrong number of days)
+      ---
+      duration_ms: 351.7562
+      type: 'test'
+      ...
+    1..3
+ok 15 - US-009 working days and hours
+  ---
+  duration_ms: 1026.439
+  type: 'suite'
+  ...
+# Subtest: US-010 / US-013 publishing
+    # Subtest: TEST-PC-020 AC-027 AC-033: a published service and product appear in the provider catalog, on its profile and in search
+    ok 1 - TEST-PC-020 AC-027 AC-033: a published service and product appear in the provider catalog, on its profile and in search
+      ---
+      duration_ms: 414.7085
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-021 AC-028 AC-034: a service or product without exactly one species is not published and the species is indicated
+    ok 2 - TEST-PC-021 AC-028 AC-034: a service or product without exactly one species is not published and the species is indicated
+      ---
+      duration_ms: 472.3578
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-022 AC-029: a service without modality (or with an unknown one) is not published
+    ok 3 - TEST-PC-022 AC-029: a service without modality (or with an unknown one) is not published
+      ---
+      duration_ms: 331.1834
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-023 AC-082 AC-084: a service or product without a price is not published and the price is indicated
+    ok 4 - TEST-PC-023 AC-082 AC-084: a service or product without a price is not published and the price is indicated
+      ---
+      duration_ms: 496.3684
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-024 AC-107: an independent veterinarian offers services only at the owner's home
+    ok 5 - TEST-PC-024 AC-107: an independent veterinarian offers services only at the owner's home
+      ---
+      duration_ms: 296.4451
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-025 AC-111: a new product is published as available
+    ok 6 - TEST-PC-025 AC-111: a new product is published as available
+      ---
+      duration_ms: 301.4535
+      type: 'test'
+      ...
+    1..6
+ok 16 - US-010 / US-013 publishing
+  ---
+  duration_ms: 2314.6146
+  type: 'suite'
+  ...
+# Subtest: US-016 / US-017 / US-018 owner discovery
+    # Subtest: TEST-PC-030 AC-038 AC-039: search returns matching offerings of all providers with price, provider type and modality
+    ok 1 - TEST-PC-030 AC-038 AC-039: search returns matching offerings of all providers with price, provider type and modality
+      ---
+      duration_ms: 33.0836
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+    ok 2 - TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+      ---
+      duration_ms: 25.0241
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-032 FR-017 (US-016): search text is required, trimmed and bounded
+    ok 3 - TEST-PC-032 FR-017 (US-016): search text is required, trimmed and bounded
+      ---
+      duration_ms: 99.4567
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-033 AC-041 AC-043: the species filter keeps only that species and removing it brings both back
+    ok 4 - TEST-PC-033 AC-041 AC-043: the species filter keeps only that species and removing it brings both back
+      ---
+      duration_ms: 97.1549
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-034 AC-042 BR-008: filtering by a species the owner has no pet of still shows those offerings
+    ok 5 - TEST-PC-034 AC-042 BR-008: filtering by a species the owner has no pet of still shows those offerings
+      ---
+      duration_ms: 455.9801
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-035 AC-086: text and species must both match
+    ok 6 - TEST-PC-035 AC-086: text and species must both match
+      ---
+      duration_ms: 39.8768
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-036 AC-038: search is case- and accent-insensitive and treats LIKE wildcards literally
+    ok 7 - TEST-PC-036 AC-038: search is case- and accent-insensitive and treats LIKE wildcards literally
+      ---
+      duration_ms: 53.1797
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-037 AC-044: each public profile lists only its own offerings, with provider type and contact data
+    ok 8 - TEST-PC-037 AC-044: each public profile lists only its own offerings, with provider type and contact data
+      ---
+      duration_ms: 17.2292
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-038 AC-044: unknown, malformed and non-provider identifiers are NOT_FOUND
+    ok 9 - TEST-PC-038 AC-044: unknown, malformed and non-provider identifiers are NOT_FOUND
+      ---
+      duration_ms: 52.1428
+      type: 'test'
+      ...
+    1..9
+ok 17 - US-016 / US-017 / US-018 owner discovery
+  ---
+  duration_ms: 1915.2876
+  type: 'suite'
+  ...
+# Subtest: authentication and role separation
+    # Subtest: TEST-SEC-001 AC-113: every protected endpoint answers 401 UNAUTHENTICATED without a session and never touches data
+    ok 1 - TEST-SEC-001 AC-113: every protected endpoint answers 401 UNAUTHENTICATED without a session and never touches data
+      ---
+      duration_ms: 179.4877
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-002 AC-013 BR-001: every endpoint of the other account type is indistinguishable from a missing resource
+    ok 2 - TEST-SEC-002 AC-013 BR-001: every endpoint of the other account type is indistinguishable from a missing resource
+      ---
+      duration_ms: 183.9611
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-003 NFR-002: forged, truncated and malformed cookies never authenticate
+    ok 3 - TEST-SEC-003 NFR-002: forged, truncated and malformed cookies never authenticate
+      ---
+      duration_ms: 79.9236
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-004 ADR-007 P05-ASM-007: the database stores only the SHA-256 of the session token, never the token
+    ok 4 - TEST-SEC-004 ADR-007 P05-ASM-007: the database stores only the SHA-256 of the session token, never the token
+      ---
+      duration_ms: 305.598
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-005 ADR-007: session cookies are HttpOnly, Secure, SameSite=Lax, Path=/ and bounded by the absolute lifetime
+    ok 5 - TEST-SEC-005 ADR-007: session cookies are HttpOnly, Secure, SameSite=Lax, Path=/ and bounded by the absolute lifetime
+      ---
+      duration_ms: 666.9833
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-006 AC-012: sign-in failures do not reveal whether the account exists (same status, body and no cookie)
+    ok 6 - TEST-SEC-006 AC-012: sign-in failures do not reveal whether the account exists (same status, body and no cookie)
+      ---
+      duration_ms: 607.4625
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-007 NFR-001: password length is capped, so a huge password cannot force expensive hashing
+    ok 7 - TEST-SEC-007 NFR-001: password length is capped, so a huge password cannot force expensive hashing
+      ---
+      duration_ms: 20.8465
+      type: 'test'
+      ...
+    1..7
+ok 18 - authentication and role separation
+  ---
+  duration_ms: 3456.8591
+  type: 'suite'
+  ...
+# Subtest: request origin protection (CR-021)
+    # Subtest: TEST-SEC-010: a state-changing request from another origin or without Origin is refused with FORBIDDEN_ORIGIN and has no effect
+    ok 1 - TEST-SEC-010: a state-changing request from another origin or without Origin is refused with FORBIDDEN_ORIGIN and has no effect
+      ---
+      duration_ms: 292.2849
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-011: a body that is not application/json is refused even from the right origin
+    ok 2 - TEST-SEC-011: a body that is not application/json is refused even from the right origin
+      ---
+      duration_ms: 39.095
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-012: read-only requests do not need an Origin and no CORS permission is granted to other origins
+    ok 3 - TEST-SEC-012: read-only requests do not need an Origin and no CORS permission is granted to other origins
+      ---
+      duration_ms: 11.3398
+      type: 'test'
+      ...
+    1..3
+ok 19 - request origin protection (CR-021)
+  ---
+  duration_ms: 345.0315
+  type: 'suite'
+  ...
+# Subtest: cross-account isolation (AC-064, BR-005)
+    # Subtest: TEST-SEC-020 AC-064 AC-055: appointments are visible only to their own owner and provider
+    ok 1 - TEST-SEC-020 AC-064 AC-055: appointments are visible only to their own owner and provider
+      ---
+      duration_ms: 736.1006
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-021 BR-005: an owner cannot book with another owner's pet, nor inject ownership through extra fields
+    ok 2 - TEST-SEC-021 BR-005: an owner cannot book with another owner's pet, nor inject ownership through extra fields
+      ---
+      duration_ms: 112.0843
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-022: sign-up input cannot choose the account type, id, or any unlisted attribute (mass assignment)
+    ok 3 - TEST-SEC-022: sign-up input cannot choose the account type, id, or any unlisted attribute (mass assignment)
+      ---
+      duration_ms: 61.7492
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-023: a provider cannot publish on behalf of another provider
+    ok 4 - TEST-SEC-023: a provider cannot publish on behalf of another provider
+      ---
+      duration_ms: 297.6202
+      type: 'test'
+      ...
+    1..4
+ok 20 - cross-account isolation (AC-064, BR-005)
+  ---
+  duration_ms: 1209.7008
+  type: 'suite'
+  ...
+# Subtest: injection and hostile input
+    # Subtest: TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+    ok 1 - TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+      ---
+      duration_ms: 205.8232
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+    ok 2 - TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+      ---
+      duration_ms: 849.8384
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-037 DEF-001: refusing NUL in text does not change password handling (a NUL inside a password is still just part of the secret)
+    ok 3 - TEST-SEC-037 DEF-001: refusing NUL in text does not change password handling (a NUL inside a password is still just part of the secret)
+      ---
+      duration_ms: 853.4486
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-031: hostile text stored by sign-up and publishing round-trips as inert data
+    ok 4 - TEST-SEC-031: hostile text stored by sign-up and publishing round-trips as inert data
+      ---
+      duration_ms: 935.5308
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-032: identifiers in paths and bodies are validated before reaching the database
+    ok 5 - TEST-SEC-032: identifiers in paths and bodies are validated before reaching the database
+      ---
+      duration_ms: 200.4813
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-036: repeated query parameters and a bracketed search key are rejected by validation, not by a crash
+    ok 6 - TEST-SEC-036: repeated query parameters and a bracketed search key are rejected by validation, not by a crash
+      ---
+      duration_ms: 64.8395
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+    ok 7 - TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+      ---
+      duration_ms: 61.982
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-034 AC-102: types are checked (numbers, arrays and objects where strings are expected are rejected, not coerced)
+    ok 8 - TEST-SEC-034 AC-102: types are checked (numbers, arrays and objects where strings are expected are rejected, not coerced)
+      ---
+      duration_ms: 195.5924
+      type: 'test'
+      ...
+    1..8
+ok 21 - injection and hostile input
+  ---
+  duration_ms: 3370.0972
+  type: 'suite'
+  ...
+# Subtest: information leakage and logging (CR-005, CR-020)
+    # Subtest: TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+    ok 1 - TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+      ---
+      duration_ms: 58.8333
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-041 CR-020: logs never contain passwords, e-mails, cookies, tokens, addresses or request bodies
+    ok 2 - TEST-SEC-041 CR-020: logs never contain passwords, e-mails, cookies, tokens, addresses or request bodies
+      ---
+      duration_ms: 1143.4791
+      type: 'test'
+      ...
+    1..2
+ok 22 - information leakage and logging (CR-005, CR-020)
+  ---
+  duration_ms: 1203.0603
+  type: 'suite'
+  ...
+# Subtest: BR-010 / BR-011 / BR-012 / BR-013 — which slots are offered
+    # Subtest: TEST-UT-001 BR-011: an hour-long appointment must fit entirely inside the working hours
+    ok 1 - TEST-UT-001 BR-011: an hour-long appointment must fit entirely inside the working hours
+      ---
+      duration_ms: 3.791
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-002 BR-010: the weekday and hour are those of Bogota, not of UTC
+    ok 2 - TEST-UT-002 BR-010: the weekday and hour are those of Bogota, not of UTC
+      ---
+      duration_ms: 1.517
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-003 AC-051: a start that is not strictly after now is not offered
+    ok 3 - TEST-UT-003 AC-051: a start that is not strictly after now is not offered
+      ---
+      duration_ms: 0.8025
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-004 BR-012 / BR-013: clinics ignore existing appointments; independent veterinarians do not offer a taken slot
+    ok 4 - TEST-UT-004 BR-012 / BR-013: clinics ignore existing appointments; independent veterinarians do not offer a taken slot
+      ---
+      duration_ms: 0.5619
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-005 AC-026: no hours means no slots
+    ok 5 - TEST-UT-005 AC-026: no hours means no slots
+      ---
+      duration_ms: 21.395
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-006 AC-046: computeWeekSlots yields 7 consecutive dates and exactly the open one-hour starts, as Bogota ISO strings
+    ok 6 - TEST-UT-006 AC-046: computeWeekSlots yields 7 consecutive dates and exactly the open one-hour starts, as Bogota ISO strings
+      ---
+      duration_ms: 10.7833
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-007 BR-011: for every hour window, offered slots are exactly the starts that fit (exhaustive over 0-24)
+    ok 7 - TEST-UT-007 BR-011: for every hour window, offered slots are exactly the starts that fit (exhaustive over 0-24)
+      ---
+      duration_ms: 834.0843
+      type: 'test'
+      ...
+    1..7
+ok 23 - BR-010 / BR-011 / BR-012 / BR-013 — which slots are offered
+  ---
+  duration_ms: 878.2586
+  type: 'suite'
+  ...
+# Subtest: calendar helpers (Bogota, UTC-5, no daylight saving)
+    # Subtest: TEST-UT-010: toBogotaIso and bogotaInstant are inverse across month, year and leap boundaries
+    ok 1 - TEST-UT-010: toBogotaIso and bogotaInstant are inverse across month, year and leap boundaries
+      ---
+      duration_ms: 0.9631
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-011: weekday, Monday-of-week and date arithmetic
+    ok 2 - TEST-UT-011: weekday, Monday-of-week and date arithmetic
+      ---
+      duration_ms: 2.6375
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-012: isLocalDate accepts only real calendar dates
+    ok 3 - TEST-UT-012: isLocalDate accepts only real calendar dates
+      ---
+      duration_ms: 1.2816
+      type: 'test'
+      ...
+    1..3
+ok 24 - calendar helpers (Bogota, UTC-5, no daylight saving)
+  ---
+  duration_ms: 6.2997
+  type: 'suite'
+  ...
+# Subtest: AC-080 / AC-025 — working-hours validation
+    # Subtest: TEST-UT-020: a valid week normalizes to seven days, non-working days carrying no hours
+    ok 1 - TEST-UT-020: a valid week normalizes to seven days, non-working days carrying no hours
+      ---
+      duration_ms: 1.9864
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-021 AC-080: fractional hours are NOT_ON_THE_HOUR on both start and end
+    ok 2 - TEST-UT-021 AC-080: fractional hours are NOT_ON_THE_HOUR on both start and end
+      ---
+      duration_ms: 0.6989
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+    ok 3 - TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+      ---
+      duration_ms: 1.3947
+      type: 'test'
+      ...
+    1..3
+ok 25 - AC-080 / AC-025 — working-hours validation
+  ---
+  duration_ms: 4.5268
+  type: 'suite'
+  ...
+# Subtest: IF-011 request validation (AC-053, AC-054, AC-046)
+    # Subtest: TEST-UT-030: a valid request is normalized (ids lower-cased, address trimmed, instant parsed)
+    ok 1 - TEST-UT-030: a valid request is normalized (ids lower-cased, address trimmed, instant parsed)
+      ---
+      duration_ms: 1.205
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-031: required, format, hour and modality errors carry the field and reason
+    ok 2 - TEST-UT-031: required, format, hour and modality errors carry the field and reason
+      ---
+      duration_ms: 0.9963
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-032: validators never throw on arbitrary JSON values
+    ok 3 - TEST-UT-032: validators never throw on arbitrary JSON values
+      ---
+      duration_ms: 3.1071
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-033 AC-054 BR-007: the appointment modality follows the offering rules
+    ok 4 - TEST-UT-033 AC-054 BR-007: the appointment modality follows the offering rules
+      ---
+      duration_ms: 2.1139
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-034 weekStart: absent is allowed; otherwise a real Monday between years 1970 and 2999
+    ok 5 - TEST-UT-034 weekStart: absent is allowed; otherwise a real Monday between years 1970 and 2999
+      ---
+      duration_ms: 0.4563
+      type: 'test'
+      ...
+    1..5
+ok 26 - IF-011 request validation (AC-053, AC-054, AC-046)
+  ---
+  duration_ms: 8.4159
+  type: 'suite'
+  ...
+# Subtest: sign-up, publishing and search validation boundaries
+    # Subtest: TEST-UT-040 AC-102: password boundary is 8 characters (code points), maximum 128
+    ok 1 - TEST-UT-040 AC-102: password boundary is 8 characters (code points), maximum 128
+      ---
+      duration_ms: 1.1754
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-041 AC-001 AC-075: pet fields — age 0 is a valid age, species only dog or cat, optional measures are range-checked
+    ok 2 - TEST-UT-041 AC-001 AC-075: pet fields — age 0 is a valid age, species only dog or cat, optional measures are range-checked
+      ---
+      duration_ms: 0.7477
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-042 AC-104 AC-105 BR-026: a clinic address is mandatory, an independent veterinarian's optional
+    ok 3 - TEST-UT-042 AC-104 AC-105 BR-026: a clinic address is mandatory, an independent veterinarian's optional
+      ---
+      duration_ms: 0.4994
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-043 AC-107 AC-029 BR-007: modality rules by provider type
+    ok 4 - TEST-UT-043 AC-107 AC-029 BR-007: modality rules by provider type
+      ---
+      duration_ms: 0.3852
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-044 AC-082 AC-084 BR-027: price must be a whole number of pesos between 1 and the 32-bit maximum
+    ok 5 - TEST-UT-044 AC-082 AC-084 BR-027: price must be a whole number of pesos between 1 and the 32-bit maximum
+      ---
+      duration_ms: 0.5047
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-045 FR-017 AC-041: search text and species filter validation
+    ok 6 - TEST-UT-045 FR-017 AC-041: search text and species filter validation
+      ---
+      duration_ms: 0.3391
+      type: 'test'
+      ...
+    1..6
+ok 27 - sign-up, publishing and search validation boundaries
+  ---
+  duration_ms: 4.2259
+  type: 'suite'
+  ...
+# Subtest: CTR-001 outcome catalogue
+    # Subtest: TEST-UT-050: outcomes map to the documented HTTP status and only VALIDATION_FAILED carries fields
+    ok 1 - TEST-UT-050: outcomes map to the documented HTTP status and only VALIDATION_FAILED carries fields
+      ---
+      duration_ms: 1.4429
+      type: 'test'
+      ...
+    1..1
+ok 28 - CTR-001 outcome catalogue
+  ---
+  duration_ms: 1.5981
+  type: 'suite'
+  ...
+# Subtest: DEF-001 — NUL characters are refused at the API boundary
+    # Subtest: TEST-UT-060 DEF-001: clean input passes and NUL anywhere in the body or query becomes VALIDATION_FAILED naming the field
+    ok 1 - TEST-UT-060 DEF-001: clean input passes and NUL anywhere in the body or query becomes VALIDATION_FAILED naming the field
+      ---
+      duration_ms: 1.2246
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-061 DEF-001: the password field is not inspected (it is only hashed), so its handling is unchanged
+    ok 2 - TEST-UT-061 DEF-001: the password field is not inspected (it is only hashed), so its handling is unchanged
+      ---
+      duration_ms: 0.2981
+      type: 'test'
+      ...
+    1..2
+ok 29 - DEF-001 — NUL characters are refused at the API boundary
+  ---
+  duration_ms: 1.7125
+  type: 'suite'
+  ...
+1..29
+# tests 143
+# suites 29
+# pass 143
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19603.8231
+=== STEP RESULT: Tests (P07 QA suite) -> exit 0

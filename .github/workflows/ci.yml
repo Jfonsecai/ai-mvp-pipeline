@@ -1,0 +1,79 @@
+# P08-WF-001 - Continuous integration: build and test every change (ARCHITECTURE 5.5, 15.1).
+#
+# Deployment is NOT done by this workflow. Vercel deploys each push through its GitHub integration
+# (ARCHITECTURE 5.5, TD-14). This workflow is the quality gate in front of it: protect `main` and
+# require the status check "build-and-test" before merging, so only commits that built and passed
+# the tests reach the Vercel production deployment. See artifacts/08_deployment/DEPLOYMENT.md.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Superseded runs are cancelled only for pull requests (same group per branch). Every push gets a group
+# of its own (its commit SHA), so no later push can cancel or replace a queued run: each commit that
+# reaches main keeps its own finished (success or failure) check result.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-and-test:
+    name: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Throwaway PostgreSQL for the database tests. It is reachable only from this runner and is
+    # discarded with it, so it needs no stored password (trust authentication).
+    # The default image locale (en_US.utf8) is required: accent-insensitive search relies on lower()
+    # and fails in the C locale (P07 finding F-06). Do not pass --locale=C or --no-locale.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: vetcare
+          POSTGRES_DB: vetcare_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vetcare -d vetcare_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_DATABASE_URL: postgresql://vetcare@localhost:5432/vetcare_test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (version from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies (lockfile only)
+        run: npm ci
+
+      # The database tests are SKIPPED, not failed, when TEST_DATABASE_URL is missing. A green run
+      # without the database would prove almost nothing, so refuse to continue (P07 finding W-4).
+      - name: Require the test database
+        run: |
+          test -n "$TEST_DATABASE_URL" || { echo "::error::TEST_DATABASE_URL is not set; database tests would be skipped"; exit 1; }
+          node -e "import('pg').then(async ({default: pg}) => { const c = new pg.Client({ connectionString: process.env.TEST_DATABASE_URL }); await c.connect(); const r = await c.query(\"SELECT lower('Ú') AS folded\"); await c.end(); if (r.rows[0].folded !== 'ú') { console.error('::error::database locale does not fold non-ASCII capitals (C locale?)'); process.exit(1); } console.log('test database reachable, locale folds accents'); })"
+
+      - name: Build (client bundle into public/)
+        run: npm run build
+
+      - name: Tests (project suite)
+        run: npm test
+
+      - name: Tests (P07 QA suite)
+        run: node --test "artifacts/07_qa/test_suites/**/*.test.js"

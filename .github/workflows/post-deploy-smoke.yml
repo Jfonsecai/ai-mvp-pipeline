@@ -1,0 +1,59 @@
+# P08-WF-002 - Deployment verification: after Vercel reports a successful PRODUCTION deployment,
+# run the read-only smoke test (scripts/smoke-test.js) against the deployed application.
+#
+# Triggers:
+#   deployment_status   Vercel publishes a GitHub "deployment_status" event for each deployment.
+#   workflow_dispatch   manual fallback (Actions > Post-deploy smoke test > Run workflow) with the URL to
+#                       check. Use it if the automatic trigger does not fire (assumption P08-ASSUMPTION-002,
+#                       not yet confirmed against a real Vercel deployment) or to re-check a deployment.
+#
+# The workflow creates no secrets and writes no data. Repository variables (Settings > Variables,
+# public values):
+#   SMOKE_BASE_URL  recommended: the public production domain. The unique per-deployment URL can sit
+#                   behind Vercel Deployment Protection and answer with a login page instead of the app.
+#   APP_ORIGIN      REQUIRED: the same value as the APP_ORIGIN variable of the Vercel project and equal
+#                   to the origin of the URL checked. It enables the sign-in check (SMOKE-06), which
+#                   verifies Argon2 and the database path on the platform. The job FAILS when that check
+#                   cannot run, instead of finishing green with an unverified check (SMOKE_REQUIRE_ALL).
+# Status: NOT YET EXECUTED. It runs only once the repository is connected to Vercel (COND-001).
+name: Post-deploy smoke test
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Origin to check, for example https://your-domain.example (overrides SMOKE_BASE_URL)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    # Automatic runs: only a successful Production deployment. Manual runs: always.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # For a deployment event this is the deployed commit; for a manual run github.event.deployment is
+      # empty and the checkout falls back to the revision the workflow was started from.
+      - name: Checkout the deployed revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - name: Set up Node.js (version from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Smoke test the deployed application
+        run: node scripts/smoke-test.js
+        env:
+          BASE_URL: ${{ inputs.base_url || vars.SMOKE_BASE_URL || github.event.deployment_status.environment_url }}
+          APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+          SMOKE_REQUIRE_ALL: "1"

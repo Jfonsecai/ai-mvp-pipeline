@@ -1,0 +1,47 @@
+### YAML structure
+ci concurrency: {"group":"ci-${{ github.ref }}","cancel-in-progress":"${{ github.event_name == 'pull_request' }}"}
+smoke triggers: deployment_status,workflow_dispatch | dispatch inputs: {"base_url":{"description":"Origin to check, for example https://your-domain.example (overrides SMOKE_BASE_URL)","required":true,"type":"string"}}
+smoke if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production')
+smoke env: {"BASE_URL":"${{ inputs.base_url || vars.SMOKE_BASE_URL || github.event.deployment_status.environment_url }}","APP_ORIGIN":"${{ vars.APP_ORIGIN }}","SMOKE_REQUIRE_ALL":"1"}
+permissions: {"contents":"read"}
+
+### prepare a database and start the API (real app) on the local test server
+applied 001_initial_schema.sql
+Applied 1 migration(s).
+
+### A. SMOKE_REQUIRE_ALL=1 and APP_ORIGIN missing: SMOKE-06 cannot run -> must FAIL
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+5 passed, 0 failed, 1 skipped (not verified) against http://127.0.0.1:3061
+SMOKE_REQUIRE_ALL=1: SMOKE-06 did not run (set APP_ORIGIN to the origin of BASE_URL); the deployment is NOT verified
+exit=1
+
+### B. SMOKE_REQUIRE_ALL=1 and APP_ORIGIN present but for another origin -> must FAIL
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+5 passed, 0 failed, 1 skipped (not verified) against http://127.0.0.1:3061
+SMOKE_REQUIRE_ALL=1: SMOKE-06 did not run (set APP_ORIGIN to the origin of BASE_URL); the deployment is NOT verified
+exit=1
+
+### C. SMOKE_REQUIRE_ALL=1 and APP_ORIGIN equal to the origin -> must PASS
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+PASS SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+6 passed, 0 failed, 0 skipped (not verified) against http://127.0.0.1:3061
+exit=0
+
+### D. unchanged default (no flag), APP_ORIGIN missing -> SKIP is reported, exit 0 as before
+SKIP SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+5 passed, 0 failed, 1 skipped (not verified) against http://127.0.0.1:3061
+exit=0
+
+### E. empty variable as GitHub passes it when the variable is not defined (APP_ORIGIN='') with the flag -> must FAIL
+5 passed, 0 failed, 1 skipped (not verified) against http://127.0.0.1:3061
+SMOKE_REQUIRE_ALL=1: SMOKE-06 did not run (set APP_ORIGIN to the origin of BASE_URL); the deployment is NOT verified
+exit=1

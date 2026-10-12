@@ -1,0 +1,88 @@
+checkout copy: 5b6e18d + 3 uncommitted paths; contains .env? no; contains node_modules? no
+
+##### V1 full CI job emulation (workflow run: steps, in order)
+::skip:: Checkout (action actions/checkout@v4: not emulated)
+::skip:: Set up Node.js (version from .nvmrc) (action actions/setup-node@v4: not emulated)
+=== STEP: Install dependencies (lockfile only)
+added 116 packages, and audited 118 packages in 6s
+=== STEP RESULT: Install dependencies (lockfile only) -> exit 0
+=== STEP: Require the test database
+=== STEP RESULT: Require the test database -> exit 0
+=== STEP: Build (client bundle into public/)
+[32m✓ built in 395ms[39m
+=== STEP RESULT: Build (client bundle into public/) -> exit 0
+=== STEP: Tests (project suite)
+# Subtest: apiFetch: a CTR-001 error body becomes an ApiError with code, status and fields
+ok 44 - apiFetch: a CTR-001 error body becomes an ApiError with code, status and fields
+# Subtest: apiFetch: non-JSON or foreign error bodies and network failures are UNEXPECTED
+ok 45 - apiFetch: non-JSON or foreign error bodies and network failures are UNEXPECTED
+# Subtest: malformed JSON body: VALIDATION_FAILED, not an HTML error page
+ok 70 - malformed JSON body: VALIDATION_FAILED, not an HTML error page
+# Subtest: errors: a business Outcome keeps its code and status
+ok 79 - errors: a business Outcome keeps its code and status
+# Subtest: errors: unexpected sync and async failures are UNEXPECTED JSON with no leak
+ok 80 - errors: unexpected sync and async failures are UNEXPECTED JSON with no leak
+# Subtest: logging: unexpected errors log name/code (and message outside production) but never reach the response
+ok 82 - logging: unexpected errors log name/code (and message outside production) but never reach the response
+# Subtest: logging: production logs omit the error message
+ok 83 - logging: production logs omit the error message
+# Subtest: an invalid species is refused with 422 before any query; q and species errors are reported together
+ok 141 - an invalid species is refused with 422 before any query; q and species errors are reported together
+# Subtest: config: error messages never echo the connection string
+ok 163 - config: error messages never echo the connection string
+# tests 175
+# pass 175
+# fail 0
+# skipped 0
+=== STEP RESULT: Tests (project suite) -> exit 0
+=== STEP: Tests (P07 QA suite)
+# Subtest: error responses follow CTR-001 and the documented statuses
+ok 2 - error responses follow CTR-001 and the documented statuses
+    # Subtest: TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+    ok 2 - TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+    # Subtest: TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+    ok 1 - TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+    # Subtest: TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+    ok 2 - TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+    # Subtest: TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+    ok 7 - TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+    # Subtest: TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+    ok 1 - TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+    # Subtest: TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+    ok 3 - TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+    # Subtest: TEST-UT-031: required, format, hour and modality errors carry the field and reason
+    ok 2 - TEST-UT-031: required, format, hour and modality errors carry the field and reason
+# tests 143
+# pass 143
+# fail 0
+# skipped 0
+=== STEP RESULT: Tests (P07 QA suite) -> exit 0
+runner_exit=0
+
+##### V2 a broken client build must stop the job BEFORE the tests
+=== STEP: Install dependencies (lockfile only)
+=== STEP RESULT: Install dependencies (lockfile only) -> exit 0
+=== STEP: Require the test database
+=== STEP RESULT: Require the test database -> exit 0
+=== STEP: Build (client bundle into public/)
+[31merror during build:
+=== STEP RESULT: Build (client bundle into public/) -> exit 1
+runner_exit=1
+
+##### V3 a lockfile that does not match package.json must fail npm ci (reproducible install)
+=== STEP: Install dependencies (lockfile only)
+npm error code EUSAGE
+npm error
+npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+npm error
+runner_exit=1
+
+##### V4 workflow files: no deploy credentials, no inline secrets, pinned runtime, least privilege
+.github/workflows/ci.yml:47:      TEST_DATABASE_URL: postgresql://vetcare@localhost:5432/vetcare_test
+.github/workflows/ci.yml:62:      # The database tests are SKIPPED, not failed, when TEST_DATABASE_URL is missing. A green run
+.github/workflows/ci.yml:66:          test -n "$TEST_DATABASE_URL" || { echo "::error::TEST_DATABASE_URL is not set; database tests would be skipped"; exit 1; }
+.github/workflows/ci.yml:67:          node -e "import('pg').then(async ({default: pg}) => { const c = new pg.Client({ connectionString: process.env.TEST_DATABASE_URL }); await c.connect(); const r = await c.query(\"SELECT lower('Ú') AS folded\"); await c.end(); if (r.rows[0].folded !== 'ú') { console.error('::error::database locale does not fold non-ASCII capitals (C locale?)'); process.exit(1); } console.log('test database reachable, locale folds accents'); })"
+.github/workflows/ci.yml:14:permissions:
+.github/workflows/ci.yml:15:  contents: read
+.github/workflows/post-deploy-smoke.yml:16:permissions:
+.github/workflows/post-deploy-smoke.yml:17:  contents: read
