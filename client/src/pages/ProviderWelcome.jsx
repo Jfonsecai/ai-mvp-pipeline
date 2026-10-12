@@ -13,6 +13,7 @@ export default function ProviderWelcome() {
           {state.providerType === 'clinic' && state.address && <div><dt>Dirección de la clínica</dt><dd>{state.address}</dd></div>}
         </dl>}
         <p>La edición de tu perfil estará disponible en el siguiente paso.</p>
+        <Link className="button-link" to="/provider/working-hours">Configurar horario de atención</Link>
         <Link className="button-link" to="/">Continuar</Link>
       </section>
     </main>

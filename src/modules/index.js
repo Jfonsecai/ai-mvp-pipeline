@@ -7,5 +7,9 @@
 // Register implemented business modules here; keep table ownership and cross-module rules in
 // src/modules/README.md (ARCHITECTURE 7.3, CR-002, CR-015).
 import { createIdentityRouter } from './identity/sign-up.js';
+import { createProviderWorkingHoursRouter } from './provider/working-hours.js';
 
-export const modules = [{ createRouter: createIdentityRouter }];
+export const modules = [
+  { createRouter: createIdentityRouter },
+  { createRouter: createProviderWorkingHoursRouter },
+];

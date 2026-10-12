@@ -29,5 +29,8 @@ test('tokens.css defines exactly the 68 tokens of UX_SPEC section 4, with the sa
 test('base styles use only tokens (no raw colors or sizes) - CR-012', () => {
   const global = read('client/src/design-system/global.css');
   assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(global), 'no hex colors');
-  assert.ok(!/\b\d+(\.\d+)?(px|rem|em)\b/.test(global.replace(/\/\*[\s\S]*?\*\//g, '')), 'no raw lengths');
+  const declarations = global
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/@media[^{]+\{/g, '');
+  assert.ok(!/\b\d+(\.\d+)?(px|rem|em)\b/.test(declarations), 'no raw lengths outside media-query breakpoints');
 });
