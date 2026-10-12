@@ -20,10 +20,62 @@ function GuestOnly({ session, children }) {
   return children;
 }
 
-function RolePage({ session, role, children }) {
+function RolePage({ session, role, children, onSignedOut }) {
   if (session.state !== 'active') return <Navigate to="/sign-in" replace />;
   if (session.accountType !== role) return <Navigate to="/not-found" replace />;
-  return children;
+  return <SignedInScreen accountType={role} onSignedOut={onSignedOut}>{children}</SignedInScreen>;
+}
+
+function SignedInScreen({ accountType, children, onSignedOut }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (menuOpen) menuRef.current?.focus();
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOutside = (event) => {
+      if (!event.target.closest?.('[data-account-menu]')) setMenuOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [menuOpen]);
+
+  const signOut = () => {
+    setMenuOpen(false);
+    sessionStorage.setItem('vetcare:signed-out', 'true');
+    onSignedOut({ state: 'none', features: [] });
+    navigate('/sign-in', { replace: true });
+    apiFetch('/api/auth/sign-out', { method: 'POST' }).catch(() => {});
+  };
+
+  return <>
+    <header className="app-header">
+      <Link className="wordmark" to="/">VetCare</Link>
+      <div className="account-menu" data-account-menu>
+        <button ref={buttonRef} className="button-secondary" type="button" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}>Cuenta</button>
+        {menuOpen && <div id="account-menu-panel" ref={menuRef} className="account-menu-panel" tabIndex={-1}>
+          <p>{accountType === 'owner' ? 'Dueño de mascota' : 'Proveedor'}</p>
+          <button className="account-menu-action" type="button" onClick={signOut}>Cerrar sesión</button>
+        </div>}
+      </div>
+    </header>
+    {children}
+  </>;
 }
 
 function NotFound({ session }) {
@@ -31,7 +83,7 @@ function NotFound({ session }) {
   return <main className="page-shell"><section className="form-card"><h1>No puedes ver esta página</h1><p>La dirección no está disponible para esta cuenta.</p><Link className="button-link" to={target}>Ir al inicio</Link></section></main>;
 }
 
-function RoutedApp({ session, setSession }) {
+function RoutedApp({ session, setSession, onSignedOut }) {
   const location = useLocation();
   const navigate = useNavigate();
   const lastPath = useRef(location.pathname);
@@ -65,8 +117,8 @@ function RoutedApp({ session, setSession }) {
       : <SignIn expired={expired} unavailable={session.state === 'unavailable'} onAuthenticated={setSession} />} />
     <Route path="/owner/sign-up" element={<GuestOnly session={session}><OwnerSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/provider/sign-up" element={<GuestOnly session={session}><ProviderSignUp onAuthenticated={setSession} /></GuestOnly>} />
-    <Route path="/owner/home" element={<RolePage session={session} role="owner"><OwnerWelcome /></RolePage>} />
-    <Route path="/provider/profile" element={<RolePage session={session} role="provider"><ProviderWelcome /></RolePage>} />
+    <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerWelcome /></RolePage>} />
+    <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWelcome /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />
   </Routes>;
@@ -78,6 +130,11 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
+    if (sessionStorage.getItem('vetcare:signed-out') === 'true') {
+      setSession({ state: 'none', features: [] });
+      setReady(true);
+      return () => { mounted = false; };
+    }
     apiFetch('/api/session')
       .then((value) => { if (mounted) setSession(value); })
       .catch((error) => {
@@ -90,5 +147,9 @@ export default function App() {
   }, []);
 
   if (!ready) return <main className="page-shell"><p role="status">Cargando…</p></main>;
-  return <RoutedApp session={session} setSession={setSession} />;
+  const acceptSession = (value) => {
+    sessionStorage.removeItem('vetcare:signed-out');
+    setSession(value);
+  };
+  return <RoutedApp session={session} setSession={acceptSession} onSignedOut={setSession} />;
 }

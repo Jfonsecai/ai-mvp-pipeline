@@ -6,7 +6,7 @@ import { Outcome } from '../../shared/outcomes.js';
 import { withTransaction } from '../../shared/transaction.js';
 import { createProviderProfile } from '../provider/profile.js';
 import { createOwnerPet } from '../pets/owner-pet.js';
-import { generateSessionToken, hashSessionToken, SESSION_COOKIE_NAME } from './sessions.js';
+import { generateSessionToken, hashSessionToken, readCookie, SESSION_COOKIE_NAME } from './sessions.js';
 
 const allowedFields = new Set(['name', 'email', 'password', 'providerType', 'address']);
 const characterLength = (value) => [...value].length;
@@ -150,6 +150,19 @@ export function validateOwnerSignUp(input) {
 
 export function createIdentityRouter({ db, config, clock }) {
   const router = Router();
+
+  router.post('/auth/sign-out', async (req, res) => {
+    const token = readCookie(req.headers.cookie, SESSION_COOKIE_NAME);
+    if (token) {
+      await db.query(
+        'UPDATE session SET ended_at = $2 WHERE token_hash = $1 AND ended_at IS NULL',
+        [hashSessionToken(token), clock.now()],
+      );
+    }
+    const clearCookie = `${SESSION_COOKIE_NAME}=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0`;
+    res.set('Set-Cookie', clearCookie);
+    res.status(204).end();
+  });
 
   router.post('/auth/sign-in', async (req, res) => {
     const validated = validateSignIn(req.body);

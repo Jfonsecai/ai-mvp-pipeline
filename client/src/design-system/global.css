@@ -68,3 +68,11 @@ body {
 .profile-summary dt { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 .profile-summary dd { margin: 0; font-weight: var(--font-weight-medium); }
 .button-link { width: 100%; }
+
+.app-header { display: flex; align-items: center; justify-content: space-between; min-height: var(--size-header-height); padding: 0 var(--spacing-6); border-bottom: var(--border-width-default) solid var(--color-border-subtle); background: var(--color-bg-surface); }
+.wordmark { color: var(--color-primary); font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.account-menu { position: relative; }
+.button-secondary, .account-menu-action { min-height: var(--size-control-height); padding: var(--spacing-2) var(--spacing-3); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-text-primary); font: inherit; cursor: pointer; }
+.account-menu-panel { position: absolute; z-index: 1; top: calc(100% + var(--spacing-2)); right: 0; display: grid; gap: var(--spacing-3); width: max-content; padding: var(--spacing-3); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-lg); background: var(--color-bg-surface); box-shadow: var(--shadow-md); }
+.account-menu-panel p { margin: 0; color: var(--color-text-secondary); }
+.account-menu-action { text-align: left; }
