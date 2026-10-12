@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
 
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
@@ -28,7 +28,7 @@ function SearchResult({ result }) {
       <div><dt>Tipo</dt><dd>{kindLabel(result.kind)}</dd></div>
       <div><dt>Especie</dt><dd>{speciesLabel(result.species)}</dd></div>
       <div><dt>Precio</dt><dd>{priceLabel.format(result.priceCop)}</dd></div>
-      <div><dt>Proveedor</dt><dd>{result.provider.name}</dd></div>
+      <div><dt>Proveedor</dt><dd><Link to={`/owner/providers/${result.provider.id}`}>{result.provider.name}</Link></dd></div>
       <div><dt>Ofrecido por</dt><dd>{providerTypeLabel(result.provider.type)}</dd></div>
       {result.kind === 'service'
         ? <div><dt>Modalidad</dt><dd>{modalityLabel(result.modality)}</dd></div>

@@ -89,6 +89,29 @@ function ownProfile(row) {
   };
 }
 
+/**
+ * IF-019 provider facts: a read-only query owned by COMP-006 for other modules (COMP-008 public
+ * profile). Returns the stored facts, or null when the provider does not exist.
+ */
+export async function getProviderFacts(db, providerId) {
+  const result = await db.query(
+    `SELECT provider_id, provider_type, public_name, contact_phone, contact_email, address
+       FROM provider_profile
+      WHERE provider_id = $1`,
+    [providerId],
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  return {
+    id: row.provider_id,
+    type: row.provider_type,
+    name: row.public_name,
+    contactPhone: row.contact_phone ?? null,
+    contactEmail: row.contact_email,
+    address: row.address ?? null,
+  };
+}
+
 export function createProviderProfileRouter({ db, guard, clock }) {
   const router = Router();
 

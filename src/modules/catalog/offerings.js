@@ -122,25 +122,33 @@ async function providerTypeFor(db, providerId) {
   return result.rows[0].provider_type;
 }
 
+/**
+ * IF-021 offering facts: a read-only query owned by COMP-007 for other modules (the provider's own
+ * catalog and the COMP-008 public profile). Services and products in publication order.
+ */
+export async function listProviderOfferings(db, providerId) {
+  const result = await db.query(
+    `SELECT id, kind, name, price_cop, species, modality, available
+       FROM offering
+      WHERE provider_id = $1
+      ORDER BY created_at, id`,
+    [providerId],
+  );
+  const services = [];
+  const products = [];
+  for (const row of result.rows) {
+    if (row.kind === 'service') services.push(catalogService(row));
+    else products.push(catalogProduct(row));
+  }
+  return { services, products };
+}
+
 export function createCatalogRouter({ db, guard }) {
   const router = Router();
 
   router.get('/provider/offerings', guard({ role: 'provider' }), async (req, res) => {
     await providerTypeFor(db, req.session.accountId);
-    const result = await db.query(
-      `SELECT id, kind, name, price_cop, species, modality, available
-         FROM offering
-        WHERE provider_id = $1
-        ORDER BY created_at, id`,
-      [req.session.accountId],
-    );
-    const services = [];
-    const products = [];
-    for (const row of result.rows) {
-      if (row.kind === 'service') services.push(catalogService(row));
-      else products.push(catalogProduct(row));
-    }
-    res.json({ services, products });
+    res.json(await listProviderOfferings(db, req.session.accountId));
   });
 
   router.post('/provider/services', guard({ role: 'provider' }), async (req, res) => {

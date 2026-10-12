@@ -11,6 +11,7 @@ import { createProviderProfileRouter } from './provider/profile.js';
 import { createProviderWorkingHoursRouter } from './provider/working-hours.js';
 import { createCatalogRouter } from './catalog/offerings.js';
 import { createSearchRouter } from './search/offerings.js';
+import { createPublicProviderProfileRouter } from './search/provider-profile.js';
 
 export const modules = [
   { createRouter: createIdentityRouter },
@@ -18,4 +19,5 @@ export const modules = [
   { createRouter: createProviderWorkingHoursRouter },
   { createRouter: createCatalogRouter },
   { createRouter: createSearchRouter },
+  { createRouter: createPublicProviderProfileRouter },
 ];
