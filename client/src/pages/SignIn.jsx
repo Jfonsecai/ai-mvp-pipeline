@@ -35,7 +35,7 @@ export default function SignIn({ expired = false, unavailable = false, onAuthent
     try {
       const session = await apiFetch('/api/auth/sign-in', { method: 'POST', body: { ...values, email: values.email.trim() } });
       onAuthenticated({ state: 'active', ...session });
-      navigate(session.accountType === 'owner' ? '/owner/home' : '/provider/profile', { replace: true });
+      navigate(session.accountType === 'owner' ? '/owner/home' : '/provider/appointments', { replace: true });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_FAILED') {
         setErrors(Object.fromEntries((error.fields ?? []).map(({ field, reason }) => [field, reason === 'REQUIRED' ? 'Este campo es obligatorio.' : 'Revisa este campo.'])));

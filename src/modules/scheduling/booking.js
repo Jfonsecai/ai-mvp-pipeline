@@ -8,6 +8,7 @@ import { addDays, bogotaInstant, bogotaParts, isLocalDate, isoWeekday, mondayOf,
 import { getProviderFacts, lockProvider } from '../provider/profile.js';
 import { listWorkingHours } from '../provider/working-hours.js';
 import { getServiceFacts } from '../catalog/offerings.js';
+import { getOwnerName } from '../identity/accounts.js';
 import { getOwnerPet, listOwnerPets } from '../pets/owner-pet.js';
 import { computeWeekSlots, isSlotOffered } from './slots.js';
 
@@ -235,6 +236,49 @@ export async function listOwnerAppointments(db, { ownerId, now }) {
   });
 }
 
+/** IF-013: the signed-in provider's appointments, including cancelled ones (AC-063, AC-064, AC-088). */
+export async function listProviderAppointments(db, { providerId, now }) {
+  const result = await db.query(
+    `SELECT id, owner_id, pet_id, service_id, starts_at, status, modality, visit_address
+       FROM appointment
+      WHERE provider_id = $1`,
+    [providerId],
+  );
+
+  const appointments = await Promise.all(result.rows.map(async (row) => {
+    const [service, pet, ownerName] = await Promise.all([
+      getServiceFacts(db, row.service_id),
+      getOwnerPet(db, row.owner_id, row.pet_id),
+      getOwnerName(db, row.owner_id),
+    ]);
+    if (!service || !pet || !ownerName) throw new Outcome('NOT_FOUND');
+    if (row.modality === 'home' && !row.visit_address) {
+      throw new Error(`Home appointment ${row.id} has no visit address`);
+    }
+
+    const startsAt = new Date(row.starts_at);
+    return {
+      id: row.id,
+      startsAt: toBogotaIso(startsAt),
+      endsAt: toBogotaIso(new Date(startsAt.getTime() + HOUR_MS)),
+      status: row.status,
+      upcoming: startsAt.getTime() > now.getTime(),
+      service: { id: service.id, name: service.name },
+      modality: row.modality,
+      pet: { id: pet.id, name: pet.name },
+      ownerName,
+      ...(row.modality === 'home' ? { visitAddress: row.visit_address } : {}),
+    };
+  }));
+
+  return appointments.sort((left, right) => {
+    if (left.upcoming !== right.upcoming) return left.upcoming ? -1 : 1;
+    const leftTime = new Date(left.startsAt).getTime();
+    const rightTime = new Date(right.startsAt).getTime();
+    return (left.upcoming ? leftTime - rightTime : rightTime - leftTime) || left.id.localeCompare(right.id);
+  });
+}
+
 export function createBookingRouter({ db, guard, clock }) {
   const router = Router();
 
@@ -254,6 +298,15 @@ export function createBookingRouter({ db, guard, clock }) {
     res.json({
       appointments: await listOwnerAppointments(db, {
         ownerId: req.session.accountId,
+        now: clock.now(),
+      }),
+    });
+  });
+
+  router.get('/provider/appointments', guard({ role: 'provider' }), async (req, res) => {
+    res.json({
+      appointments: await listProviderAppointments(db, {
+        providerId: req.session.accountId,
         now: clock.now(),
       }),
     });

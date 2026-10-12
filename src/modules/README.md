@@ -62,7 +62,7 @@ operations are delivered by their stories.
 | `provider/` | COMP-006 Provider Profile and Working Hours | `provider_profile`, `working_hours` | US-002, US-008, US-009 | `profile.js`: IF-016 signup profile command IF-004 own profile read/update (US-008) and the IF-019 reads `getProviderFacts` (US-018) and `listWorkingHours` (US-019) and the IF-024 `lockProvider` (US-019); `working-hours.js`: IF-005 read/replace weekly hours |
 | `catalog/` | COMP-007 Catalog | `offering` | US-010, US-013 (+ US-033) | `offerings.js`: IF-006 own catalog, service publication (US-010) product publication (US-013) the IF-021 reads `listProviderOfferings` (US-018) and `getServiceFacts` (US-019) |
 | `search/` | COMP-008 Search and Discovery | none (read-only) | US-016, US-017, US-018 | `offerings.js`: owner-only text search over offerings (US-016) with the optional `species` filter (US-017); `provider-profile.js`: IF-008 owner view of a provider's public profile, composed from IF-019 and IF-021 (US-018) |
-| `scheduling/` | COMP-009 Scheduling | `appointment` | US-009 (IF-018 only), US-019, US-020, US-021, US-024 | `hours.js`: cancel upcoming appointments outside a replacement schedule; `slots.js`: pure offered-slot rules (US-019); `booking.js`: IF-010 booking context and IF-011 booking for clinic or home visits (US-019/020). Appointment lists (US-021/024) remain future work. |
+| `scheduling/` | COMP-009 Scheduling | `appointment` | US-009 (IF-018 only), US-019, US-020, US-021, US-024 | `hours.js`: cancel upcoming appointments outside a replacement schedule; `slots.js`: pure offered-slot rules (US-019); `booking.js`: IF-010 booking context, IF-011 booking, IF-012 owner appointments and IF-013 provider appointments. |
 | `ordering/` | COMP-012 Ordering | `product_order` | US-027 to US-032 (behind feature switches) | no |
 
 ## Dependency rules (CR-002, CR-015, ARCHITECTURE 7.3)
@@ -72,6 +72,8 @@ operations are delivered by their stories.
 - Exactly three cross-module **commands** exist: COMP-004 to COMP-005 (IF-015) and COMP-004 to
   COMP-006 (IF-016) inside sign-up, and COMP-006 to COMP-009 (IF-018) inside the hours save. Plus
   the provider lock IF-024 (COMP-009 calls COMP-006, changes no data).
+- COMP-009 reads the owner's display name through COMP-004's `getOwnerName` query for IF-013;
+  owner email and phone are not exposed.
 - No operation chains more than one command. Any new cross-module command needs an architecture change.
 - `src/shared/` (COMP-010) depends on no module. No business rules go there.
 - No business rule lives only in `src/http/` (COMP-003) or in the client.

@@ -12,17 +12,19 @@ import BookAppointment from './pages/BookAppointment.jsx';
 import SignIn from './pages/SignIn.jsx';
 import ProviderWorkingHours from './pages/ProviderWorkingHours.jsx';
 import ProviderCatalog from './pages/ProviderCatalog.jsx';
+import ProviderAppointments from './pages/ProviderAppointments.jsx';
 import PublishService from './pages/PublishService.jsx';
 import PublishProduct from './pages/PublishProduct.jsx';
 
-const homePath = (type) => type === 'owner' ? '/owner/home' : '/provider/profile';
+const homePath = (type) => type === 'owner' ? '/owner/home' : '/provider/appointments';
 
 function SessionHome({ session }) {
   return session.state === 'active' ? <Navigate to={homePath(session.accountType)} replace /> : <Navigate to="/sign-in" replace />;
 }
 
 function GuestOnly({ session, children }) {
-  if (session.state === 'active') return <Navigate to={homePath(session.accountType)} replace />;
+  const wasAuthenticatedOnEntry = useRef(session.state === 'active');
+  if (session.state === 'active' && wasAuthenticatedOnEntry.current) return <Navigate to={homePath(session.accountType)} replace />;
   if (session.state === 'expired') return <Navigate to="/sign-in" replace />;
   return children;
 }
@@ -74,9 +76,10 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
     <header className="app-header">
       <Link className="wordmark" to="/">VetCare</Link>
       {accountType === 'provider' && <nav className="provider-navigation" aria-label="Menú principal">
-        <NavLink to="/provider/profile">Perfil</NavLink>
-        <NavLink to="/provider/working-hours">Horario</NavLink>
+        <NavLink to="/provider/appointments">Citas</NavLink>
         <NavLink to="/provider/catalog">Catálogo</NavLink>
+        <NavLink to="/provider/working-hours">Horario</NavLink>
+        <NavLink to="/provider/profile">Perfil</NavLink>
       </nav>}
       {accountType === 'owner' && <nav className="owner-navigation" aria-label="Menú principal">
         <NavLink to="/owner/home">Buscar</NavLink>
@@ -138,6 +141,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/providers/:providerId" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><ProviderPublicProfile /></RolePage>} />
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />
     <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
+    <Route path="/provider/appointments" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderAppointments /></RolePage>} />
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
     <Route path="/provider/catalog" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderCatalog /></RolePage>} />
     <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
