@@ -54,8 +54,11 @@ export default function ProviderCatalog() {
     <main className="page-shell catalog-page">
       <section className="catalog-card" aria-labelledby="catalog-title">
         <h1 id="catalog-title">Catálogo</h1>
-        <p className="catalog-subtitle">Administra los servicios que has publicado.</p>
-        <Link className="button-link catalog-publish-link" to="/provider/services/new">Publicar servicio</Link>
+        <p className="catalog-subtitle">Administra los servicios y productos que has publicado.</p>
+        <div className="catalog-actions">
+          <Link className="button-link catalog-publish-link" to="/provider/services/new">Publicar servicio</Link>
+          <Link className="button-link button-link-secondary catalog-publish-link" to="/provider/products/new">Publicar producto</Link>
+        </div>
         {notice && <p className="success-alert" role="status">{notice}</p>}
         {loading && <p role="status">Cargando catálogo…</p>}
         {error && <div className="form-alert" role="alert">

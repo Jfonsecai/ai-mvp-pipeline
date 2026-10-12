@@ -10,6 +10,7 @@ import SignIn from './pages/SignIn.jsx';
 import ProviderWorkingHours from './pages/ProviderWorkingHours.jsx';
 import ProviderCatalog from './pages/ProviderCatalog.jsx';
 import PublishService from './pages/PublishService.jsx';
+import PublishProduct from './pages/PublishProduct.jsx';
 
 const homePath = (type) => type === 'owner' ? '/owner/home' : '/provider/profile';
 
@@ -130,6 +131,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
     <Route path="/provider/catalog" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderCatalog /></RolePage>} />
     <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
+    <Route path="/provider/products/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishProduct /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />
   </Routes>;

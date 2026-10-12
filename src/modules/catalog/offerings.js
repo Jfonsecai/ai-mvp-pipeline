@@ -1,8 +1,9 @@
-// COMP-007 Catalog — IF-006 service publication and provider catalog (US-010).
+// COMP-007 Catalog — IF-006 service publication (US-010), product publication (US-013) and provider catalog.
 import { Router } from 'express';
 import { Outcome } from '../../shared/outcomes.js';
 
 const SERVICE_FIELDS = new Set(['name', 'priceCop', 'species', 'modality']);
+const PRODUCT_FIELDS = new Set(['name', 'priceCop', 'species']);
 const SPECIES = new Set(['dog', 'cat']);
 const MODALITIES = new Set(['clinic', 'home', 'both']);
 const MAX_PRICE_COP = 2_147_483_647;
@@ -11,38 +12,52 @@ function validationError(fields) {
   return new Outcome('VALIDATION_FAILED', { fields });
 }
 
-export function validatePublishService(input, providerType) {
-  const fields = [];
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return { fields: [{ field: 'form', reason: 'REQUIRED' }] };
-  }
+const isMissing = (value) => value === undefined || value === null || value === '';
 
-  for (const key of Object.keys(input)) {
-    if (!SERVICE_FIELDS.has(key)) fields.push({ field: key, reason: 'NOT_ALLOWED' });
-  }
-
-  let name;
-  if (input.name === undefined) fields.push({ field: 'name', reason: 'REQUIRED' });
-  else if (typeof input.name !== 'string') fields.push({ field: 'name', reason: 'INVALID_FORMAT' });
+/** Shared offering-field checks (BR-006, BR-027, BR-032): a missing, null or blank value is REQUIRED. */
+function checkName(input, fields) {
+  const value = input.name;
+  if (value === undefined || value === null) fields.push({ field: 'name', reason: 'REQUIRED' });
+  else if (typeof value !== 'string') fields.push({ field: 'name', reason: 'INVALID_FORMAT' });
   else {
-    name = input.name.trim();
+    const name = value.trim();
     if (!name) fields.push({ field: 'name', reason: 'REQUIRED' });
     else if ([...name].length > 120) fields.push({ field: 'name', reason: 'TOO_LONG' });
+    else return name;
   }
+  return undefined;
+}
 
-  const priceCop = input.priceCop;
-  if (priceCop === undefined) fields.push({ field: 'priceCop', reason: 'REQUIRED' });
-  else if (typeof priceCop !== 'number' || !Number.isInteger(priceCop)) {
-    fields.push({ field: 'priceCop', reason: 'INVALID_FORMAT' });
-  } else if (priceCop < 1 || priceCop > MAX_PRICE_COP) {
-    fields.push({ field: 'priceCop', reason: 'OUT_OF_RANGE' });
-  }
+function checkPrice(input, fields) {
+  const value = input.priceCop;
+  if (isMissing(value)) fields.push({ field: 'priceCop', reason: 'REQUIRED' });
+  else if (typeof value !== 'number' || !Number.isInteger(value)) fields.push({ field: 'priceCop', reason: 'INVALID_FORMAT' });
+  else if (value < 1 || value > MAX_PRICE_COP) fields.push({ field: 'priceCop', reason: 'OUT_OF_RANGE' });
+  return value;
+}
 
-  const species = input.species;
-  if (species === undefined) fields.push({ field: 'species', reason: 'REQUIRED' });
-  else if (typeof species !== 'string' || !SPECIES.has(species)) {
-    fields.push({ field: 'species', reason: 'NOT_ALLOWED' });
+function checkSpecies(input, fields) {
+  const value = input.species;
+  if (isMissing(value)) fields.push({ field: 'species', reason: 'REQUIRED' });
+  else if (typeof value !== 'string' || !SPECIES.has(value)) fields.push({ field: 'species', reason: 'NOT_ALLOWED' });
+  return value;
+}
+
+function checkShape(input, allowed, fields) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return false;
+  for (const key of Object.keys(input)) {
+    if (!allowed.has(key)) fields.push({ field: key, reason: 'NOT_ALLOWED' });
   }
+  return true;
+}
+
+export function validatePublishService(input, providerType) {
+  const fields = [];
+  if (!checkShape(input, SERVICE_FIELDS, fields)) return { fields: [{ field: 'form', reason: 'REQUIRED' }] };
+
+  const name = checkName(input, fields);
+  const priceCop = checkPrice(input, fields);
+  const species = checkSpecies(input, fields);
 
   let modality;
   if (providerType === 'independent') {
@@ -61,6 +76,19 @@ export function validatePublishService(input, providerType) {
 
   if (fields.length) return { fields };
   return { value: { name, priceCop, species, modality } };
+}
+
+/** IF-006 publishProduct request (CTR-005 PublishProductRequest): name, price and exactly one species. */
+export function validatePublishProduct(input) {
+  const fields = [];
+  if (!checkShape(input, PRODUCT_FIELDS, fields)) return { fields: [{ field: 'form', reason: 'REQUIRED' }] };
+
+  const name = checkName(input, fields);
+  const priceCop = checkPrice(input, fields);
+  const species = checkSpecies(input, fields);
+
+  if (fields.length) return { fields };
+  return { value: { name, priceCop, species } };
 }
 
 function catalogService(row) {
@@ -129,6 +157,23 @@ export function createCatalogRouter({ db, guard }) {
       [providerId, providerType, name, priceCop, species, modality],
     );
     res.status(201).json(catalogService(result.rows[0]));
+  });
+
+  router.post('/provider/products', guard({ role: 'provider' }), async (req, res) => {
+    const providerId = req.session.accountId;
+    const providerType = await providerTypeFor(db, providerId);
+    const validation = validatePublishProduct(req.body);
+    if (validation.fields) throw validationError(validation.fields);
+
+    // Every new product is published as available (AC-111, BR-031, TD-13); products have no modality.
+    const { name, priceCop, species } = validation.value;
+    const result = await db.query(
+      `INSERT INTO offering (provider_id, provider_type, kind, name, price_cop, species, available)
+       VALUES ($1, $2, 'product', $3, $4, $5, true)
+       RETURNING id, name, price_cop, species, available`,
+      [providerId, providerType, name, priceCop, species],
+    );
+    res.status(201).json(catalogProduct(result.rows[0]));
   });
 
   return router;

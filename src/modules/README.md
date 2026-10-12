@@ -60,7 +60,7 @@ operations are delivered by their stories.
 | `identity/` | COMP-004 Identity and Access | `account`, `session` | US-001, US-002, US-003, US-034 | `sign-up.js`: owner/provider signup, sign-in, session state; `sessions.js`: IF-014 resolution |
 | `pets/` | COMP-005 Pets | `pet` | US-001 (first pet) | `owner-pet.js`: IF-015 create first pet |
 | `provider/` | COMP-006 Provider Profile and Working Hours | `provider_profile`, `working_hours` | US-002, US-008, US-009 | `profile.js`: IF-016 signup profile command and IF-004 own profile read/update (US-008); `working-hours.js`: IF-005 read/replace weekly hours |
-| `catalog/` | COMP-007 Catalog | `offering` | US-010, US-013 (+ US-033) | `offerings.js`: IF-006 own catalog and service publication (US-010) |
+| `catalog/` | COMP-007 Catalog | `offering` | US-010, US-013 (+ US-033) | `offerings.js`: IF-006 own catalog, service publication (US-010) and product publication (US-013) |
 | `search/` | COMP-008 Search and Discovery | none (read-only) | US-016, US-017, US-018 | no |
 | `scheduling/` | COMP-009 Scheduling | `appointment` | US-009 (IF-018 only), US-019, US-020, US-021, US-024 | `hours.js`: cancel upcoming appointments outside a replacement schedule |
 | `ordering/` | COMP-012 Ordering | `product_order` | US-027 to US-032 (behind feature switches) | no |
