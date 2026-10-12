@@ -112,6 +112,19 @@ export async function getProviderFacts(db, providerId) {
   };
 }
 
+/**
+ * IF-024 provider lock: serializes booking with the hours save and with other bookings of the same
+ * provider (CR-009). Must run inside the caller's transaction; the lock lasts until it ends.
+ * Returns false when the provider does not exist.
+ */
+export async function lockProvider(client, providerId) {
+  const result = await client.query(
+    'SELECT provider_id FROM provider_profile WHERE provider_id = $1 FOR UPDATE',
+    [providerId],
+  );
+  return result.rows.length > 0;
+}
+
 export function createProviderProfileRouter({ db, guard, clock }) {
   const router = Router();
 

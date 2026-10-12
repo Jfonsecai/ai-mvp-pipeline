@@ -12,6 +12,8 @@ import { createProviderWorkingHoursRouter } from './provider/working-hours.js';
 import { createCatalogRouter } from './catalog/offerings.js';
 import { createSearchRouter } from './search/offerings.js';
 import { createPublicProviderProfileRouter } from './search/provider-profile.js';
+import { createPetsRouter } from './pets/owner-pet.js';
+import { createBookingRouter } from './scheduling/booking.js';
 
 export const modules = [
   { createRouter: createIdentityRouter },
@@ -20,4 +22,6 @@ export const modules = [
   { createRouter: createCatalogRouter },
   { createRouter: createSearchRouter },
   { createRouter: createPublicProviderProfileRouter },
+  { createRouter: createPetsRouter },
+  { createRouter: createBookingRouter },
 ];

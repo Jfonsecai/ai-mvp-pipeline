@@ -32,6 +32,7 @@ function OfferingList({ items, kind }) {
         {kind === 'service' && <div><dt>Modalidad</dt><dd>{modalityLabel(item.modality)}</dd></div>}
         {kind === 'product' && item.available === false && <div><dt>Disponibilidad</dt><dd>No disponible</dd></div>}
       </dl>
+      {kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/owner/services/${item.id}/book`} aria-label={`Agendar cita: ${item.name}`}>Agendar cita</Link>}
     </li>)}
   </ul>;
 }

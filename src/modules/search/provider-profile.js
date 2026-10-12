@@ -2,10 +2,9 @@
 // Owns no table: provider facts come from COMP-006 (IF-019) and offerings from COMP-007 (IF-021).
 import { Router } from 'express';
 import { Outcome } from '../../shared/outcomes.js';
+import { isUuid } from '../../shared/ids.js';
 import { getProviderFacts } from '../provider/profile.js';
 import { listProviderOfferings } from '../catalog/offerings.js';
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** CTR-005 PublicProviderProfile: address and phone are omitted when the provider has none (AC-045). */
 function publicProfile(facts, { services, products }) {
@@ -26,7 +25,7 @@ export function createPublicProviderProfileRouter({ db, guard }) {
 
   router.get('/providers/:providerId', guard({ role: 'owner' }), async (req, res) => {
     // A malformed or unknown identifier is indistinguishable from any missing resource (CR-006).
-    if (!UUID.test(req.params.providerId)) throw new Outcome('NOT_FOUND');
+    if (!isUuid(req.params.providerId)) throw new Outcome('NOT_FOUND');
     const facts = await getProviderFacts(db, req.params.providerId.toLowerCase());
     if (!facts) throw new Outcome('NOT_FOUND');
     res.json(publicProfile(facts, await listProviderOfferings(db, facts.id)));

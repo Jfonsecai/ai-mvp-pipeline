@@ -42,6 +42,36 @@ export function toBogotaIso(date) {
   return `${shifted.toISOString().slice(0, 19)}${BOGOTA_OFFSET}`;
 }
 
+/** The instant of a Bogota wall-clock hour: bogotaInstant('2026-10-12', 8) is 08:00 on 12 October in Bogota. */
+export function bogotaInstant(date, hour) {
+  return new Date(`${date}T${String(hour).padStart(2, '0')}:00:00${BOGOTA_OFFSET}`);
+}
+
+// Calendar arithmetic on YYYY-MM-DD dates; no time zone is involved, so there are no DST pitfalls.
+export function addDays(date, days) {
+  const moved = new Date(`${date}T00:00:00Z`);
+  moved.setUTCDate(moved.getUTCDate() + days);
+  return moved.toISOString().slice(0, 10);
+}
+
+/** ISO 8601 weekday of a YYYY-MM-DD date (1 = Monday ... 7 = Sunday). */
+export function isoWeekday(date) {
+  const day = new Date(`${date}T00:00:00Z`).getUTCDay();
+  return day === 0 ? 7 : day;
+}
+
+/** The Monday of the week that contains the date. */
+export function mondayOf(date) {
+  return addDays(date, 1 - isoWeekday(date));
+}
+
+/** True for a real calendar date written YYYY-MM-DD (rejects 2026-02-30 and the like). */
+export function isLocalDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
 /**
  * The clock injected into modules so tests control "now" (COMP-010).
  * @param {() => Date} [source]

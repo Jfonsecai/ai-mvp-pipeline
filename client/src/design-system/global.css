@@ -116,6 +116,27 @@ body {
 .contact-card h2 { margin: 0 0 var(--spacing-3); font-size: var(--font-size-lg); }
 .contact-card a, .search-result a { color: var(--color-primary); overflow-wrap: anywhere; }
 .contact-card dd { overflow-wrap: anywhere; }
+.result-action { width: auto; margin-top: var(--spacing-4); }
+.booking-page { align-items: start; padding-top: var(--spacing-6); }
+.booking-card { width: min(100%, var(--size-form-max)); }
+.booking-card h1 { margin: var(--spacing-4) 0; font-size: var(--font-size-2xl); line-height: var(--line-height-tight); }
+.booking-summary { padding: var(--spacing-4); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-lg); background: var(--color-bg-surface); box-shadow: var(--shadow-sm); }
+.booking-summary h2 { margin: 0 0 var(--spacing-3); font-size: var(--font-size-lg); }
+.booking-summary a, .booking-card .back-link, .form-card dd a { color: var(--color-primary); }
+.booking-section { margin: var(--spacing-6) 0 0; padding: 0; border: 0; }
+.booking-section legend { margin-bottom: var(--spacing-3); padding: 0; font-weight: var(--font-weight-semibold); }
+.choice-card-disabled { background: var(--color-bg-muted); color: var(--color-text-disabled); cursor: not-allowed; }
+.choice-card-disabled small { color: var(--color-text-secondary); }
+.week-nav { display: flex; justify-content: space-between; gap: var(--spacing-3); margin-bottom: var(--spacing-3); }
+.week-nav .button-secondary:disabled { color: var(--color-text-disabled); cursor: not-allowed; }
+.chip-group { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0 0 var(--spacing-3); padding: 0; border: 0; }
+.chip { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: var(--size-control-height); min-height: var(--size-control-height); padding: 0 var(--spacing-3); border: var(--border-width-default) solid var(--color-border-input); border-radius: var(--radius-md); background: var(--color-bg-surface); font-size: var(--font-size-md); cursor: pointer; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip small { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.chip-disabled { background: var(--color-bg-muted); color: var(--color-text-disabled); cursor: not-allowed; }
+.chip-disabled input { cursor: not-allowed; }
+.chip:has(input:checked) { border-width: var(--border-width-strong); border-color: var(--color-primary); background: var(--color-primary-subtle); color: var(--color-primary); font-weight: var(--font-weight-medium); }
+.chip:has(input:focus-visible) { outline: var(--border-width-strong) solid var(--color-primary); outline-offset: var(--border-width-strong); }
 .catalog-section h2 { margin: 0 0 var(--spacing-3); font-size: var(--font-size-lg); }
 .catalog-empty { color: var(--color-text-secondary); }
 .catalog-list { display: grid; grid-template-columns: 1fr; gap: var(--spacing-4); margin: 0; padding: 0; list-style: none; }

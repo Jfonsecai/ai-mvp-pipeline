@@ -122,6 +122,27 @@ function weeklyHours(rows) {
   };
 }
 
+/**
+ * IF-019 working hours: a read-only query owned by COMP-006 for COMP-009 (offered slots).
+ * `db` can be the pool or a transaction client. Days without a row are non-working days.
+ *
+ * @returns {Promise<Array<{ weekday: number, startHour: number, endHour: number }>>}
+ */
+export async function listWorkingHours(db, providerId) {
+  const result = await db.query(
+    `SELECT weekday, start_hour, end_hour
+       FROM working_hours
+      WHERE provider_id = $1
+      ORDER BY weekday`,
+    [providerId],
+  );
+  return result.rows.map((row) => ({
+    weekday: Number(row.weekday),
+    startHour: Number(row.start_hour),
+    endHour: Number(row.end_hour),
+  }));
+}
+
 export function createProviderWorkingHoursRouter({ db, guard, clock }) {
   const router = Router();
 

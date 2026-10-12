@@ -143,6 +143,30 @@ export async function listProviderOfferings(db, providerId) {
   return { services, products };
 }
 
+/**
+ * IF-021 service facts: a read-only query owned by COMP-007 for COMP-009 (booking). Returns null
+ * when the identifier is not a service.
+ */
+export async function getServiceFacts(db, serviceId) {
+  const result = await db.query(
+    `SELECT id, provider_id, provider_type, name, price_cop, species, modality
+       FROM offering
+      WHERE id = $1 AND kind = 'service'`,
+    [serviceId],
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    providerId: row.provider_id,
+    providerType: row.provider_type,
+    name: row.name,
+    priceCop: Number(row.price_cop),
+    species: row.species,
+    modality: row.modality,
+  };
+}
+
 export function createCatalogRouter({ db, guard }) {
   const router = Router();
 

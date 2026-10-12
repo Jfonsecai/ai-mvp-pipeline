@@ -34,6 +34,7 @@ function SearchResult({ result }) {
         ? <div><dt>Modalidad</dt><dd>{modalityLabel(result.modality)}</dd></div>
         : <div><dt>Disponibilidad</dt><dd>{result.available ? 'Disponible' : 'No disponible'}</dd></div>}
     </dl>
+    {result.kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/owner/services/${result.id}/book`} aria-label={`Agendar cita: ${result.name}`}>Agendar cita</Link>}
   </li>;
 }
 
