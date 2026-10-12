@@ -129,6 +129,17 @@ body {
 .search-controls input { width: 100%; min-height: var(--size-control-height); padding: var(--spacing-3); border: var(--border-width-default) solid var(--color-border-input); border-radius: var(--radius-sm); font: inherit; }
 .search-controls input[aria-invalid="true"] { border-color: var(--color-error); }
 .search-submit { margin-top: 0; }
+.species-filter { display: grid; grid-template-columns: repeat(3, 1fr); margin: var(--spacing-4) 0 0; padding: 0; border: 0; }
+.species-filter legend { margin-bottom: var(--spacing-2); padding: 0; font-weight: var(--font-weight-medium); }
+.species-option { position: relative; display: flex; align-items: center; justify-content: center; min-height: var(--size-control-height); padding: 0 var(--spacing-4); border: var(--border-width-default) solid var(--color-border-input); background: var(--color-bg-surface); font-size: var(--font-size-md); font-weight: var(--font-weight-medium); cursor: pointer; }
+.species-option + .species-option { margin-left: calc(-1 * var(--border-width-default)); }
+.species-option:first-of-type { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.species-option:last-of-type { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.species-option input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.species-option:has(input:checked) { z-index: 1; border-width: var(--border-width-strong); border-color: var(--color-primary); background: var(--color-primary-subtle); color: var(--color-primary); }
+.species-option:has(input:checked) span::before { content: "✓ "; }
+.species-option:has(input:focus-visible) { outline: var(--border-width-strong) solid var(--color-primary); outline-offset: var(--border-width-strong); }
+.search-empty .button-secondary { margin-top: var(--spacing-3); }
 .search-results { margin-top: var(--spacing-6); }
 .search-empty { padding: var(--spacing-4); border-radius: var(--radius-md); background: var(--color-bg-surface); }
 .search-empty h2 { margin: 0 0 var(--spacing-2); font-size: var(--font-size-lg); }
@@ -153,5 +164,6 @@ body {
 
 @media (min-width: 1024px) {
   .search-controls { grid-template-columns: minmax(0, 1fr) max-content; align-items: end; }
+  .species-filter { grid-template-columns: repeat(3, max-content); justify-content: start; }
   .search-results-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

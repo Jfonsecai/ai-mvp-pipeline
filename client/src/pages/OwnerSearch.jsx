@@ -3,6 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
 
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
+const SPECIES_OPTIONS = [
+  { value: 'all', label: 'Todas' },
+  { value: 'dog', label: 'Perro' },
+  { value: 'cat', label: 'Gato' },
+];
 const kindLabel = (kind) => (kind === 'service' ? 'Servicio' : 'Producto');
 const providerTypeLabel = (type) => (type === 'clinic' ? 'Clínica veterinaria' : 'Veterinario independiente');
 const modalityLabel = (modality) => ({
@@ -36,6 +41,8 @@ export default function OwnerSearch() {
   const { state: locationState } = useLocation();
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
+  const [species, setSpecies] = useState('all');
+  const [submittedSpecies, setSubmittedSpecies] = useState('all');
   const [results, setResults] = useState([]);
   const [searchState, setSearchState] = useState('initial');
   const [queryError, setQueryError] = useState('');
@@ -44,27 +51,39 @@ export default function OwnerSearch() {
 
   useEffect(() => () => { requestId.current += 1; }, []);
 
-  async function search(value) {
-    const normalized = value.trim();
-    if (!normalized) {
-      setQueryError('Escribe el nombre de un servicio o producto para buscar.');
-      return;
-    }
-
+  // Runs the search for already-normalized text with the given species filter (US-017).
+  async function runSearch(normalized, speciesValue) {
     const currentRequest = ++requestId.current;
-    setQueryError('');
-    setQuery(normalized);
     setSubmittedQuery(normalized);
+    setSubmittedSpecies(speciesValue);
     setSearchState('loading');
 
     try {
-      const response = await apiFetch(`/api/search?q=${encodeURIComponent(normalized)}`);
+      const response = await apiFetch(`/api/search?q=${encodeURIComponent(normalized)}&species=${speciesValue}`);
       if (requestId.current !== currentRequest) return;
       setResults(response.results);
       setSearchState('complete');
     } catch {
       if (requestId.current === currentRequest) setSearchState('error');
     }
+  }
+
+  async function search(value) {
+    const normalized = value.trim();
+    if (!normalized) {
+      setQueryError('Escribe el nombre de un servicio o producto para buscar.');
+      return;
+    }
+    setQueryError('');
+    setQuery(normalized);
+    await runSearch(normalized, species);
+  }
+
+  // Changing the filter re-applies the last submitted search at once. Before any search it is only
+  // remembered and applied to the first one (SCR-UX-004). Unsubmitted text in the field is left alone.
+  function changeSpecies(next) {
+    setSpecies(next);
+    if (submittedQuery) void runSearch(submittedQuery, next);
   }
 
   function submit(event) {
@@ -102,6 +121,19 @@ export default function OwnerSearch() {
           </button>
         </div>
         {queryError && <span className="field-error" id="offering-query-error">{queryError}</span>}
+        <fieldset className="species-filter">
+          <legend>Especie</legend>
+          {SPECIES_OPTIONS.map(({ value, label }) => <label className="species-option" key={value}>
+            <input
+              type="radio"
+              name="species-filter"
+              value={value}
+              checked={species === value}
+              onChange={() => changeSpecies(value)}
+            />
+            <span>{label}</span>
+          </label>)}
+        </fieldset>
       </form>
 
       <section className="search-results" aria-label="Resultados de búsqueda">
@@ -112,11 +144,12 @@ export default function OwnerSearch() {
         {searchState === 'loading' && <p role="status">Buscando servicios y productos…</p>}
         {searchState === 'error' && <div className="form-alert" role="alert">
           No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.
-          <button className="link-button" type="button" onClick={() => void search(submittedQuery)}>Reintentar</button>
+          <button className="link-button" type="button" onClick={() => void runSearch(submittedQuery, submittedSpecies)}>Reintentar</button>
         </div>}
         {searchState === 'complete' && results.length === 0 && <div className="search-empty" role="status">
           <h2>No encontramos resultados</h2>
-          <p>Prueba con otra palabra.</p>
+          <p>{submittedSpecies === 'all' ? 'Prueba con otra palabra.' : 'Prueba con otra palabra o quita el filtro de especie.'}</p>
+          {submittedSpecies !== 'all' && <button className="button-secondary" type="button" onClick={() => changeSpecies('all')}>Quitar filtro</button>}
         </div>}
         {searchState === 'complete' && results.length > 0 && <>
           <p className="search-summary" aria-live="polite">

@@ -161,7 +161,7 @@ test('search is restricted to owner sessions and rejects invalid query text', as
   assert.deepEqual((await tooLong.json()).fields, [{ field: 'q', reason: 'TOO_LONG' }]);
 });
 
-test('search response fields conform to API_SPEC without implementing the species filter', () => {
+test('search parameters and response fields conform to API_SPEC', () => {
   const spec = parse(read(API_SPEC_PATH));
   const operation = spec.paths['/api/search'].get;
   assert.deepEqual(operation.parameters.map(({ name }) => name), ['q', 'species']);
