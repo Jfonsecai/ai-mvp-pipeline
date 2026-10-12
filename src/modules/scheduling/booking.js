@@ -186,6 +186,55 @@ export async function bookSlot(pool, { ownerId, service, petId, startsAt, modali
   });
 }
 
+/** IF-012: the signed-in owner's current appointments, including cancelled ones (AC-055, AC-056, AC-087). */
+export async function listOwnerAppointments(db, { ownerId, now }) {
+  const result = await db.query(
+    `SELECT id, pet_id, service_id, starts_at, status, modality, visit_address
+       FROM appointment
+      WHERE owner_id = $1`,
+    [ownerId],
+  );
+
+  const appointments = await Promise.all(result.rows.map(async (row) => {
+    const [service, pet] = await Promise.all([
+      getServiceFacts(db, row.service_id),
+      getOwnerPet(db, ownerId, row.pet_id),
+    ]);
+    if (!service || !pet) throw new Outcome('NOT_FOUND');
+    const provider = await getProviderFacts(db, service.providerId);
+    if (!provider) throw new Outcome('NOT_FOUND');
+
+    const startsAt = new Date(row.starts_at);
+    const address = row.modality === 'home' ? row.visit_address : provider.address;
+    if (!address) throw new Error(`Appointment ${row.id} has no place address`);
+
+    return {
+      id: row.id,
+      startsAt: toBogotaIso(startsAt),
+      endsAt: toBogotaIso(new Date(startsAt.getTime() + HOUR_MS)),
+      status: row.status,
+      upcoming: startsAt.getTime() > now.getTime(),
+      service: { id: service.id, name: service.name },
+      modality: row.modality,
+      pet: { id: pet.id, name: pet.name },
+      provider: {
+        id: provider.id,
+        name: provider.name,
+        type: provider.type,
+        ...(provider.contactPhone ? { contactPhone: provider.contactPhone } : {}),
+      },
+      place: { kind: row.modality, address },
+    };
+  }));
+
+  return appointments.sort((left, right) => {
+    if (left.upcoming !== right.upcoming) return left.upcoming ? -1 : 1;
+    const leftTime = new Date(left.startsAt).getTime();
+    const rightTime = new Date(right.startsAt).getTime();
+    return (left.upcoming ? leftTime - rightTime : rightTime - leftTime) || left.id.localeCompare(right.id);
+  });
+}
+
 export function createBookingRouter({ db, guard, clock }) {
   const router = Router();
 
@@ -199,6 +248,15 @@ export function createBookingRouter({ db, guard, clock }) {
       weekStart: week.value,
       now: clock.now(),
     }));
+  });
+
+  router.get('/owner/appointments', guard({ role: 'owner' }), async (req, res) => {
+    res.json({
+      appointments: await listOwnerAppointments(db, {
+        ownerId: req.session.accountId,
+        now: clock.now(),
+      }),
+    });
   });
 
   router.post('/owner/appointments', guard({ role: 'owner' }), async (req, res) => {

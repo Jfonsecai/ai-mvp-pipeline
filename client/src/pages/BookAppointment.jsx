@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
 // SCR-UX-006 "Agendar cita" (FLOW-UX-010; US-019, US-020): pet, place and day/time.
@@ -33,6 +33,7 @@ const firstDayWithSlots = (days) => days.find((day) => day.slots.length > 0)?.da
 
 export default function BookAppointment() {
   const { serviceId } = useParams();
+  const navigate = useNavigate();
   const [pets, setPets] = useState(null);
   const [context, setContext] = useState(null);
   const [state, setState] = useState('loading'); // loading | ready | error | not-found
@@ -45,9 +46,7 @@ export default function BookAppointment() {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState('');
   const [saving, setSaving] = useState(false);
-  const [booked, setBooked] = useState(null);
   const [attempt, setAttempt] = useState(0);
-  const headingRef = useRef(null);
   const requestId = useRef(0);
 
   const applyContext = useCallback((value) => {
@@ -82,10 +81,6 @@ export default function BookAppointment() {
       });
     return () => { active = false; };
   }, [serviceId, attempt, loadContext, applyContext]);
-
-  useEffect(() => {
-    if (booked) headingRef.current?.focus();
-  }, [booked]);
 
   async function changeWeek(weekStart) {
     setWeekLoading(true);
@@ -125,7 +120,7 @@ export default function BookAppointment() {
     };
     try {
       const appointment = await apiFetch('/api/owner/appointments', { method: 'POST', body: payload });
-      setBooked(appointment);
+      navigate('/owner/appointments', { state: { justBookedId: appointment.id } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'SLOT_UNAVAILABLE') {
         setAlert(MSG_SLOT_GONE);
@@ -163,26 +158,6 @@ export default function BookAppointment() {
   const noEligible = context && context.ownerHasPets && context.eligiblePetIds.length === 0;
   const currentWeekMonday = context ? mondayOf(context.now.slice(0, 10)) : '';
   const selectedDay = context?.days.find((d) => d.date === day);
-
-  if (booked) {
-    const date = booked.startsAt.slice(0, 10);
-    return <main className="page-shell">
-      <section className="form-card" aria-labelledby="booked-title">
-        <h1 id="booked-title" ref={headingRef} tabIndex={-1}>Cita agendada</h1>
-        <div className="success-alert" role="status">
-          Cita agendada: {dayFullLabel(date)} a las {timeLabel(booked.startsAt)}
-        </div>
-        <dl className="profile-summary">
-          <div><dt>Servicio</dt><dd>{booked.service.name}</dd></div>
-          <div><dt>Mascota</dt><dd>{booked.pet.name}</dd></div>
-          <div><dt>Proveedor</dt><dd><Link to={`/owner/providers/${booked.provider.id}`}>{booked.provider.name}</Link></dd></div>
-          <div><dt>Lugar</dt><dd>{booked.place.address}</dd></div>
-        </dl>
-        <p className="field-help">La cita queda agendada de inmediato; el proveedor no tiene que confirmarla.</p>
-        <Link className="button-link" to="/owner/home">Buscar otro servicio</Link>
-      </section>
-    </main>;
-  }
 
   return <main className="page-shell booking-page">
     <section className="booking-card" aria-labelledby="booking-title">
