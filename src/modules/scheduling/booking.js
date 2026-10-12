@@ -1,10 +1,4 @@
-// COMP-009 Scheduling — IF-010 booking context and IF-011 booking (US-019).
-//
-// Scope of US-019: slots and in-clinic booking. A visit at the owner's home needs the visit address
-// and the modality choice of US-020 (AC-052 to AC-054), so a request that would create a home
-// appointment is refused here with NOT_ALLOWED until that story lands. `bookSlot` itself is
-// modality-agnostic (it takes the modality and the address as data), so US-020 reuses the same
-// locked, atomic booking transaction.
+// COMP-009 Scheduling — IF-010 booking context and IF-011 booking (US-019, US-020).
 import { Router } from 'express';
 import { Outcome } from '../../shared/outcomes.js';
 import { withTransaction } from '../../shared/transaction.js';
@@ -69,24 +63,40 @@ export function validateBookingRequest(input) {
       fields.push({ field: 'modality', reason: 'NOT_ALLOWED' });
     } else modality = input.modality;
   }
-  // The visit address belongs to home visits (US-020); it is not accepted by this increment.
-  if (input.visitAddress !== undefined && !fields.some((f) => f.field === 'visitAddress')) {
-    fields.push({ field: 'visitAddress', reason: 'NOT_ALLOWED' });
+  let visitAddress;
+  if (input.visitAddress !== undefined) {
+    if (typeof input.visitAddress !== 'string') {
+      fields.push({ field: 'visitAddress', reason: 'INVALID_FORMAT' });
+    } else {
+      visitAddress = input.visitAddress.trim();
+      if (!visitAddress) fields.push({ field: 'visitAddress', reason: 'REQUIRED' });
+      else if ([...visitAddress].length > 300) fields.push({ field: 'visitAddress', reason: 'TOO_LONG' });
+    }
   }
 
   if (fields.length) return { fields };
-  return { value: { serviceId: input.serviceId.toLowerCase(), petId: input.petId.toLowerCase(), startsAt, modality } };
+  return {
+    value: {
+      serviceId: input.serviceId.toLowerCase(),
+      petId: input.petId.toLowerCase(),
+      startsAt,
+      modality,
+      visitAddress,
+    },
+  };
 }
 
 /**
- * The modality of an appointment that this increment can create: at the clinic only (BR-007).
- * A service offered at home, or a home choice, needs US-020.
+ * Resolves the selected appointment modality and enforces the service's offering rules (BR-007).
  */
-export function resolveClinicModality(serviceModality, requested) {
+export function resolveAppointmentModality(serviceModality, requested) {
   if (serviceModality === 'clinic') {
     if (requested === undefined || requested === 'clinic') return 'clinic';
+  } else if (serviceModality === 'home') {
+    if (requested === undefined || requested === 'home') return 'home';
   } else if (serviceModality === 'both') {
     if (requested === 'clinic') return 'clinic';
+    if (requested === 'home') return 'home';
     if (requested === undefined) throw validationFailed([{ field: 'modality', reason: 'REQUIRED' }]);
   }
   throw validationFailed([{ field: 'modality', reason: 'NOT_ALLOWED' }]);
@@ -194,13 +204,19 @@ export function createBookingRouter({ db, guard, clock }) {
   router.post('/owner/appointments', guard({ role: 'owner' }), async (req, res) => {
     const validation = validateBookingRequest(req.body);
     if (validation.fields) throw validationFailed(validation.fields);
-    const { serviceId, petId, startsAt, modality: requestedModality } = validation.value;
+    const { serviceId, petId, startsAt, modality: requestedModality, visitAddress } = validation.value;
     const ownerId = req.session.accountId;
     const now = clock.now();
 
     const service = await getServiceFacts(db, serviceId);
     if (!service) throw new Outcome('NOT_FOUND');
-    const modality = resolveClinicModality(service.modality, requestedModality);
+    const modality = resolveAppointmentModality(service.modality, requestedModality);
+    if (modality === 'home' && !visitAddress) {
+      throw validationFailed([{ field: 'visitAddress', reason: 'REQUIRED' }]);
+    }
+    if (modality === 'clinic' && visitAddress !== undefined) {
+      throw validationFailed([{ field: 'visitAddress', reason: 'NOT_ALLOWED' }]);
+    }
 
     const pets = await listOwnerPets(db, ownerId);
     if (!pets.length) throw new Outcome('NO_PETS');
@@ -210,7 +226,15 @@ export function createBookingRouter({ db, guard, clock }) {
 
     const provider = await getProviderFacts(db, service.providerId);
     if (!provider) throw new Outcome('NOT_FOUND');
-    const { id } = await bookSlot(db, { ownerId, service, petId: pet.id, startsAt, modality, now });
+    const { id } = await bookSlot(db, {
+      ownerId,
+      service,
+      petId: pet.id,
+      startsAt,
+      modality,
+      visitAddress: modality === 'home' ? visitAddress : undefined,
+      now,
+    });
 
     res.status(201).json({
       id,
@@ -227,7 +251,7 @@ export function createBookingRouter({ db, guard, clock }) {
         type: provider.type,
         ...(provider.contactPhone ? { contactPhone: provider.contactPhone } : {}),
       },
-      place: { kind: modality, address: provider.address },
+      place: { kind: modality, address: modality === 'home' ? visitAddress : provider.address },
     });
   });
 

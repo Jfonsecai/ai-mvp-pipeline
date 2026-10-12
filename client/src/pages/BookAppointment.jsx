@@ -2,12 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
-// SCR-UX-006 "Agendar cita" (FLOW-UX-010; US-019): pet, place and day/time. Booking at the owner's
-// home (the modality choice and the visit address, SCR-UX-006 section 2) belongs to US-020, so a
-// service that needs a home visit shows its slots but cannot be booked yet.
+// SCR-UX-006 "Agendar cita" (FLOW-UX-010; US-019, US-020): pet, place and day/time.
 const MSG_NET = 'No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.';
 const MSG_FORM = 'Revisa los campos marcados para continuar.';
 const MSG_SLOT_GONE = 'Ese horario ya no está disponible. Elige otro.';
+const MSG_REQUIRED = 'Este campo es obligatorio.';
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
 const speciesPlural = (species) => (species === 'dog' ? 'perros' : 'gatos');
 const typeLabel = (type) => (type === 'clinic' ? 'Clínica veterinaria' : 'Veterinario independiente');
@@ -39,6 +38,8 @@ export default function BookAppointment() {
   const [state, setState] = useState('loading'); // loading | ready | error | not-found
   const [weekLoading, setWeekLoading] = useState(false);
   const [petId, setPetId] = useState('');
+  const [modality, setModality] = useState('');
+  const [visitAddress, setVisitAddress] = useState('');
   const [day, setDay] = useState('');
   const [slot, setSlot] = useState('');
   const [errors, setErrors] = useState({});
@@ -71,6 +72,8 @@ export default function BookAppointment() {
         if (!active || !value) return;
         setPets(petList.pets);
         applyContext(value);
+        setModality(value.service.modality === 'both' ? '' : value.service.modality);
+        setVisitAddress('');
         if (value.eligiblePetIds.length === 1) setPetId(value.eligiblePetIds[0]);
         setState('ready');
       })
@@ -102,6 +105,8 @@ export default function BookAppointment() {
     event.preventDefault();
     const nextErrors = {};
     if (!petId) nextErrors.pet = 'Elige una mascota.';
+    if (service.modality === 'both' && !modality) nextErrors.modality = 'Elige dónde será la cita.';
+    if (modality === 'home' && !visitAddress.trim()) nextErrors.visitAddress = MSG_REQUIRED;
     if (!slot) nextErrors.slot = 'Elige un horario.';
     setErrors(nextErrors);
     setAlert('');
@@ -115,7 +120,8 @@ export default function BookAppointment() {
       serviceId: context.service.id,
       petId,
       startsAt: slot,
-      ...(context.service.modality === 'both' ? { modality: 'clinic' } : {}),
+      ...(context.service.modality === 'both' ? { modality } : {}),
+      ...(modality === 'home' ? { visitAddress: visitAddress.trim() } : {}),
     };
     try {
       const appointment = await apiFetch('/api/owner/appointments', { method: 'POST', body: payload });
@@ -155,7 +161,6 @@ export default function BookAppointment() {
   const onlySpecies = service ? speciesPlural(service.species) : '';
   const noPets = context && !context.ownerHasPets;
   const noEligible = context && context.ownerHasPets && context.eligiblePetIds.length === 0;
-  const needsHome = service?.modality === 'home';
   const currentWeekMonday = context ? mondayOf(context.now.slice(0, 10)) : '';
   const selectedDay = context?.days.find((d) => d.date === day);
 
@@ -233,15 +238,35 @@ export default function BookAppointment() {
           {!noEligible && <>
             <fieldset className="booking-section">
               <legend>2. ¿Dónde será la cita?</legend>
-              {!needsHome && <>
-                <p>Esta cita es en la clínica.</p>
-                {service.provider.address && <p className="field-help">Lugar: {service.provider.address}</p>}
-                {service.modality === 'both' && <p className="field-help">Este servicio también se ofrece a domicilio; esa opción estará disponible próximamente.</p>}
+              {service.modality === 'both'
+                ? <div className="modality-options" role="radiogroup" aria-label="Modalidad de la cita"
+                  aria-describedby={errors.modality ? 'booking-modality-error' : undefined}>
+                  <label className={`choice-card${modality === 'clinic' ? ' choice-card-selected' : ''}`}>
+                    <input type="radio" name="modality" value="clinic" checked={modality === 'clinic'}
+                      onChange={() => { setModality('clinic'); setErrors((current) => ({ ...current, modality: undefined })); setAlert(''); }} />
+                    <span>En la clínica</span>
+                  </label>
+                  <label className={`choice-card${modality === 'home' ? ' choice-card-selected' : ''}`}>
+                    <input type="radio" name="modality" value="home" checked={modality === 'home'}
+                      onChange={() => { setModality('home'); setErrors((current) => ({ ...current, modality: undefined })); setAlert(''); }} />
+                    <span>A domicilio</span>
+                  </label>
+                </div>
+                : <p>{modality === 'home' ? 'Esta cita es a domicilio.' : 'Esta cita es en la clínica.'}</p>}
+              {errors.modality && <span id="booking-modality-error" className="field-error">{errors.modality}</span>}
+              {modality === 'home' && <>
+                <label className="field-label" htmlFor="visit-address">Dirección de la visita</label>
+                <input id="visit-address" name="visitAddress" type="text" value={visitAddress} maxLength={300} required
+                  autoComplete="street-address" aria-invalid={Boolean(errors.visitAddress)}
+                  aria-describedby={errors.visitAddress ? 'visit-address-error' : 'visit-address-help'}
+                  onChange={(event) => {
+                    setVisitAddress(event.target.value);
+                    setErrors((current) => ({ ...current, visitAddress: undefined }));
+                  }} />
+                <span className="field-help" id="visit-address-help">Incluye barrio, torre o apartamento si aplica.</span>
+                {errors.visitAddress && <span className="field-error" id="visit-address-error">{errors.visitAddress}</span>}
               </>}
-              {needsHome && <>
-                <p>Esta cita es a domicilio.</p>
-                <div className="info-alert" role="status">Las citas a domicilio aún no se pueden agendar. Podrás ver los horarios, pero no completar la reserva todavía.</div>
-              </>}
+              {modality === 'clinic' && service.provider.address && <p className="field-help">Lugar: {service.provider.address}</p>}
             </fieldset>
 
             <fieldset className="booking-section" aria-describedby={errors.slot ? 'booking-slot-error' : undefined}>
@@ -281,7 +306,7 @@ export default function BookAppointment() {
             </fieldset>
 
             {context.providerHasHours && <>
-              <button className="primary-button" type="submit" disabled={saving || needsHome}>{saving ? 'Agendando…' : 'Agendar cita'}</button>
+              <button className="primary-button" type="submit" disabled={saving}>{saving ? 'Agendando…' : 'Agendar cita'}</button>
               <p className="field-help">La cita queda agendada de inmediato.</p>
             </>}
           </>}

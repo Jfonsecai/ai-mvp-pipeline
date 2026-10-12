@@ -317,24 +317,52 @@ test('ownership and existence: another owner\'s pet, unknown or malformed ids an
   assert.equal(asService.status, 404, 'a product id is not a service');
 });
 
-test('modality in this increment (BR-007): clinic bookings only; home services and the home choice are refused until US-020', { skip }, async () => {
+test('AC-052 to AC-054 / BR-015 / EDGE-008: home visits require a visit address and store the selected modality', { skip }, async () => {
   const before = (await rows(world.clinic.id)).length + (await rows(world.vet.id)).length;
-  const home = await book(world.ownerDog, { serviceId: world.dogHome.id, petId: world.ownerDog.petId, startsAt: at('2026-10-13', 13) });
-  assert.equal(home.status, 422);
-  assert.deepEqual(home.body.fields, [{ field: 'modality', reason: 'NOT_ALLOWED' }]);
-  const vet = await book(world.ownerCat, { serviceId: world.vetCat.id, petId: world.ownerCat.petId, startsAt: at(MONDAY, 10) });
-  assert.equal(vet.status, 422);
-  assert.deepEqual(vet.body.fields, [{ field: 'modality', reason: 'NOT_ALLOWED' }]);
-  const bothNoChoice = await book(world.ownerBoth, { serviceId: world.catBoth.id, petId: (await admin.query(`SELECT id FROM pet WHERE owner_id = $1 AND species = 'cat'`, [world.ownerBoth.id])).rows[0].id, startsAt: at('2026-10-13', 13) });
+  const bothCatPet = (await admin.query(`SELECT id FROM pet WHERE owner_id = $1 AND species = 'cat'`, [world.ownerBoth.id])).rows[0].id;
+  const missingIndependentAddress = await book(world.ownerCat, { serviceId: world.vetCat.id, petId: world.ownerCat.petId, startsAt: at('2026-10-19', 10) });
+  assert.deepEqual(missingIndependentAddress.body.fields, [{ field: 'visitAddress', reason: 'REQUIRED' }]);
+  const blankAddress = await book(world.ownerCat, { serviceId: world.vetCat.id, petId: world.ownerCat.petId, startsAt: at('2026-10-19', 10), visitAddress: '   ' });
+  assert.deepEqual(blankAddress.body.fields, [{ field: 'visitAddress', reason: 'REQUIRED' }]);
+  const longAddress = await book(world.ownerCat, { serviceId: world.vetCat.id, petId: world.ownerCat.petId, startsAt: at('2026-10-19', 10), visitAddress: 'a'.repeat(301) });
+  assert.deepEqual(longAddress.body.fields, [{ field: 'visitAddress', reason: 'TOO_LONG' }]);
+  const bothNoChoice = await book(world.ownerBoth, { serviceId: world.catBoth.id, petId: bothCatPet, startsAt: at('2026-10-13', 13) });
   assert.deepEqual(bothNoChoice.body.fields, [{ field: 'modality', reason: 'REQUIRED' }]);
-  const bothHome = await book(world.ownerCat, { serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'home', startsAt: at('2026-10-13', 13) });
-  assert.deepEqual(bothHome.body.fields, [{ field: 'modality', reason: 'NOT_ALLOWED' }]);
-  const address = await book(world.ownerDog, { serviceId: world.dogClinic.id, petId: world.ownerDog.petId, visitAddress: 'Calle 1', startsAt: at('2026-10-13', 13) });
-  assert.deepEqual(address.body.fields, [{ field: 'visitAddress', reason: 'NOT_ALLOWED' }]);
+  const bothHomeNoAddress = await book(world.ownerCat, { serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'home', startsAt: at('2026-10-13', 13) });
+  assert.deepEqual(bothHomeNoAddress.body.fields, [{ field: 'visitAddress', reason: 'REQUIRED' }]);
+  const bothClinicWithAddress = await book(world.ownerCat, { serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'clinic', startsAt: at('2026-10-13', 13), visitAddress: 'Calle 1' });
+  assert.deepEqual(bothClinicWithAddress.body.fields, [{ field: 'visitAddress', reason: 'NOT_ALLOWED' }]);
+  const clinicWithAddress = await book(world.ownerDog, { serviceId: world.dogClinic.id, petId: world.ownerDog.petId, startsAt: at('2026-10-13', 13), visitAddress: 'Calle 1' });
+  assert.deepEqual(clinicWithAddress.body.fields, [{ field: 'visitAddress', reason: 'NOT_ALLOWED' }]);
   assert.equal((await rows(world.clinic.id)).length + (await rows(world.vet.id)).length, before, 'nothing was written');
-  const ok = await book(world.ownerCat, { serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'clinic', startsAt: at('2026-10-13', 13) });
-  assert.equal(ok.status, 201, 'a service offered both ways is bookable at the clinic');
-  assert.equal(ok.body.modality, 'clinic');
+
+  const independentHome = await book(world.ownerCat, {
+    serviceId: world.vetCat.id, petId: world.ownerCat.petId, startsAt: at('2026-10-19', 10), visitAddress: ' Calle 8 # 9-10 ',
+  });
+  assert.equal(independentHome.status, 201, 'independent veterinarians offer home visits only');
+  assert.equal(independentHome.body.modality, 'home');
+  assert.deepEqual(independentHome.body.place, { kind: 'home', address: 'Calle 8 # 9-10' });
+  let stored = (await rows(world.vet.id)).at(-1);
+  assert.equal(stored.modality, 'home');
+  assert.equal(stored.visit_address, 'Calle 8 # 9-10');
+
+  const clinicHome = await book(world.ownerCat, {
+    serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'home', startsAt: at('2026-10-13', 13), visitAddress: 'Calle 12 # 3-4',
+  });
+  assert.equal(clinicHome.status, 201);
+  assert.deepEqual(clinicHome.body.place, { kind: 'home', address: 'Calle 12 # 3-4' });
+  stored = (await rows(world.clinic.id)).at(-1);
+  assert.equal(stored.modality, 'home');
+  assert.equal(stored.visit_address, 'Calle 12 # 3-4');
+
+  const clinicChoice = await book(world.ownerCat, {
+    serviceId: world.catBoth.id, petId: world.ownerCat.petId, modality: 'clinic', startsAt: at('2026-10-13', 13),
+  });
+  assert.equal(clinicChoice.status, 201, 'a both-way clinic service can still be booked at the clinic');
+  assert.deepEqual(clinicChoice.body.place, { kind: 'clinic', address: 'Calle 1 # 2-3' });
+  stored = (await rows(world.clinic.id)).at(-1);
+  assert.equal(stored.modality, 'clinic');
+  assert.equal(stored.visit_address, null);
 });
 
 test('IF-009 own pets, access control and weekStart validation', { skip }, async () => {

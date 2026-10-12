@@ -4,7 +4,7 @@ import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse } from 'yaml';
 import { createApp } from '../src/app.js';
-import { createBookingRouter } from '../src/modules/scheduling/booking.js';
+import { createBookingRouter, validateBookingRequest } from '../src/modules/scheduling/booking.js';
 import { createPetsRouter } from '../src/modules/pets/owner-pet.js';
 import { API_SPEC_PATH, fakeSessionDb, fixedClock, read, startApp, testConfig } from './helpers.js';
 
@@ -86,7 +86,6 @@ test('invalid booking requests are refused with field reasons before any query; 
     [{ ...valid, startsAt: '2026-02-30T11:00:00-05:00' }, ['startsAt:INVALID_FORMAT']],
     [{ ...valid, petId: 'x' }, ['petId:INVALID_FORMAT']],
     [{ ...valid, ownerId: OWNER_ID }, ['ownerId:NOT_ALLOWED']],
-    [{ ...valid, visitAddress: 'Calle 1' }, ['visitAddress:NOT_ALLOWED']],
   ];
   for (const [body, expected] of cases) {
     const response = await post(request, 'owner', body);
@@ -100,6 +99,19 @@ test('invalid booking requests are refused with field reasons before any query; 
   const text = await request('/api/owner/appointments', { method: 'POST', headers: { ...headers('owner'), 'content-type': 'text/plain' }, body: JSON.stringify(valid) });
   assert.equal(text.status, 403);
   assert.deepEqual(db.queries, []);
+});
+
+test('home visit address input is trimmed and validated against the Address contract', () => {
+  assert.equal(validateBookingRequest({ ...valid, visitAddress: '  Calle 1 # 2-3  ' }).value.visitAddress, 'Calle 1 # 2-3');
+  assert.deepEqual(validateBookingRequest({ ...valid, visitAddress: '   ' }).fields, [
+    { field: 'visitAddress', reason: 'REQUIRED' },
+  ]);
+  assert.deepEqual(validateBookingRequest({ ...valid, visitAddress: 123 }).fields, [
+    { field: 'visitAddress', reason: 'INVALID_FORMAT' },
+  ]);
+  assert.deepEqual(validateBookingRequest({ ...valid, visitAddress: 'a'.repeat(301) }).fields, [
+    { field: 'visitAddress', reason: 'TOO_LONG' },
+  ]);
 });
 
 test('a well-formed request for an unknown service is NOT_FOUND', async () => {

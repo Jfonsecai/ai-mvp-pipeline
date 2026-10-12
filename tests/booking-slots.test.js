@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { addDays, bogotaInstant, isLocalDate, isoWeekday, mondayOf, toBogotaIso } from '../src/shared/clock.js';
 import { isUuid } from '../src/shared/ids.js';
 import { computeWeekSlots, isSlotOffered } from '../src/modules/scheduling/slots.js';
-import { resolveClinicModality, validateBookingRequest, validateWeekStart } from '../src/modules/scheduling/booking.js';
+import { resolveAppointmentModality, validateBookingRequest, validateWeekStart } from '../src/modules/scheduling/booking.js';
 
 const MONDAY = '2026-10-12';
 const none = new Set();
@@ -111,7 +111,7 @@ test('weekStart validation: absent is allowed; only real Mondays in a sane range
   assert.deepEqual(validateWeekStart('3000-01-06'), { fields: [{ field: 'weekStart', reason: 'OUT_OF_RANGE' }] });
 });
 
-test('booking request validation: shape, ids, whole-hour instants with any offset, unknown and home-only fields', () => {
+test('booking request validation: shape, ids, whole-hour instants with any offset and unknown fields', () => {
   const ok = { serviceId: 'AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA', petId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', startsAt: '2026-10-12T10:00:00-05:00' };
   const valid = validateBookingRequest(ok);
   assert.equal(valid.value.serviceId, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'ids are lower-cased');
@@ -128,23 +128,23 @@ test('booking request validation: shape, ids, whole-hour instants with any offse
     assert.deepEqual(reasons({ ...ok, startsAt }), ['startsAt:INVALID_FORMAT'], JSON.stringify(startsAt));
   }
   assert.deepEqual(reasons({ ...ok, modality: 'remote' }), ['modality:NOT_ALLOWED']);
-  assert.deepEqual(reasons({ ...ok, visitAddress: 'Calle 1' }), ['visitAddress:NOT_ALLOWED']);
   assert.deepEqual(reasons({ ...ok, ownerId: 'x', status: 'cancelled' }), ['ownerId:NOT_ALLOWED', 'status:NOT_ALLOWED']);
   assert.deepEqual(reasons([]), ['form:REQUIRED']);
   assert.deepEqual(reasons(null), ['form:REQUIRED']);
 });
 
-test('modality in this increment: clinic bookings only; home and the home choice wait for US-020', () => {
-  assert.equal(resolveClinicModality('clinic', undefined), 'clinic');
-  assert.equal(resolveClinicModality('clinic', 'clinic'), 'clinic');
-  assert.equal(resolveClinicModality('both', 'clinic'), 'clinic');
-  const refused = (service, requested) => { try { resolveClinicModality(service, requested); return 'allowed'; } catch (e) { return e.fields[0].reason; } };
+test('service modality determines the allowed appointment modality (BR-007)', () => {
+  assert.equal(resolveAppointmentModality('clinic', undefined), 'clinic');
+  assert.equal(resolveAppointmentModality('clinic', 'clinic'), 'clinic');
+  assert.equal(resolveAppointmentModality('both', 'clinic'), 'clinic');
+  assert.equal(resolveAppointmentModality('both', 'home'), 'home');
+  assert.equal(resolveAppointmentModality('home', undefined), 'home');
+  assert.equal(resolveAppointmentModality('home', 'home'), 'home');
+  const refused = (service, requested) => { try { resolveAppointmentModality(service, requested); return 'allowed'; } catch (e) { return e.fields[0].reason; } };
   assert.equal(refused('both', undefined), 'REQUIRED');
-  assert.equal(refused('both', 'home'), 'NOT_ALLOWED');
   assert.equal(refused('clinic', 'home'), 'NOT_ALLOWED');
-  assert.equal(refused('home', undefined), 'NOT_ALLOWED');
-  assert.equal(refused('home', 'home'), 'NOT_ALLOWED');
   assert.equal(refused('home', 'clinic'), 'NOT_ALLOWED');
+  assert.equal(refused('invalid', undefined), 'NOT_ALLOWED');
 });
 
 test('identifiers: only canonical UUIDs', () => {
