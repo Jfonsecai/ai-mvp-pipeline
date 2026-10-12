@@ -8,6 +8,8 @@ import OwnerSignUp from './pages/OwnerSignUp.jsx';
 import OwnerWelcome from './pages/OwnerWelcome.jsx';
 import SignIn from './pages/SignIn.jsx';
 import ProviderWorkingHours from './pages/ProviderWorkingHours.jsx';
+import ProviderCatalog from './pages/ProviderCatalog.jsx';
+import PublishService from './pages/PublishService.jsx';
 
 const homePath = (type) => type === 'owner' ? '/owner/home' : '/provider/profile';
 
@@ -70,6 +72,7 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
       {accountType === 'provider' && <nav className="provider-navigation" aria-label="Menú principal">
         <NavLink to="/provider/profile">Perfil</NavLink>
         <NavLink to="/provider/working-hours">Horario</NavLink>
+        <NavLink to="/provider/catalog">Catálogo</NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
         <button ref={buttonRef} className="button-secondary" type="button" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}>Cuenta</button>
@@ -125,6 +128,8 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerWelcome /></RolePage>} />
     <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
+    <Route path="/provider/catalog" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderCatalog /></RolePage>} />
+    <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />
   </Routes>;
