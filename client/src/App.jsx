@@ -3,7 +3,7 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from
 import { ApiError, apiFetch } from './api/client.js';
 import TechnicalStatus from './pages/TechnicalStatus.jsx';
 import ProviderSignUp from './pages/ProviderSignUp.jsx';
-import ProviderWelcome from './pages/ProviderWelcome.jsx';
+import ProviderProfile from './pages/ProviderProfile.jsx';
 import OwnerSignUp from './pages/OwnerSignUp.jsx';
 import OwnerWelcome from './pages/OwnerWelcome.jsx';
 import SignIn from './pages/SignIn.jsx';
@@ -68,6 +68,7 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
     <header className="app-header">
       <Link className="wordmark" to="/">VetCare</Link>
       {accountType === 'provider' && <nav className="provider-navigation" aria-label="Menú principal">
+        <NavLink to="/provider/profile">Perfil</NavLink>
         <NavLink to="/provider/working-hours">Horario</NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
@@ -122,7 +123,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/sign-up" element={<GuestOnly session={session}><OwnerSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/provider/sign-up" element={<GuestOnly session={session}><ProviderSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerWelcome /></RolePage>} />
-    <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWelcome /></RolePage>} />
+    <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />

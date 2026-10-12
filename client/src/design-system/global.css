@@ -77,6 +77,7 @@ body {
 .account-menu-panel p { margin: 0; color: var(--color-text-secondary); }
 .account-menu-action { text-align: left; }
 
+.provider-navigation { display: flex; align-items: center; gap: var(--spacing-4); }
 .provider-navigation a { color: var(--color-text-secondary); font-weight: var(--font-weight-medium); text-decoration: none; }
 .provider-navigation a[aria-current="page"] { color: var(--color-primary); }
 .working-hours-page { align-items: start; padding-top: var(--spacing-6); }
@@ -95,6 +96,8 @@ body {
 .working-day-off { color: var(--color-text-secondary); }
 .info-alert, .warning-alert { margin: var(--spacing-4) 0; padding: var(--spacing-3); border-left: var(--border-width-accent) solid var(--color-info); border-radius: var(--radius-sm); background: var(--color-info-bg); color: var(--color-info); }
 .warning-alert { border-color: var(--color-warning); background: var(--color-warning-bg); color: var(--color-warning); }
+.profile-page { align-items: start; padding-top: var(--spacing-6); }
+.link-button { padding: 0; border: 0; background: none; color: var(--color-primary); font: inherit; text-decoration: underline; cursor: pointer; }
 .working-hours-card .primary-button { max-width: var(--size-form-max); }
 
 @media (min-width: 768px) {
