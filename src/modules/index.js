@@ -10,10 +10,12 @@ import { createIdentityRouter } from './identity/sign-up.js';
 import { createProviderProfileRouter } from './provider/profile.js';
 import { createProviderWorkingHoursRouter } from './provider/working-hours.js';
 import { createCatalogRouter } from './catalog/offerings.js';
+import { createSearchRouter } from './search/offerings.js';
 
 export const modules = [
   { createRouter: createIdentityRouter },
   { createRouter: createProviderProfileRouter },
   { createRouter: createProviderWorkingHoursRouter },
   { createRouter: createCatalogRouter },
+  { createRouter: createSearchRouter },
 ];
