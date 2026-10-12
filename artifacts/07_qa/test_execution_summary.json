@@ -1,0 +1,165 @@
+{
+  "verdict": "PASS_WITH_WARNINGS",
+  "round": 2,
+  "date": "2026-10-12",
+  "tests": {
+    "total": 318,
+    "passed": 318,
+    "failed": 0,
+    "skipped": 0,
+    "not_executed": 0
+  },
+  "breakdown": {
+    "p07_suite": {
+      "total": 143,
+      "passed": 143,
+      "failed": 0,
+      "skipped": 0
+    },
+    "existing_suite": {
+      "total": 175,
+      "passed": 175,
+      "failed": 0,
+      "skipped": 0
+    },
+    "combined_total_note": "318 is the combined coverage run of both suites; 143 + 175 = 318."
+  },
+  "coverage": {
+    "available": true,
+    "line_percent": 98.76,
+    "branch_percent": 95.05,
+    "scope": "src/** only, both suites together, Node --experimental-test-coverage, local PostgreSQL 18; client code is not measured"
+  },
+  "acceptance_criteria": {
+    "in_scope": 65,
+    "with_passing_evidence": 64,
+    "without_evidence": [
+      "AC-056"
+    ],
+    "api_only_ui_untested": [
+      "AC-040",
+      "AC-048",
+      "AC-109",
+      "AC-112"
+    ],
+    "partial": [
+      "AC-087",
+      "AC-088"
+    ]
+  },
+  "findings": [
+    {
+      "id": "DEF-001",
+      "severity": "MINOR",
+      "type": "implementation_defect",
+      "title": "A NUL character (U+0000) in free-text input returns HTTP 500 UNEXPECTED instead of 422 VALIDATION_FAILED",
+      "status": "RESOLVED",
+      "root_cause": "CONFIRMED: PostgreSQL error 22021 on U+0000 in a text parameter; validators accept the character and the error handler maps the unknown error to UNEXPECTED",
+      "evidence": [
+        "TEST-SEC-035",
+        "TEST-SEC-037",
+        "TEST-UT-060",
+        "TEST-UT-061",
+        "artifacts/07_qa/evidence/p07_1_qa_suite_run.tap (before)",
+        "artifacts/07_qa/evidence/p07_3_after_fix_qa_suite_run.tap (after)"
+      ],
+      "affected_inputs": 14,
+      "handoff": "P07.3",
+      "resolution": "P07.3: rejectNulCharacters middleware (src/http/middleware.js, registered in src/app.js). Verified by re-execution: TEST-SEC-035 passes; 143/143 new, 175/175 existing, 318/318 combined."
+    },
+    {
+      "id": "F-02",
+      "severity": "INFO",
+      "type": "documentation_inconsistency",
+      "title": "IMPLEMENTATION_INDEX.md is stale: FAIL/BLOCKED statuses and 192/193 test counts predate the integration of US-016/017/018/021/024; P07 now has passing evidence for AC-027, AC-033, AC-047 and AC-052",
+      "status": "OPEN"
+    },
+    {
+      "id": "F-03",
+      "severity": "INFO",
+      "type": "unverifiable",
+      "title": "AC-056 and the owner/provider-cancel forms of AC-087/AC-088 depend on stories that are not implemented (US-022, US-025, US-026)",
+      "status": "OPEN"
+    },
+    {
+      "id": "F-04",
+      "severity": "INFO",
+      "type": "coverage_gap",
+      "title": "No automated browser/UI tests; screen behavior of AC-040, AC-048, AC-109 and AC-112 and search-state retention are unverified",
+      "status": "OPEN"
+    },
+    {
+      "id": "F-05",
+      "severity": "INFO",
+      "type": "unverified_environment",
+      "title": "Hosted Vercel/Neon runtime (COND-001) unverified; all evidence is local",
+      "status": "OPEN"
+    },
+    {
+      "id": "F-06",
+      "severity": "INFO",
+      "type": "environment",
+      "title": "Accent-insensitive search needs a non-C database locale; the test database must exist (TEST_DATABASE_URL)",
+      "status": "OPEN"
+    },
+    {
+      "id": "F-07",
+      "severity": "INFO",
+      "type": "test_report_accuracy",
+      "title": "P07.1 report inaccuracies (AC-111 attribution, missing AC-056 row, wrong story number, defect scope 9 vs 14) found during independent review",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "F-08",
+      "severity": "INFO",
+      "type": "documentation_inconsistency",
+      "title": "P07 prompts name unversioned artifacts and a root-level SYSTEM_PROMPT.md that do not exist as named",
+      "status": "OPEN"
+    }
+  ],
+  "limitations": [
+    "No UI or browser tests exist; screen behavior is unverified",
+    "Hosted Vercel/Neon runtime not verified (COND-001)",
+    "Non-functional requirements (performance, availability, accessibility) were not measured",
+    "Database-backed suites are skipped, not failed, when TEST_DATABASE_URL is unset",
+    "Mutation evidence limited to 9 hand-chosen faults; concurrency evidence limited to 8 parallel requests per scenario",
+    "Coverage describes lines executed, not assertion strength; client code is not measured",
+    "No human review of the test suite has taken place"
+  ],
+  "evidence": [
+    "artifacts/07_qa/evidence/p07_1_qa_suite_run.tap",
+    "artifacts/07_qa/evidence/p07_1_existing_suite_run.txt",
+    "artifacts/07_qa/evidence/p07_2_coverage_new_suite.txt",
+    "artifacts/07_qa/evidence/p07_2_coverage_combined.txt",
+    "artifacts/07_qa/evidence/p07_2_mutation_check.txt",
+    "artifacts/07_qa/evidence/p07_2_client_build.txt",
+    "artifacts/07_qa/evidence/p07_3_after_fix_qa_suite_run.tap",
+    "artifacts/07_qa/evidence/p07_3_after_fix_existing_suite_run.txt",
+    "artifacts/07_qa/evidence/p07_3_after_fix_coverage_combined.txt",
+    "artifacts/07_qa/evidence/p07_3_after_fix_client_build.txt"
+  ],
+  "history": [
+    {
+      "round": 1,
+      "verdict": "PASS_WITH_WARNINGS",
+      "tests": {
+        "total": 315,
+        "passed": 314,
+        "failed": 1
+      },
+      "open_defects": [
+        "DEF-001"
+      ]
+    },
+    {
+      "round": 2,
+      "verdict": "PASS_WITH_WARNINGS",
+      "tests": {
+        "total": 318,
+        "passed": 318,
+        "failed": 0
+      },
+      "open_defects": []
+    }
+  ]
+}

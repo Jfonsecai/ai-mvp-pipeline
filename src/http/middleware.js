@@ -49,6 +49,31 @@ export function originGuard(config) {
 }
 
 /**
+ * PostgreSQL text cannot hold U+0000 (error 22021), so such a character in any text the client sends
+ * would end as UNEXPECTED (500). Client input must be refused by validation instead (CTR-001, CR-005):
+ * the JSON body and the query string are checked here, and the offending field is named.
+ * The `password` field is skipped: it is only ever hashed (Argon2id), never stored as text.
+ */
+export function rejectNulCharacters(req, _res, next) {
+  const fields = [];
+  const visit = (value, path) => {
+    if (typeof value === 'string') {
+      if (value.includes('\u0000')) fields.push({ field: path, reason: 'INVALID_FORMAT' });
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) => visit(item, `${path}.${index}`));
+    } else if (value && typeof value === 'object') {
+      for (const [key, item] of Object.entries(value)) visit(item, path ? `${path}.${key}` : key);
+    }
+  };
+  if (req.body && typeof req.body === 'object') {
+    for (const [key, item] of Object.entries(req.body)) if (key !== 'password') visit(item, key);
+  }
+  visit(req.query, '');
+  if (fields.length) throw new Outcome('VALIDATION_FAILED', { fields });
+  next();
+}
+
+/**
  * TB-3: every request is resolved to a session context before any module runs.
  * `req.session` is { state: 'none' } | { state: 'expired' } | { state: 'active', accountId, accountType }.
  * @param {(token: string | undefined) => Promise<object>} resolve IF-014

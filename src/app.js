@@ -7,7 +7,7 @@ import { createLogger } from './shared/logger.js';
 import { resolveSession } from './modules/identity/sessions.js';
 import { modules as registeredModules } from './modules/index.js';
 import { healthRouter } from './http/health.js';
-import { createGuard, noStore, originGuard, requestLogger, sessionContext } from './http/middleware.js';
+import { createGuard, noStore, originGuard, rejectNulCharacters, requestLogger, sessionContext } from './http/middleware.js';
 import { createErrorHandler, notFound } from './http/errors.js';
 
 /**
@@ -39,6 +39,7 @@ export function createApp({
   // Everything below runs for module routes only.
   api.use(originGuard(config));
   api.use(express.json({ limit: '100kb' }));
+  api.use(rejectNulCharacters);
   api.use(
     sessionContext((token) =>
       resolveSession(db, token, clock.now(), { idleMinutes: config.sessionIdleMinutes }),

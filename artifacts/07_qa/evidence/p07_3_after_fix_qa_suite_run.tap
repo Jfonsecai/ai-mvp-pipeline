@@ -1,0 +1,1073 @@
+TAP version 13
+# Subtest: success responses conform to API_SPEC_V1.yaml
+    # Subtest: TEST-CT-001 US-001/US-002/US-003: sign-up, sign-in and session responses
+    ok 1 - TEST-CT-001 US-001/US-002/US-003: sign-up, sign-in and session responses
+      ---
+      duration_ms: 1085.2515
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-002 US-008/US-009: provider profile and working hours
+    ok 2 - TEST-CT-002 US-008/US-009: provider profile and working hours
+      ---
+      duration_ms: 113.0791
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-003 US-010/US-013: publish responses and own catalog
+    ok 3 - TEST-CT-003 US-010/US-013: publish responses and own catalog
+      ---
+      duration_ms: 63.1974
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-004 US-016/US-017/US-018: search results, public profile and pets
+    ok 4 - TEST-CT-004 US-016/US-017/US-018: search results, public profile and pets
+      ---
+      duration_ms: 108.3922
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-005 US-019/US-020/US-021/US-024: booking context, booking and both appointment lists
+    ok 5 - TEST-CT-005 US-019/US-020/US-021/US-024: booking context, booking and both appointment lists
+      ---
+      duration_ms: 521.0725
+      type: 'test'
+      ...
+    1..5
+ok 1 - success responses conform to API_SPEC_V1.yaml
+  ---
+  duration_ms: 3449.54
+  type: 'suite'
+  ...
+# Subtest: error responses follow CTR-001 and the documented statuses
+    # Subtest: TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorResponse bodies with the catalogued status
+    ok 1 - TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorResponse bodies with the catalogued status
+      ---
+      duration_ms: 578.5228
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-011 CTR-001: NO_PETS is returned with the documented status
+    ok 2 - TEST-CT-011 CTR-001: NO_PETS is returned with the documented status
+      ---
+      duration_ms: 275.2181
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-012: every ValidationFailed field entry uses a catalogued reason code
+    ok 3 - TEST-CT-012: every ValidationFailed field entry uses a catalogued reason code
+      ---
+      duration_ms: 63.5405
+      type: 'test'
+      ...
+    1..3
+ok 2 - error responses follow CTR-001 and the documented statuses
+  ---
+  duration_ms: 919.225
+  type: 'suite'
+  ...
+# Subtest: API_SPEC_V1.yaml consistency with the running application
+    # Subtest: TEST-CT-020: every path the application serves is documented, and no implemented route is missing from the specification
+    ok 1 - TEST-CT-020: every path the application serves is documented, and no implemented route is missing from the specification
+      ---
+      duration_ms: 2.453
+      type: 'test'
+      ...
+    # Subtest: TEST-CT-021 NFR / CR-005: API responses are never cacheable and carry no technology banner
+    ok 2 - TEST-CT-021 NFR / CR-005: API responses are never cacheable and carry no technology banner
+      ---
+      duration_ms: 37.3444
+      type: 'test'
+      ...
+    1..2
+ok 3 - API_SPEC_V1.yaml consistency with the running application
+  ---
+  duration_ms: 40.5063
+  type: 'suite'
+  ...
+# Subtest: US-019 slots offered (AC-046, AC-051, AC-026, AC-025)
+    # Subtest: TEST-BK-001 AC-046 AC-025: slots are one-hour starts only inside the working days and hours, for the whole week
+    ok 1 - TEST-BK-001 AC-046 AC-025: slots are one-hour starts only inside the working days and hours, for the whole week
+      ---
+      duration_ms: 533.2435
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+    ok 2 - TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+      ---
+      duration_ms: 675.3096
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-003 AC-026: a provider with no working hours offers no slots in any week
+    ok 3 - TEST-BK-003 AC-026: a provider with no working hours offers no slots in any week
+      ---
+      duration_ms: 570.9162
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-004 AC-025: different hours per day are respected, including a late shift ending at midnight (Bogota day, not UTC day)
+    ok 4 - TEST-BK-004 AC-025: different hours per day are respected, including a late shift ending at midnight (Bogota day, not UTC day)
+      ---
+      duration_ms: 707.4538
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-005 AC-046: the owner can look at other weeks; weekStart must be a real Monday
+    ok 5 - TEST-BK-005 AC-046: the owner can look at other weeks; weekStart must be a real Monday
+      ---
+      duration_ms: 637.7537
+      type: 'test'
+      ...
+    1..5
+ok 4 - US-019 slots offered (AC-046, AC-051, AC-026, AC-025)
+  ---
+  duration_ms: 3289.4102
+  type: 'suite'
+  ...
+# Subtest: US-019 booking (AC-047..AC-050, AC-108, AC-109, AC-048)
+    # Subtest: TEST-BK-010 AC-047: booking schedules immediately and appears at once in the owner's and the provider's appointments
+    ok 1 - TEST-BK-010 AC-047: booking schedules immediately and appears at once in the owner's and the provider's appointments
+      ---
+      duration_ms: 549.5783
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-011 AC-049 BR-012: a clinic keeps offering a slot that already has appointments and accepts several owners
+    ok 2 - TEST-BK-011 AC-049 BR-012: a clinic keeps offering a slot that already has appointments and accepts several owners
+      ---
+      duration_ms: 991.08
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-012 AC-050 BR-013: an independent veterinarian's booked slot is no longer offered and cannot be booked again, across services
+    ok 3 - TEST-BK-012 AC-050 BR-013: an independent veterinarian's booked slot is no longer offered and cannot be booked again, across services
+      ---
+      duration_ms: 767.0881
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-013 BR-013: eight simultaneous bookings of one independent slot produce exactly one appointment
+    ok 4 - TEST-BK-013 BR-013: eight simultaneous bookings of one independent slot produce exactly one appointment
+      ---
+      duration_ms: 1722.3037
+      type: 'test'
+      ...
+# (node:11076) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+# (Use `node --trace-deprecation ...` to show where the warning was created)
+    # Subtest: TEST-BK-014 BR-012: eight simultaneous bookings of one clinic slot all succeed
+    ok 5 - TEST-BK-014 BR-012: eight simultaneous bookings of one clinic slot all succeed
+      ---
+      duration_ms: 1153.9134
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-015 AC-108 AC-109: only pets of the service's species can be chosen, and an owner without one is told it is not allowed
+    ok 6 - TEST-BK-015 AC-108 AC-109: only pets of the service's species can be chosen, and an owner without one is told it is not allowed
+      ---
+      duration_ms: 344.1491
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-016 AC-048 BR-005: an owner with no registered pet cannot book and is told to register one
+    ok 7 - TEST-BK-016 AC-048 BR-005: an owner with no registered pet cannot book and is told to register one
+      ---
+      duration_ms: 356.9547
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-017 BR-005: the pet must belong to the signed-in owner (another owner's pet is NOT_FOUND)
+    ok 8 - TEST-BK-017 BR-005: the pet must belong to the signed-in owner (another owner's pet is NOT_FOUND)
+      ---
+      duration_ms: 340.1744
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour and non-existent services are refused
+    ok 9 - TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour and non-existent services are refused
+      ---
+      duration_ms: 284.2963
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-019 AC-050: a slot freed by the provider's schedule change can be offered and booked again (cancelled appointments do not block)
+    ok 10 - TEST-BK-019 AC-050: a slot freed by the provider's schedule change can be offered and booked again (cancelled appointments do not block)
+      ---
+      duration_ms: 398.5281
+      type: 'test'
+      ...
+    1..10
+ok 5 - US-019 booking (AC-047..AC-050, AC-108, AC-109, AC-048)
+  ---
+  duration_ms: 6909.7926
+  type: 'suite'
+  ...
+# Subtest: US-020 home visits (AC-052..AC-054)
+    # Subtest: TEST-BK-030 AC-052: a home appointment is booked with the visit address and the provider can see it
+    ok 1 - TEST-BK-030 AC-052: a home appointment is booked with the visit address and the provider can see it
+      ---
+      duration_ms: 210.3398
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-031 AC-053: a home service booked without an address (absent, empty or blank) is not booked and the address is indicated
+    ok 2 - TEST-BK-031 AC-053: a home service booked without an address (absent, empty or blank) is not booked and the address is indicated
+      ---
+      duration_ms: 155.0089
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-032 AC-054: a clinic service offered both ways needs a chosen modality, and an address only for home
+    ok 3 - TEST-BK-032 AC-054: a clinic service offered both ways needs a chosen modality, and an address only for home
+      ---
+      duration_ms: 157.7331
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-033 BR-007: the chosen modality must be one the service offers
+    ok 4 - TEST-BK-033 BR-007: the chosen modality must be one the service offers
+      ---
+      duration_ms: 285.6753
+      type: 'test'
+      ...
+    1..4
+ok 6 - US-020 home visits (AC-052..AC-054)
+  ---
+  duration_ms: 809.1301
+  type: 'suite'
+  ...
+# Subtest: AC-081 consistency under concurrency (CR-009)
+    # Subtest: TEST-BK-050 AC-081 BR-011: bookings racing with a working-hours change never leave a scheduled appointment outside the final hours
+    ok 1 - TEST-BK-050 AC-081 BR-011: bookings racing with a working-hours change never leave a scheduled appointment outside the final hours
+      ---
+      duration_ms: 1513.3145
+      type: 'test'
+      ...
+    1..1
+ok 7 - AC-081 consistency under concurrency (CR-009)
+  ---
+  duration_ms: 1513.4728
+  type: 'suite'
+  ...
+# Subtest: US-021 / US-024 appointment lists (AC-055, AC-056, AC-063, AC-064, AC-087, AC-088)
+    # Subtest: TEST-BK-040 AC-055 AC-063: each appointment shows service, provider/owner, pet, date and time, modality, status (and the address for home visits)
+    ok 1 - TEST-BK-040 AC-055 AC-063: each appointment shows service, provider/owner, pet, date and time, modality, status (and the address for home visits)
+      ---
+      duration_ms: 155.2552
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-041 AC-064 AC-055: lists contain only the signed-in party's appointments
+    ok 2 - TEST-BK-041 AC-064 AC-055: lists contain only the signed-in party's appointments
+      ---
+      duration_ms: 433.8969
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-042 AC-081 AC-087 AC-088: changing hours cancels exactly the upcoming appointments outside them, shown as cancelled to both parties
+    ok 3 - TEST-BK-042 AC-081 AC-087 AC-088: changing hours cancels exactly the upcoming appointments outside them, shown as cancelled to both parties
+      ---
+      duration_ms: 392.8829
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-043 AC-081: appointments that already took place are left alone when hours change
+    ok 4 - TEST-BK-043 AC-081: appointments that already took place are left alone when hours change
+      ---
+      duration_ms: 147.4848
+      type: 'test'
+      ...
+    # Subtest: TEST-BK-044 AC-055: upcoming appointments come first (soonest first), then past ones (most recent first)
+    ok 5 - TEST-BK-044 AC-055: upcoming appointments come first (soonest first), then past ones (most recent first)
+      ---
+      duration_ms: 159.5778
+      type: 'test'
+      ...
+    1..5
+ok 8 - US-021 / US-024 appointment lists (AC-055, AC-056, AC-063, AC-064, AC-087, AC-088)
+  ---
+  duration_ms: 1289.4498
+  type: 'suite'
+  ...
+# Subtest: US-001 owner sign-up
+    # Subtest: TEST-ID-001 AC-001: a valid sign-up creates the owner, registers the pet and signs the owner in
+    ok 1 - TEST-ID-001 AC-001: a valid sign-up creates the owner, registers the pet and signs the owner in
+      ---
+      duration_ms: 449.6161
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-002 AC-002: sign-up without a pet creates no account and says a pet is required
+    ok 2 - TEST-ID-002 AC-002: sign-up without a pet creates no account and says a pet is required
+      ---
+      duration_ms: 15.0812
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing name is rejected and indicated as name
+    ok 3 - TEST-ID-003 AC-003: a missing name is rejected and indicated as name
+      ---
+      duration_ms: 9.8485
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing email is rejected and indicated as email
+    ok 4 - TEST-ID-003 AC-003: a missing email is rejected and indicated as email
+      ---
+      duration_ms: 12.9374
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing password is rejected and indicated as password
+    ok 5 - TEST-ID-003 AC-003: a missing password is rejected and indicated as password
+      ---
+      duration_ms: 10.5006
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet name is rejected and indicated as pet.name
+    ok 6 - TEST-ID-003 AC-003: a missing pet name is rejected and indicated as pet.name
+      ---
+      duration_ms: 8.5934
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet species is rejected and indicated as pet.species
+    ok 7 - TEST-ID-003 AC-003: a missing pet species is rejected and indicated as pet.species
+      ---
+      duration_ms: 10.3489
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet age is rejected and indicated as pet.ageYears
+    ok 8 - TEST-ID-003 AC-003: a missing pet age is rejected and indicated as pet.ageYears
+      ---
+      duration_ms: 14.2935
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-003 AC-003: a missing pet breed is rejected and indicated as pet.breed
+    ok 9 - TEST-ID-003 AC-003: a missing pet breed is rejected and indicated as pet.breed
+      ---
+      duration_ms: 12.8083
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-004 AC-004: a second owner account with the same email is rejected and the first stays usable
+    ok 10 - TEST-ID-004 AC-004: a second owner account with the same email is rejected and the first stays usable
+      ---
+      duration_ms: 1097.2098
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-005 AC-005: the stored credential is an Argon2id hash, never the password
+    ok 11 - TEST-ID-005 AC-005: the stored credential is an Argon2id hash, never the password
+      ---
+      duration_ms: 284.9931
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-006 AC-074: an email that belongs to a provider can still sign up as an owner
+    ok 12 - TEST-ID-006 AC-074: an email that belongs to a provider can still sign up as an owner
+      ---
+      duration_ms: 549.2035
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-007 AC-075: only dog or cat can be chosen as the pet species
+    ok 13 - TEST-ID-007 AC-075: only dog or cat can be chosen as the pet species
+      ---
+      duration_ms: 468.0509
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-008 AC-102: the password minimum is 8 characters (7 rejected, 8 accepted, counted as characters)
+    ok 14 - TEST-ID-008 AC-102: the password minimum is 8 characters (7 rejected, 8 accepted, counted as characters)
+      ---
+      duration_ms: 173.7096
+      type: 'test'
+      ...
+    1..14
+ok 9 - US-001 owner sign-up
+  ---
+  duration_ms: 3484.7669
+  type: 'suite'
+  ...
+# Subtest: US-002 provider sign-up
+    # Subtest: TEST-ID-010 AC-006 AC-105: clinic with address and independent veterinarian without address are created
+    ok 1 - TEST-ID-010 AC-006 AC-105: clinic with address and independent veterinarian without address are created
+      ---
+      duration_ms: 423.6302
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-011 AC-007: a missing or unknown provider type is rejected and indicated
+    ok 2 - TEST-ID-011 AC-007: a missing or unknown provider type is rejected and indicated
+      ---
+      duration_ms: 24.045
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-012 AC-008: a second provider account with the same email is rejected
+    ok 3 - TEST-ID-012 AC-008: a second provider account with the same email is rejected
+      ---
+      duration_ms: 384.864
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-013 AC-009: the stored provider credential is an Argon2id hash
+    ok 4 - TEST-ID-013 AC-009: the stored provider credential is an Argon2id hash
+      ---
+      duration_ms: 259.7338
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-014 AC-076: an email that belongs to an owner can sign up as a provider
+    ok 5 - TEST-ID-014 AC-076: an email that belongs to an owner can sign up as a provider
+      ---
+      duration_ms: 308.3073
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-015 AC-103: provider password shorter than 8 characters is rejected
+    ok 6 - TEST-ID-015 AC-103: provider password shorter than 8 characters is rejected
+      ---
+      duration_ms: 8.5325
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-016 AC-104: a clinic without an address (absent, empty or blank) is rejected
+    ok 7 - TEST-ID-016 AC-104: a clinic without an address (absent, empty or blank) is rejected
+      ---
+      duration_ms: 41.2229
+      type: 'test'
+      ...
+    1..7
+ok 10 - US-002 provider sign-up
+  ---
+  duration_ms: 1453.3386
+  type: 'suite'
+  ...
+# Subtest: US-003 sign-in and account types
+    # Subtest: TEST-ID-020 AC-010 AC-011: owners and providers sign in with the correct credentials and reach their own interface
+    ok 1 - TEST-ID-020 AC-010 AC-011: owners and providers sign in with the correct credentials and reach their own interface
+      ---
+      duration_ms: 777.5918
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-021 AC-012: wrong password, unknown email and unregistered account type give the same refusal
+    ok 2 - TEST-ID-021 AC-012: wrong password, unknown email and unregistered account type give the same refusal
+      ---
+      duration_ms: 800.4805
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-022 AC-013: a session of one account type cannot use functions of the other type
+    ok 3 - TEST-ID-022 AC-013: a session of one account type cannot use functions of the other type
+      ---
+      duration_ms: 700.7393
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-023 AC-077: the same email as owner and provider reaches the interface of the chosen type
+    ok 4 - TEST-ID-023 AC-077: the same email as owner and provider reaches the interface of the chosen type
+      ---
+      duration_ms: 1182.9012
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-025 AC-010: e-mail addresses are matched case-insensitively and ignoring surrounding spaces at sign-in
+    ok 5 - TEST-ID-025 AC-010: e-mail addresses are matched case-insensitively and ignoring surrounding spaces at sign-in
+      ---
+      duration_ms: 506.5561
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-024 AC-012: sign-in validates its input (missing and malformed fields are VALIDATION_FAILED)
+    ok 6 - TEST-ID-024 AC-012: sign-in validates its input (missing and malformed fields are VALIDATION_FAILED)
+      ---
+      duration_ms: 4.7076
+      type: 'test'
+      ...
+    1..6
+ok 11 - US-003 sign-in and account types
+  ---
+  duration_ms: 3975.157
+  type: 'suite'
+  ...
+# Subtest: AC-114 session lifetime
+    # Subtest: TEST-ID-030 AC-114: 60 minutes without activity requires a new sign-in, activity renews the idle window
+    ok 1 - TEST-ID-030 AC-114: 60 minutes without activity requires a new sign-in, activity renews the idle window
+      ---
+      duration_ms: 125.4459
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-031 AC-114: 12 hours after sign-in the next action requires signing in again, however active the user was
+    ok 2 - TEST-ID-031 AC-114: 12 hours after sign-in the next action requires signing in again, however active the user was
+      ---
+      duration_ms: 191.4493
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-032 AC-114: signing in again after expiry yields a working session
+    ok 3 - TEST-ID-032 AC-114: signing in again after expiry yields a working session
+      ---
+      duration_ms: 219.3335
+      type: 'test'
+      ...
+    1..3
+ok 12 - AC-114 session lifetime
+  ---
+  duration_ms: 536.7602
+  type: 'suite'
+  ...
+# Subtest: US-034 sign-out
+    # Subtest: TEST-ID-040 AC-112 AC-113: sign-out ends the session without confirmation and protected screens then require sign-in
+    ok 1 - TEST-ID-040 AC-112 AC-113: sign-out ends the session without confirmation and protected screens then require sign-in
+      ---
+      duration_ms: 142.4074
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-041 AC-112: sign-out only ends the session of that cookie, and signing in again with another type works
+    ok 2 - TEST-ID-041 AC-112: sign-out only ends the session of that cookie, and signing in again with another type works
+      ---
+      duration_ms: 536.903
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-042 AC-112 EDGE-031: signing out is idempotent and works without or with a stale cookie
+    ok 3 - TEST-ID-042 AC-112 EDGE-031: signing out is idempotent and works without or with a stale cookie
+      ---
+      duration_ms: 92.9471
+      type: 'test'
+      ...
+    # Subtest: TEST-ID-043 AC-113: a copied cookie of a signed-out session is useless even for provider functions
+    ok 4 - TEST-ID-043 AC-113: a copied cookie of a signed-out session is useless even for provider functions
+      ---
+      duration_ms: 117.4634
+      type: 'test'
+      ...
+    1..4
+ok 13 - US-034 sign-out
+  ---
+  duration_ms: 890.3137
+  type: 'suite'
+  ...
+# Subtest: US-008 provider public profile
+    # Subtest: TEST-PC-001 AC-023 AC-044: saved name, phone, email and address appear on the public profile the owner sees
+    ok 1 - TEST-PC-001 AC-023 AC-044: saved name, phone, email and address appear on the public profile the owner sees
+      ---
+      duration_ms: 216.1828
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-002 AC-024 AC-045: an independent veterinarian without address saves and is shown without one; adding it later shows it
+    ok 2 - TEST-PC-002 AC-024 AC-045: an independent veterinarian without address saves and is shown without one; adding it later shows it
+      ---
+      duration_ms: 257.7593
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-003 AC-106: a clinic can change its address but cannot remove it; the failed save changes nothing
+    ok 3 - TEST-PC-003 AC-106: a clinic can change its address but cannot remove it; the failed save changes nothing
+      ---
+      duration_ms: 409.6756
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-004 AC-023: required name, phone and email are enforced and phone characters are validated
+    ok 4 - TEST-PC-004 AC-023: required name, phone and email are enforced and phone characters are validated
+      ---
+      duration_ms: 315.2219
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-005 AC-023: a provider edits only its own profile (other providers are unaffected)
+    ok 5 - TEST-PC-005 AC-023: a provider edits only its own profile (other providers are unaffected)
+      ---
+      duration_ms: 562.0856
+      type: 'test'
+      ...
+    1..5
+ok 14 - US-008 provider public profile
+  ---
+  duration_ms: 2375.4993
+  type: 'suite'
+  ...
+# Subtest: US-009 working days and hours
+    # Subtest: TEST-PC-010 AC-025: hours can differ per day and are returned exactly as saved
+    ok 1 - TEST-PC-010 AC-025: hours can differ per day and are returned exactly as saved
+      ---
+      duration_ms: 367.6
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-011 AC-080: a start or end that is not on the hour is rejected and the time is indicated
+    ok 2 - TEST-PC-011 AC-080: a start or end that is not on the hour is rejected and the time is indicated
+      ---
+      duration_ms: 316.9585
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-012 AC-025: invalid ranges are rejected (end not after start, outside 0-24, wrong number of days)
+    ok 3 - TEST-PC-012 AC-025: invalid ranges are rejected (end not after start, outside 0-24, wrong number of days)
+      ---
+      duration_ms: 295.935
+      type: 'test'
+      ...
+    1..3
+ok 15 - US-009 working days and hours
+  ---
+  duration_ms: 982.2054
+  type: 'suite'
+  ...
+# Subtest: US-010 / US-013 publishing
+    # Subtest: TEST-PC-020 AC-027 AC-033: a published service and product appear in the provider catalog, on its profile and in search
+    ok 1 - TEST-PC-020 AC-027 AC-033: a published service and product appear in the provider catalog, on its profile and in search
+      ---
+      duration_ms: 308.7899
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-021 AC-028 AC-034: a service or product without exactly one species is not published and the species is indicated
+    ok 2 - TEST-PC-021 AC-028 AC-034: a service or product without exactly one species is not published and the species is indicated
+      ---
+      duration_ms: 407.6398
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-022 AC-029: a service without modality (or with an unknown one) is not published
+    ok 3 - TEST-PC-022 AC-029: a service without modality (or with an unknown one) is not published
+      ---
+      duration_ms: 298.9325
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-023 AC-082 AC-084: a service or product without a price is not published and the price is indicated
+    ok 4 - TEST-PC-023 AC-082 AC-084: a service or product without a price is not published and the price is indicated
+      ---
+      duration_ms: 512.4291
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-024 AC-107: an independent veterinarian offers services only at the owner's home
+    ok 5 - TEST-PC-024 AC-107: an independent veterinarian offers services only at the owner's home
+      ---
+      duration_ms: 269.7031
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-025 AC-111: a new product is published as available
+    ok 6 - TEST-PC-025 AC-111: a new product is published as available
+      ---
+      duration_ms: 275.8793
+      type: 'test'
+      ...
+    1..6
+ok 16 - US-010 / US-013 publishing
+  ---
+  duration_ms: 2075.3242
+  type: 'suite'
+  ...
+# Subtest: US-016 / US-017 / US-018 owner discovery
+    # Subtest: TEST-PC-030 AC-038 AC-039: search returns matching offerings of all providers with price, provider type and modality
+    ok 1 - TEST-PC-030 AC-038 AC-039: search returns matching offerings of all providers with price, provider type and modality
+      ---
+      duration_ms: 35.7738
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+    ok 2 - TEST-PC-031 AC-040: a search without matches returns an empty list (not an error)
+      ---
+      duration_ms: 25.6952
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-032 FR-017 (US-016): search text is required, trimmed and bounded
+    ok 3 - TEST-PC-032 FR-017 (US-016): search text is required, trimmed and bounded
+      ---
+      duration_ms: 102.1059
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-033 AC-041 AC-043: the species filter keeps only that species and removing it brings both back
+    ok 4 - TEST-PC-033 AC-041 AC-043: the species filter keeps only that species and removing it brings both back
+      ---
+      duration_ms: 92.5242
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-034 AC-042 BR-008: filtering by a species the owner has no pet of still shows those offerings
+    ok 5 - TEST-PC-034 AC-042 BR-008: filtering by a species the owner has no pet of still shows those offerings
+      ---
+      duration_ms: 384.1917
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-035 AC-086: text and species must both match
+    ok 6 - TEST-PC-035 AC-086: text and species must both match
+      ---
+      duration_ms: 53.8001
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-036 AC-038: search is case- and accent-insensitive and treats LIKE wildcards literally
+    ok 7 - TEST-PC-036 AC-038: search is case- and accent-insensitive and treats LIKE wildcards literally
+      ---
+      duration_ms: 65.4881
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-037 AC-044: each public profile lists only its own offerings, with provider type and contact data
+    ok 8 - TEST-PC-037 AC-044: each public profile lists only its own offerings, with provider type and contact data
+      ---
+      duration_ms: 49.7239
+      type: 'test'
+      ...
+    # Subtest: TEST-PC-038 AC-044: unknown, malformed and non-provider identifiers are NOT_FOUND
+    ok 9 - TEST-PC-038 AC-044: unknown, malformed and non-provider identifiers are NOT_FOUND
+      ---
+      duration_ms: 38.1336
+      type: 'test'
+      ...
+    1..9
+ok 17 - US-016 / US-017 / US-018 owner discovery
+  ---
+  duration_ms: 1633.4031
+  type: 'suite'
+  ...
+# Subtest: authentication and role separation
+    # Subtest: TEST-SEC-001 AC-113: every protected endpoint answers 401 UNAUTHENTICATED without a session and never touches data
+    ok 1 - TEST-SEC-001 AC-113: every protected endpoint answers 401 UNAUTHENTICATED without a session and never touches data
+      ---
+      duration_ms: 174.8141
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-002 AC-013 BR-001: every endpoint of the other account type is indistinguishable from a missing resource
+    ok 2 - TEST-SEC-002 AC-013 BR-001: every endpoint of the other account type is indistinguishable from a missing resource
+      ---
+      duration_ms: 212.4234
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-003 NFR-002: forged, truncated and malformed cookies never authenticate
+    ok 3 - TEST-SEC-003 NFR-002: forged, truncated and malformed cookies never authenticate
+      ---
+      duration_ms: 108.8939
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-004 ADR-007 P05-ASM-007: the database stores only the SHA-256 of the session token, never the token
+    ok 4 - TEST-SEC-004 ADR-007 P05-ASM-007: the database stores only the SHA-256 of the session token, never the token
+      ---
+      duration_ms: 300.1474
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-005 ADR-007: session cookies are HttpOnly, Secure, SameSite=Lax, Path=/ and bounded by the absolute lifetime
+    ok 5 - TEST-SEC-005 ADR-007: session cookies are HttpOnly, Secure, SameSite=Lax, Path=/ and bounded by the absolute lifetime
+      ---
+      duration_ms: 541.3358
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-006 AC-012: sign-in failures do not reveal whether the account exists (same status, body and no cookie)
+    ok 6 - TEST-SEC-006 AC-012: sign-in failures do not reveal whether the account exists (same status, body and no cookie)
+      ---
+      duration_ms: 426.8843
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-007 NFR-001: password length is capped, so a huge password cannot force expensive hashing
+    ok 7 - TEST-SEC-007 NFR-001: password length is capped, so a huge password cannot force expensive hashing
+      ---
+      duration_ms: 6.686
+      type: 'test'
+      ...
+    1..7
+ok 18 - authentication and role separation
+  ---
+  duration_ms: 3227.3124
+  type: 'suite'
+  ...
+# Subtest: request origin protection (CR-021)
+    # Subtest: TEST-SEC-010: a state-changing request from another origin or without Origin is refused with FORBIDDEN_ORIGIN and has no effect
+    ok 1 - TEST-SEC-010: a state-changing request from another origin or without Origin is refused with FORBIDDEN_ORIGIN and has no effect
+      ---
+      duration_ms: 211.9718
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-011: a body that is not application/json is refused even from the right origin
+    ok 2 - TEST-SEC-011: a body that is not application/json is refused even from the right origin
+      ---
+      duration_ms: 36.9056
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-012: read-only requests do not need an Origin and no CORS permission is granted to other origins
+    ok 3 - TEST-SEC-012: read-only requests do not need an Origin and no CORS permission is granted to other origins
+      ---
+      duration_ms: 9.773
+      type: 'test'
+      ...
+    1..3
+ok 19 - request origin protection (CR-021)
+  ---
+  duration_ms: 259.9846
+  type: 'suite'
+  ...
+# Subtest: cross-account isolation (AC-064, BR-005)
+    # Subtest: TEST-SEC-020 AC-064 AC-055: appointments are visible only to their own owner and provider
+    ok 1 - TEST-SEC-020 AC-064 AC-055: appointments are visible only to their own owner and provider
+      ---
+      duration_ms: 679.5587
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-021 BR-005: an owner cannot book with another owner's pet, nor inject ownership through extra fields
+    ok 2 - TEST-SEC-021 BR-005: an owner cannot book with another owner's pet, nor inject ownership through extra fields
+      ---
+      duration_ms: 95.0348
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-022: sign-up input cannot choose the account type, id, or any unlisted attribute (mass assignment)
+    ok 3 - TEST-SEC-022: sign-up input cannot choose the account type, id, or any unlisted attribute (mass assignment)
+      ---
+      duration_ms: 55.1011
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-023: a provider cannot publish on behalf of another provider
+    ok 4 - TEST-SEC-023: a provider cannot publish on behalf of another provider
+      ---
+      duration_ms: 322.6962
+      type: 'test'
+      ...
+    1..4
+ok 20 - cross-account isolation (AC-064, BR-005)
+  ---
+  duration_ms: 1154.0345
+  type: 'suite'
+  ...
+# Subtest: injection and hostile input
+    # Subtest: TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+    ok 1 - TEST-SEC-030: SQL metacharacters in search text are data: no error, no extra rows, tables intact
+      ---
+      duration_ms: 144.7353
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+    ok 2 - TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDATION_FAILED, never as a server error
+      ---
+      duration_ms: 755.1492
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-037 DEF-001: refusing NUL in text does not change password handling (a NUL inside a password is still just part of the secret)
+    ok 3 - TEST-SEC-037 DEF-001: refusing NUL in text does not change password handling (a NUL inside a password is still just part of the secret)
+      ---
+      duration_ms: 856.5598
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-031: hostile text stored by sign-up and publishing round-trips as inert data
+    ok 4 - TEST-SEC-031: hostile text stored by sign-up and publishing round-trips as inert data
+      ---
+      duration_ms: 802.3247
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-032: identifiers in paths and bodies are validated before reaching the database
+    ok 5 - TEST-SEC-032: identifiers in paths and bodies are validated before reaching the database
+      ---
+      duration_ms: 93.3443
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-036: repeated query parameters and a bracketed search key are rejected by validation, not by a crash
+    ok 6 - TEST-SEC-036: repeated query parameters and a bracketed search key are rejected by validation, not by a crash
+      ---
+      duration_ms: 46.5204
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+    ok 7 - TEST-SEC-033: malformed, wrongly typed and oversized JSON bodies end as JSON errors, never as a crash
+      ---
+      duration_ms: 41.8174
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-034 AC-102: types are checked (numbers, arrays and objects where strings are expected are rejected, not coerced)
+    ok 8 - TEST-SEC-034 AC-102: types are checked (numbers, arrays and objects where strings are expected are rejected, not coerced)
+      ---
+      duration_ms: 50.5856
+      type: 'test'
+      ...
+    1..8
+ok 21 - injection and hostile input
+  ---
+  duration_ms: 2792.8718
+  type: 'suite'
+  ...
+# Subtest: information leakage and logging (CR-005, CR-020)
+    # Subtest: TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+    ok 1 - TEST-SEC-040 CR-005: error responses expose only the outcome code (no stack, SQL, table or file names)
+      ---
+      duration_ms: 55.5983
+      type: 'test'
+      ...
+    # Subtest: TEST-SEC-041 CR-020: logs never contain passwords, e-mails, cookies, tokens, addresses or request bodies
+    ok 2 - TEST-SEC-041 CR-020: logs never contain passwords, e-mails, cookies, tokens, addresses or request bodies
+      ---
+      duration_ms: 1003.2733
+      type: 'test'
+      ...
+    1..2
+ok 22 - information leakage and logging (CR-005, CR-020)
+  ---
+  duration_ms: 1059.5096
+  type: 'suite'
+  ...
+# Subtest: BR-010 / BR-011 / BR-012 / BR-013 — which slots are offered
+    # Subtest: TEST-UT-001 BR-011: an hour-long appointment must fit entirely inside the working hours
+    ok 1 - TEST-UT-001 BR-011: an hour-long appointment must fit entirely inside the working hours
+      ---
+      duration_ms: 3.3221
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-002 BR-010: the weekday and hour are those of Bogota, not of UTC
+    ok 2 - TEST-UT-002 BR-010: the weekday and hour are those of Bogota, not of UTC
+      ---
+      duration_ms: 1.6467
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-003 AC-051: a start that is not strictly after now is not offered
+    ok 3 - TEST-UT-003 AC-051: a start that is not strictly after now is not offered
+      ---
+      duration_ms: 1.0981
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-004 BR-012 / BR-013: clinics ignore existing appointments; independent veterinarians do not offer a taken slot
+    ok 4 - TEST-UT-004 BR-012 / BR-013: clinics ignore existing appointments; independent veterinarians do not offer a taken slot
+      ---
+      duration_ms: 1.4378
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-005 AC-026: no hours means no slots
+    ok 5 - TEST-UT-005 AC-026: no hours means no slots
+      ---
+      duration_ms: 10.5587
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-006 AC-046: computeWeekSlots yields 7 consecutive dates and exactly the open one-hour starts, as Bogota ISO strings
+    ok 6 - TEST-UT-006 AC-046: computeWeekSlots yields 7 consecutive dates and exactly the open one-hour starts, as Bogota ISO strings
+      ---
+      duration_ms: 16.0664
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-007 BR-011: for every hour window, offered slots are exactly the starts that fit (exhaustive over 0-24)
+    ok 7 - TEST-UT-007 BR-011: for every hour window, offered slots are exactly the starts that fit (exhaustive over 0-24)
+      ---
+      duration_ms: 817.8637
+      type: 'test'
+      ...
+    1..7
+ok 23 - BR-010 / BR-011 / BR-012 / BR-013 — which slots are offered
+  ---
+  duration_ms: 855.9154
+  type: 'suite'
+  ...
+# Subtest: calendar helpers (Bogota, UTC-5, no daylight saving)
+    # Subtest: TEST-UT-010: toBogotaIso and bogotaInstant are inverse across month, year and leap boundaries
+    ok 1 - TEST-UT-010: toBogotaIso and bogotaInstant are inverse across month, year and leap boundaries
+      ---
+      duration_ms: 1.1167
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-011: weekday, Monday-of-week and date arithmetic
+    ok 2 - TEST-UT-011: weekday, Monday-of-week and date arithmetic
+      ---
+      duration_ms: 1.0226
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-012: isLocalDate accepts only real calendar dates
+    ok 3 - TEST-UT-012: isLocalDate accepts only real calendar dates
+      ---
+      duration_ms: 0.8487
+      type: 'test'
+      ...
+    1..3
+ok 24 - calendar helpers (Bogota, UTC-5, no daylight saving)
+  ---
+  duration_ms: 3.9524
+  type: 'suite'
+  ...
+# Subtest: AC-080 / AC-025 — working-hours validation
+    # Subtest: TEST-UT-020: a valid week normalizes to seven days, non-working days carrying no hours
+    ok 1 - TEST-UT-020: a valid week normalizes to seven days, non-working days carrying no hours
+      ---
+      duration_ms: 3.6708
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-021 AC-080: fractional hours are NOT_ON_THE_HOUR on both start and end
+    ok 2 - TEST-UT-021 AC-080: fractional hours are NOT_ON_THE_HOUR on both start and end
+      ---
+      duration_ms: 0.8159
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+    ok 3 - TEST-UT-022: ranges, duplicates and shape errors are reported, never thrown
+      ---
+      duration_ms: 1.3475
+      type: 'test'
+      ...
+    1..3
+ok 25 - AC-080 / AC-025 — working-hours validation
+  ---
+  duration_ms: 6.3537
+  type: 'suite'
+  ...
+# Subtest: IF-011 request validation (AC-053, AC-054, AC-046)
+    # Subtest: TEST-UT-030: a valid request is normalized (ids lower-cased, address trimmed, instant parsed)
+    ok 1 - TEST-UT-030: a valid request is normalized (ids lower-cased, address trimmed, instant parsed)
+      ---
+      duration_ms: 1.2848
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-031: required, format, hour and modality errors carry the field and reason
+    ok 2 - TEST-UT-031: required, format, hour and modality errors carry the field and reason
+      ---
+      duration_ms: 1.1357
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-032: validators never throw on arbitrary JSON values
+    ok 3 - TEST-UT-032: validators never throw on arbitrary JSON values
+      ---
+      duration_ms: 4.402
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-033 AC-054 BR-007: the appointment modality follows the offering rules
+    ok 4 - TEST-UT-033 AC-054 BR-007: the appointment modality follows the offering rules
+      ---
+      duration_ms: 0.9457
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-034 weekStart: absent is allowed; otherwise a real Monday between years 1970 and 2999
+    ok 5 - TEST-UT-034 weekStart: absent is allowed; otherwise a real Monday between years 1970 and 2999
+      ---
+      duration_ms: 0.857
+      type: 'test'
+      ...
+    1..5
+ok 26 - IF-011 request validation (AC-053, AC-054, AC-046)
+  ---
+  duration_ms: 9.3041
+  type: 'suite'
+  ...
+# Subtest: sign-up, publishing and search validation boundaries
+    # Subtest: TEST-UT-040 AC-102: password boundary is 8 characters (code points), maximum 128
+    ok 1 - TEST-UT-040 AC-102: password boundary is 8 characters (code points), maximum 128
+      ---
+      duration_ms: 0.9498
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-041 AC-001 AC-075: pet fields — age 0 is a valid age, species only dog or cat, optional measures are range-checked
+    ok 2 - TEST-UT-041 AC-001 AC-075: pet fields — age 0 is a valid age, species only dog or cat, optional measures are range-checked
+      ---
+      duration_ms: 5.6135
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-042 AC-104 AC-105 BR-026: a clinic address is mandatory, an independent veterinarian's optional
+    ok 3 - TEST-UT-042 AC-104 AC-105 BR-026: a clinic address is mandatory, an independent veterinarian's optional
+      ---
+      duration_ms: 0.9636
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-043 AC-107 AC-029 BR-007: modality rules by provider type
+    ok 4 - TEST-UT-043 AC-107 AC-029 BR-007: modality rules by provider type
+      ---
+      duration_ms: 0.8337
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-044 AC-082 AC-084 BR-027: price must be a whole number of pesos between 1 and the 32-bit maximum
+    ok 5 - TEST-UT-044 AC-082 AC-084 BR-027: price must be a whole number of pesos between 1 and the 32-bit maximum
+      ---
+      duration_ms: 0.7768
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-045 FR-017 AC-041: search text and species filter validation
+    ok 6 - TEST-UT-045 FR-017 AC-041: search text and species filter validation
+      ---
+      duration_ms: 0.4552
+      type: 'test'
+      ...
+    1..6
+ok 27 - sign-up, publishing and search validation boundaries
+  ---
+  duration_ms: 10.454
+  type: 'suite'
+  ...
+# Subtest: CTR-001 outcome catalogue
+    # Subtest: TEST-UT-050: outcomes map to the documented HTTP status and only VALIDATION_FAILED carries fields
+    ok 1 - TEST-UT-050: outcomes map to the documented HTTP status and only VALIDATION_FAILED carries fields
+      ---
+      duration_ms: 1.4992
+      type: 'test'
+      ...
+    1..1
+ok 28 - CTR-001 outcome catalogue
+  ---
+  duration_ms: 1.7098
+  type: 'suite'
+  ...
+# Subtest: DEF-001 — NUL characters are refused at the API boundary
+    # Subtest: TEST-UT-060 DEF-001: clean input passes and NUL anywhere in the body or query becomes VALIDATION_FAILED naming the field
+    ok 1 - TEST-UT-060 DEF-001: clean input passes and NUL anywhere in the body or query becomes VALIDATION_FAILED naming the field
+      ---
+      duration_ms: 2.0713
+      type: 'test'
+      ...
+    # Subtest: TEST-UT-061 DEF-001: the password field is not inspected (it is only hashed), so its handling is unchanged
+    ok 2 - TEST-UT-061 DEF-001: the password field is not inspected (it is only hashed), so its handling is unchanged
+      ---
+      duration_ms: 0.5934
+      type: 'test'
+      ...
+    1..2
+ok 29 - DEF-001 — NUL characters are refused at the API boundary
+  ---
+  duration_ms: 3.051
+  type: 'suite'
+  ...
+1..29
+# tests 143
+# suites 29
+# pass 143
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14519.8229

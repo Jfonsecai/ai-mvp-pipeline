@@ -1,0 +1,55 @@
+== baseline (unmutated copy)
+TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M1 slot may extend past closing hour
+   KILLED by:
+     TEST-BK-001 AC-046 AC-025: slots are one-hour starts only inside the working days and hour
+     TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+     TEST-BK-004 AC-025: different hours per day are respected, including a late shift ending a
+     TEST-BK-005 AC-046: the owner can look at other weeks; weekStart must be a real Monday
+     TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+     TEST-UT-001 BR-011: an hour-long appointment must fit entirely inside the working hours
+     TEST-UT-006 AC-046: computeWeekSlots yields 7 consecutive dates and exactly the open one-h
+     TEST-UT-007 BR-011: for every hour window, offered slots are exactly the starts that fit (
+== M2 a slot starting exactly now is offered
+   KILLED by:
+     TEST-BK-002 AC-051: slots whose start time is not in the future are not offered
+     TEST-BK-018 AC-046 AC-051: the server rechecks the slot: outside hours, past, off-the-hour
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+     TEST-UT-003 AC-051: a start that is not strictly after now is not offered
+== M3 independent slots can be double booked
+   KILLED by:
+     TEST-BK-012 AC-050 BR-013: an independent veterinarian's booked slot is no longer offered 
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+     TEST-UT-004 BR-012 / BR-013: clinics ignore existing appointments; independent veterinaria
+== M4 hours change also cancels past appointments
+   KILLED by:
+     TEST-BK-043 AC-081: appointments that already took place are left alone when hours change
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M5 origin guard disabled
+   KILLED by:
+     TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorRespon
+     TEST-SEC-010: a state-changing request from another origin or without Origin is refused wi
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M6 idle limit off by one (60 min still valid)
+   KILLED by:
+     TEST-ID-030 AC-114: 60 minutes without activity requires a new sign-in, activity renews th
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M7 pet species not checked when booking
+   KILLED by:
+     TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorRespon
+     TEST-BK-015 AC-108 AC-109: only pets of the service's species can be chosen, and an owner 
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M8 species filter ignored in search
+   KILLED by:
+     TEST-CT-004 US-016/US-017/US-018: search results, public profile and pets
+     TEST-PC-033 AC-041 AC-043: the species filter keeps only that species and removing it brin
+     TEST-PC-034 AC-042 BR-008: filtering by a species the owner has no pet of still shows thos
+     TEST-PC-035 AC-086: text and species must both match
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
+== M9 role guard returns the wrong outcome
+   KILLED by:
+     TEST-CT-010 CTR-001: representative failures of every implemented endpoint are ErrorRespon
+     TEST-ID-022 AC-013: a session of one account type cannot use functions of the other type
+     TEST-SEC-002 AC-013 BR-001: every endpoint of the other account type is indistinguishable 
+     TEST-SEC-035 CR-005 CTR-001: a NUL character in any free-text field is rejected as VALIDAT
