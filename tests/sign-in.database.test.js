@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { Router } from 'express';
 import argon2 from 'argon2';
 import pg from 'pg';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { migrate } from '../src/db/migrator.js';
 import { createIdentityRouter } from '../src/modules/identity/sign-up.js';
 import { fixedClock, startApp, testConfig } from './helpers.js';

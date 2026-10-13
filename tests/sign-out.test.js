@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { createIdentityRouter } from '../src/modules/identity/sign-up.js';
 import { hashSessionToken } from '../src/modules/identity/sessions.js';
 import { fixedClock, startApp, testConfig } from './helpers.js';

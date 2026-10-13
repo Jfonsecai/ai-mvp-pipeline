@@ -11,7 +11,7 @@ import { randomUUID } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { createApp } from '../../../../src/app.js';
+import { createApp } from '../../../../src/application.js';
 import { migrate } from '../../../../src/db/migrator.js';
 import { loadConfig } from '../../../../src/shared/config.js';
 import { createLogger } from '../../../../src/shared/logger.js';

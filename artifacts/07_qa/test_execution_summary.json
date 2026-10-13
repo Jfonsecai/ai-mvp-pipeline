@@ -65,7 +65,7 @@
       ],
       "affected_inputs": 14,
       "handoff": "P07.3",
-      "resolution": "P07.3: rejectNulCharacters middleware (src/http/middleware.js, registered in src/app.js). Verified by re-execution: TEST-SEC-035 passes; 143/143 new, 175/175 existing, 318/318 combined."
+      "resolution": "P07.3: rejectNulCharacters middleware (src/http/middleware.js, registered in src/application.js). Verified by re-execution: TEST-SEC-035 passes; 143/143 new, 175/175 existing, 318/318 combined."
     },
     {
       "id": "F-02",

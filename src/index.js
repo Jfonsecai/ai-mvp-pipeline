@@ -3,7 +3,7 @@
 // and comes from public/ (built by `npm run build`). Local development uses scripts/dev-server.js.
 //
 // UNVERIFIED on Vercel until the step-0 deployment (COND-001 / P05-ASM-012).
-import { createApp } from './app.js';
+import { createApp } from './application.js';
 import { createDatabase } from './db/database.js';
 import { loadConfig } from './shared/config.js';
 import { createLogger } from './shared/logger.js';

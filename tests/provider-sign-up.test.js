@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import argon2 from 'argon2';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { createIdentityRouter, validateProviderSignUp } from '../src/modules/identity/sign-up.js';
 import { fixedClock, startApp, testConfig } from './helpers.js';
 

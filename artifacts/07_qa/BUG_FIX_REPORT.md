@@ -17,7 +17,7 @@ Informational findings F-02 to F-08 are not code defects and were not touched (F
 | Summary | `U+0000` in any text the client sends reaches PostgreSQL, which rejects it, and the API answers `500 UNEXPECTED` instead of `422 VALIDATION_FAILED`. |
 | Severity | MINOR |
 | Related stories / criteria | No acceptance criterion states it. It affects the inputs of US-001, 002, 003, 008, 010, 013, 016, 020 and the contract rules CTR-001 / CR-005. |
-| Affected components | COMP-003 API Boundary (`src/http/middleware.js`, `src/app.js`) and, through it, every module that stores or searches text. |
+| Affected components | COMP-003 API Boundary (`src/http/middleware.js`, `src/application.js`) and, through it, every module that stores or searches text. |
 
 ### Root Cause Analysis
 
@@ -36,7 +36,7 @@ Smallest change that closes the whole class of inputs at once: one boundary midd
 | File | Change |
 |---|---|
 | `src/http/middleware.js` | New `rejectNulCharacters(req, res, next)`: walks the parsed JSON body (nested objects and arrays) and the query string, and throws `Outcome('VALIDATION_FAILED', { fields })` naming each field as `INVALID_FORMAT`. The top-level `password` field is skipped. |
-| `src/app.js` | Imports it and registers it right after `express.json(...)` and before the session context. |
+| `src/application.js` | Imports it and registers it right after `express.json(...)` and before the session context. |
 
 2 production files, +27 / -1 lines (`git diff --stat`). No dependency, configuration, schema, API contract or business-rule change.
 

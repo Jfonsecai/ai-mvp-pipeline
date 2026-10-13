@@ -2375,7 +2375,7 @@ ok 204 - sign-out without a session succeeds and clears any stale cookie
 # file                   | line % | branch % | funcs % | uncovered lines
 # -------------------------------------------------------------------------------------
 # src                    |        |          |         | 
-#  app.js                | 100.00 |   100.00 |  100.00 | 
+#  application.js                | 100.00 |   100.00 |  100.00 | 
 #  db                    |        |          |         | 
 #   database.js          | 100.00 |   100.00 |   57.14 | 
 #   migrator.js          | 100.00 |   100.00 |   88.89 | 

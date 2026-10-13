@@ -1,5 +1,6 @@
 # Visual Studio local workspace and cache files
 .vs/
+.vscode/
 
 # Dependencies and build output
 node_modules/
