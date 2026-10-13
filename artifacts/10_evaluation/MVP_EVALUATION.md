@@ -166,21 +166,24 @@ The project documentation is generally good at explaining setup, architecture, a
 
 ## 7. Success Criteria and Outcome Assessment
 
-The project documents nine capability areas as the core MVP success criteria. The current evidence supports this outcome mapping:
+The project documents nine capability areas as the core MVP success criteria. The nine-count summary (5 met, 3 partially met, 1 not met, 0 unmeasured) applies only to those nine documented capability areas. Operational outcomes and user/business outcomes are assessed separately and are not part of this nine-capability-area count.
+
+The current evidence supports this outcome mapping:
 
 | Category | Result |
 |---|---|
 | Demonstrated outcomes | PARTIALLY_VERIFIED |
 | Operational outcomes | NOT_VERIFIED |
 | User/business outcomes | DATA_UNAVAILABLE |
-| Unmeasured criteria | Yes |
+| Unmeasured criteria (within the nine capability areas) | No (0) |
 
 Detailed assessment:
 
 - Met / demonstrated: five capability areas (search, account/auth, provider profile, working hours, booking) are strongly supported by local tests and implementation artifacts.
 - Partially met: three capability areas (catalog, pet management, appointment management) are available but incomplete or limited.
 - Not met: product ordering remains not implemented.
-- Unmeasured: adoption, business impact, and real-world operational outcomes remain unavailable.
+- Unmeasured (within the nine documented capability areas): none (0).
+- Assessed separately (not included in the nine-capability-area count): operational outcomes remain `NOT_VERIFIED`, and user/business outcomes remain `DATA_UNAVAILABLE`.
 
 ## 8. Risks and Prioritized Recommendations
 
