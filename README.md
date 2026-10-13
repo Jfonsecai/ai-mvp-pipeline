@@ -1,107 +1,71 @@
-# VetCare - technical foundation
+# VetCare
 
-Veterinary services and products marketplace (MVP). This repository currently holds the **technical
-foundation** (pipeline phase P06.1) plus the project artifacts. No user story is implemented yet.
+Marketplace web para descubrir servicios veterinarios y reservar atención presencial o a domicilio.
 
-Architecture: a client-server **modular monolith** - a React single-page client served as static
-files, one Express application under `/api` (one Vercel Function), one PostgreSQL database (Neon).
-Authority: `artifacts/05_arquitecture/ARCHITECTURE_V2.md`, `API_SPEC_V1.yaml`, `DATA_MODEL_V1.md`.
+## Propósito y problema
 
-## Prerequisites
+VetCare busca ayudar a dueños de mascotas a encontrar atención veterinaria y a proveedores a publicar servicios. La visión del producto y el alcance MVP están en P00 y P01; la disponibilidad que se describe aquí refleja el código actual.
 
-- Node.js 22 or newer (`.nvmrc`), npm 10+.
-- A PostgreSQL database for anything that touches data (Neon branch `dev`, or a local server).
+## Funcionalidades implementadas
 
-## Setup
+- **Búsqueda y filtro por especie — IMPLEMENTED.** Consultar servicios y proveedores disponibles.
+- **Reserva de citas — IMPLEMENTED.** Reservar servicios en clínica o a domicilio.
+- **Catálogo del proveedor — PARTIAL.** Publicar y consultar ofertas; no se implementa edición o eliminación.
+- **Gestión de mascotas — PARTIAL.** Crear la mascota inicial al registrarse y consultar mascotas; no agregar, editar ni eliminar después.
+- **Cuentas y autenticación — IMPLEMENTED.** Registro de dueños y proveedores, inicio y cierre de sesión.
+- **Gestión de citas — PARTIAL.** Reservar y consultar citas. El cambio de horario del proveedor puede cancelar automáticamente citas que quedan fuera del horario; no hay rutas para cancelación o reprogramación manual.
+- **Perfil del proveedor — IMPLEMENTED.**
+- **Horario del proveedor — IMPLEMENTED.**
+- **Pedidos de productos — NOT_IMPLEMENTED.** La tabla existe, pero no hay flujo de aplicación.
 
-```bash
-npm install                     # installs the root app and the client workspace
-cp .env.example .env            # then edit .env; never commit it
-```
+## Tecnología
 
-`.env` variables (details in `.env.example`):
+Node.js (>=22), Express, PostgreSQL, React, React Router y Vite, según los manifiestos del proyecto. La estructura de módulos es un monolito modular. Consulte [Arquitectura](docs/ARCHITECTURE.md).
 
-| Variable | Used by | Notes |
-|---|---|---|
-| `APP_ORIGIN` | API | **Required.** The browser origin allowed to make state-changing requests (CR-021). Local: `http://localhost:5173`. |
-| `DATABASE_URL` | API | Pooled connection string (Neon pooled endpoint). Optional to start; needed for data and `/api/health/db`. |
-| `DATABASE_URL_UNPOOLED` | migrations only | Direct connection string. |
-| `FEATURES` | API | Enabled ordering slices (ADR-017). Empty by default. |
-| `SESSION_IDLE_MINUTES`, `SESSION_ABSOLUTE_HOURS` | API | Defaults 60 and 12 (TD-05). |
-| `TEST_DATABASE_URL` | tests | Optional throwaway database for the database tests. |
+## Requisitos previos
 
-## Database
+Node.js 22 o posterior, npm y PostgreSQL para las funciones que leen o escriben datos. Consulte [Configuración](docs/SETUP.md).
 
-```bash
-npm run migrate:status          # lists applied / pending migrations (needs DATABASE_URL_UNPOOLED)
-npm run migrate                 # applies pending migrations from ./migrations
-```
+## Inicio rápido
 
-Migrations are plain SQL (`migrations/NNN_name.sql`), applied with the **direct** connection by the
-DevOps role, **never during the Vercel build**. An applied file must not be edited; add a new file.
-`001_initial_schema.sql` is DATA_MODEL Appendix A verbatim.
+Instale dependencias con `npm ci`, cree `.env` a partir de `.env.example` y configure `APP_ORIGIN`. En terminales separadas ejecute `npm run dev:api` y `npm run dev:client`; luego abra `http://localhost:5173`. Estos comandos se comprobaron por inspección de manifiestos y scripts; no se ejecutaron durante esta generación.
 
-## Run locally
+## Configuración
 
-Two terminals:
+La configuración detallada y variables de aplicación, base de datos y verificación de despliegue están en [SETUP](docs/SETUP.md). No copie valores reales o credenciales a la documentación.
 
-```bash
-npm run dev:api                 # Express on http://localhost:3000
-npm run dev:client              # Vite on http://localhost:5173, proxies /api to :3000
-```
+## Uso
 
-Open `http://localhost:5173/estado-tecnico` (technical status page: API and database checks).
+Un dueño se registra con su mascota inicial, busca proveedores, reserva una cita y consulta sus citas. Un proveedor registra su cuenta, configura perfil y horarios, publica ofertas y consulta citas. Pasos detallados: [Guía de usuario](docs/USER_GUIDE.md).
 
-## Verify the foundation
+## Estructura del proyecto
 
-```bash
-npm test                        # unit, HTTP and contract-consistency tests (Node test runner)
-npm run build                   # builds the client into ./public
-curl http://localhost:3000/api/health        # {"status":"ok"}
-curl http://localhost:3000/api/health/db     # {"status":"ok","database":"ok"} when the database answers
-```
+Directorios de primer nivel relevantes: `.github/`, `artifacts/`, `client/`, `migrations/`, `prompts/`, `public/`, `scripts/`, `src/` y `tests/`.
 
-Database tests run only when `TEST_DATABASE_URL` points at a throwaway database; otherwise they are
-skipped (reported as skipped, not passed). Each run creates and drops its own schema.
+## Pruebas
 
-## Layout
+Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `TEST_DATABASE_URL`. P09 no ejecutó pruebas. El informe previo de runtime del 2026-10-12 registra 175 pruebas aprobadas y build exitoso; es evidencia histórica, no una ejecución de esta etapa. Consulte [Testing](docs/TESTING.md).
 
-```text
-src/index.js            Vercel entry: exports the Express app (UNVERIFIED on Vercel until step 0)
-src/application.js              builds the app (COMP-003): middleware order, module registration
-src/http/               COMP-003 API boundary: origin guard, session context, route guard, errors, health
-src/shared/             COMP-010 shared kernel: config, clock/time zone, outcomes, features, logger, transactions
-src/db/                 COMP-011 access: pool (database.js) and SQL migration runner (migrator.js)
-src/modules/            business modules (see src/modules/README.md); only session resolution exists
-migrations/             SQL migrations
-scripts/                dev-server.js (local API), migrate.js (CLI)
-client/                 COMP-001 React app (Vite) and COMP-002 design tokens (client/src/design-system)
-tests/                  node:test suites
-artifacts/              pipeline artifacts (P00-P06); prompts/ pipeline prompts
-```
+## Índice de documentación
 
-## Deployment notes (Vercel Hobby + Neon; ARCHITECTURE 5.5)
+- [Configuración](docs/SETUP.md)
+- [Arquitectura](docs/ARCHITECTURE.md)
+- [API](docs/API.md)
+- [Modelo de datos](docs/DATA_MODEL.md)
+- [Guía de usuario](docs/USER_GUIDE.md)
+- [Pruebas](docs/TESTING.md)
+- [Cobertura de requisitos](docs/REQUIREMENTS_COVERAGE.md)
+- [Limitaciones conocidas](docs/KNOWN_LIMITATIONS.md)
+- [Reporte P09](artifacts/09_documentation/DOCUMENTATION_REPORT.md)
 
-`vercel.json` runs `npm run build` and rewrites non-`/api` paths to `/index.html`. Vercel serves
-`public/**` from the CDN and runs `src/index.js` as the single function for `/api/*`. Set the
-variables of `.env.example` in the Vercel project (Neon's integration injects `DATABASE_URL` and
-`DATABASE_URL_UNPOOLED`). **This setup has not been verified on Vercel.** Before building screens,
-run the step-0 checks of ARCHITECTURE 15.1 item 3 / validation COND-001:
+## Limitaciones y alcance
 
-1. `/api/health` and `/api/health/db` answer on the deployed URL; static files come from `public/`.
-2. Reloading a client route (for example `/estado-tecnico`) returns the client; if not, switch
-   `BrowserRouter` to `HashRouter` in `client/src/main.jsx` (P05-ASM-012).
-3. Argon2id hashing works on the Vercel runtime (library chosen by the sign-up story; fallback bcrypt, ADR-006).
-4. Apply the migration with `DATABASE_URL_UNPOOLED`; a transaction runs through `DATABASE_URL`.
+Pedidos, cambios manuales de citas, edición/eliminación de mascotas y ofertas no están implementados. Pagos, notificaciones, seguimiento en tiempo real, calificaciones, verificación de proveedores, administración y expansión geográfica están fuera del alcance según P01. La pantalla `/estado-tecnico` es un diagnóstico técnico, no una funcionalidad de producto especificada. Detalles y discrepancias: [limitaciones](docs/KNOWN_LIMITATIONS.md).
 
-Preview deployments have a different URL per deployment, so `APP_ORIGIN` must be set for them too,
-otherwise state-changing requests return `FORBIDDEN_ORIGIN` (open item, see IMPLEMENTATION_LOG).
+## Estado del proyecto
 
-## Rules for contributors
+La aplicación contiene flujos integrados de registro, búsqueda, reserva y gestión de proveedor. Los informes de P06/P08 conservan resultados históricos. El usuario reporta que el despliegue ya se realizó, pero el reporte P08 comprobado todavía registra BLOCKED y no se proporcionó evidencia de un smoke test actualizado; el despliegue hospedado queda **UNVERIFIED** en esta generación.
 
-- Implement stories inside the module boundaries (`src/modules/README.md`); API shapes come from
-  `API_SPEC_V1.yaml`, the schema from `DATA_MODEL_V1.md`. Change the contract and the code together (CR-026).
-- Screens use only the design tokens in `client/src/design-system/tokens.css` and the components of
-  UX_SPEC section 5 (CR-012). A missing visual value is added to UX_SPEC first.
-- No secrets in the repository (it is public by decision P05-ASM-011). Logs never contain passwords,
-  tokens, emails, phones or addresses (CR-020).
+## Trazabilidad del pipeline
+
+Contexto y alcance: `artifacts/00_context/`, `artifacts/01_discovery/`, `artifacts/02_requirements/`; diseño: `artifacts/05_arquitecture/`; implementación, QA y despliegue: `artifacts/06_implementation/`, `artifacts/07_qa/`, `artifacts/08_deployment/`. La cobertura enlaza capacidades MVP con sus fuentes y evidencia de código.
