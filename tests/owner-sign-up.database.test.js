@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { migrate } from '../src/db/migrator.js';
 import { createIdentityRouter } from '../src/modules/identity/sign-up.js';
 import { startApp, testConfig } from './helpers.js';

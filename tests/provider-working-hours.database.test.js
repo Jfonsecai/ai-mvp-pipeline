@@ -2,7 +2,7 @@ import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { migrate } from '../src/db/migrator.js';
 import { createProviderWorkingHoursRouter } from '../src/modules/provider/working-hours.js';
 import { hashSessionToken } from '../src/modules/identity/sessions.js';

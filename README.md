@@ -68,7 +68,7 @@ skipped (reported as skipped, not passed). Each run creates and drops its own sc
 
 ```text
 src/index.js            Vercel entry: exports the Express app (UNVERIFIED on Vercel until step 0)
-src/app.js              builds the app (COMP-003): middleware order, module registration
+src/application.js              builds the app (COMP-003): middleware order, module registration
 src/http/               COMP-003 API boundary: origin guard, session context, route guard, errors, health
 src/shared/             COMP-010 shared kernel: config, clock/time zone, outcomes, features, logger, transactions
 src/db/                 COMP-011 access: pool (database.js) and SQL migration runner (migrator.js)

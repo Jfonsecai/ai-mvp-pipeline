@@ -167,7 +167,7 @@ Acceptance criteria outside the 15 committed stories (for example AC-111, under 
 
 ## 11. Round 2 — reassessment after P07.3
 
-Basis: the patch was read (`git diff`: `src/app.js` +1 import and +1 registration line, `src/http/middleware.js` +25 lines, nothing else changed in the working tree apart from the new `artifacts/07_qa/`), and the tests were **re-executed**; `BUG_FIX_REPORT.md` was not taken as proof.
+Basis: the patch was read (`git diff`: `src/application.js` +1 import and +1 registration line, `src/http/middleware.js` +25 lines, nothing else changed in the working tree apart from the new `artifacts/07_qa/`), and the tests were **re-executed**; `BUG_FIX_REPORT.md` was not taken as proof.
 
 | Run (after the fix) | Total | Pass | Fail | Skipped |
 |---|---:|---:|---:|---:|

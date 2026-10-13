@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { migrate } from '../src/db/migrator.js';
 import { createIdentityRouter } from '../src/modules/identity/sign-up.js';
 import { createProviderProfileRouter } from '../src/modules/provider/profile.js';

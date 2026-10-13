@@ -1,7 +1,7 @@
 import { test, after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { Router } from 'express';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { Outcome } from '../src/shared/outcomes.js';
 import { APP_ORIGIN, fakeSessionDb, fixedClock, memoryLogger, startApp, testConfig } from './helpers.js';
 

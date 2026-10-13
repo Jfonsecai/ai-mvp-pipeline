@@ -3,7 +3,7 @@
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse } from 'yaml';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { createCatalogRouter, validatePublishProduct, validatePublishService } from '../src/modules/catalog/offerings.js';
 import { API_SPEC_PATH, fakeSessionDb, fixedClock, read, startApp, testConfig } from './helpers.js';
 

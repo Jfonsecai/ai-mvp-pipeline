@@ -96,7 +96,7 @@ every risk is eliminated.
 
 | Field | Content |
 |---|---|
-| Evidence | ARCHITECTURE §6.2 COMP-003 lists "Validate the request shape: types, required fields, enumerations, lengths, as in API_SPEC.yaml". `src/app.js` only parses JSON; there is no validation helper or library (R10). Log U2 discloses it. |
+| Evidence | ARCHITECTURE §6.2 COMP-003 lists "Validate the request shape: types, required fields, enumerations, lengths, as in API_SPEC.yaml". `src/application.js` only parses JSON; there is no validation helper or library (R10). Log U2 discloses it. |
 | Why it matters | Five developers will implement the committed stories in parallel (PRIORITIZATION §7). Without one shared convention, each module validates differently, which risks the contract drift CR-026 and P05-RISK-003 exist to prevent. CR-003 still requires server-side validation. |
 | Corrective action | Before the first story that accepts a request body, record the convention: either one shared helper (the choice of library is open, ARCHITECTURE §15.5) or an explicit per-module rule, and add it to `src/modules/README.md`. Not required to be done inside P06.1: introducing a library there would have been an unapproved dependency choice. |
 | Verification to close | The convention is written in `src/modules/README.md` and the first story uses it, with a test for a rejected body. |

@@ -1,6 +1,6 @@
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/application.js';
 import { createProviderWorkingHoursRouter, validateWeeklyHours } from '../src/modules/provider/working-hours.js';
 import { fixedClock, fakeSessionDb, startApp, testConfig } from './helpers.js';
 
