@@ -28,7 +28,7 @@ Node.js 22 o posterior, npm y PostgreSQL para las funciones que leen o escriben 
 
 ## Inicio rápido
 
-Instale dependencias con `npm ci`, cree `.env` a partir de `.env.example` y configure `APP_ORIGIN`. En terminales separadas ejecute `npm run dev:api` y `npm run dev:client`; luego abra `http://localhost:5173`. Estos comandos se comprobaron por inspección de manifiestos y scripts; no se ejecutaron durante esta generación.
+Instale dependencias con `npm ci`, cree `.env` a partir de `.env.example` y configure `APP_ORIGIN`. En terminales separadas ejecute `npm run dev:api` y `npm run dev:client`; luego abra `http://localhost:5173`. Se ejecutaron `npm ci`, `npm run build`, `npm run dev:api` y `npm run dev:client` el 2026-10-14 (evidencia en `artifacts/08_deployment/evidence/p08_rerun_ci_local.txt`): la API responde `/api/health` y Vite sirve el cliente y reenvía `/api`. Las rutas que usan datos requieren una base PostgreSQL propia.
 
 ## Configuración
 
@@ -44,7 +44,7 @@ Directorios de primer nivel relevantes: `.github/`, `artifacts/`, `client/`, `mi
 
 ## Pruebas
 
-Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `TEST_DATABASE_URL`. P09 no ejecutó pruebas. El informe previo de runtime del 2026-10-12 registra 175 pruebas aprobadas y build exitoso; es evidencia histórica, no una ejecución de esta etapa. Consulte [Testing](docs/TESTING.md).
+Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `TEST_DATABASE_URL`, y una ejecución con omisiones no es una ejecución completa. Hay además una suite de QA (`artifacts/07_qa/test_suites/`). Con una base desechable configurada, el 2026-10-14 pasaron 175 de 175 pruebas del proyecto y 143 de 143 de la suite de QA; la integración continua de GitHub Actions ejecuta ambas en cada cambio (evidencia en `artifacts/08_deployment/`). Consulte [Testing](docs/TESTING.md).
 
 ## Índice de documentación
 
@@ -54,6 +54,7 @@ Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `T
 - [Modelo de datos](docs/DATA_MODEL.md)
 - [Guía de usuario](docs/USER_GUIDE.md)
 - [Pruebas](docs/TESTING.md)
+- [Guía de despliegue (P08)](artifacts/08_deployment/DEPLOYMENT.md) y su [validación](artifacts/08_deployment/DEPLOYMENT_VALIDATION_V2.md)
 - [Cobertura de requisitos](docs/REQUIREMENTS_COVERAGE.md)
 - [Limitaciones conocidas](docs/KNOWN_LIMITATIONS.md)
 - [Reporte P09](artifacts/09_documentation/DOCUMENTATION_REPORT.md)
@@ -64,8 +65,8 @@ Pedidos, cambios manuales de citas, edición/eliminación de mascotas y ofertas 
 
 ## Estado del proyecto
 
-La aplicación contiene flujos integrados de registro, búsqueda, reserva y gestión de proveedor. Los informes de P06/P08 conservan resultados históricos. El usuario reporta que el despliegue ya se realizó, pero el reporte P08 comprobado todavía registra BLOCKED y no se proporcionó evidencia de un smoke test actualizado; el despliegue hospedado queda **UNVERIFIED** en esta generación.
+La aplicación contiene flujos integrados de registro, búsqueda, reserva y gestión de proveedor. Está desplegada en Vercel (cliente y API) con PostgreSQL en Neon; el dominio de producción es https://vetcare-mvp.vercel.app. La etapa P08 (re-ejecutada el 2026-10-14, estado READY_WITH_ASSUMPTIONS, validación PASS_WITH_WARNINGS) verificó el commit `8c439b7`: build y pruebas en GitHub Actions, despliegue de producción y 9 de 9 comprobaciones de humo contra el dominio público. Esto verifica que la aplicación está disponible y que sus rutas, base de datos y control de origen responden. Además, el equipo reporta haber probado a mano los recorridos principales en producción el 2026-10-14 (registro, inicio de sesión, búsqueda y reserva); todas las pruebas pasaron según el reporte del equipo (atestación humana, sin valores individuales registrados), y no hay pruebas automatizadas de la interfaz ni uso con datos reales. Advertencias vigentes: la comprobación de CI no es obligatoria para publicar en `main`, no se ha probado una reversión y los entornos de vista previa no se verifican (ver [limitaciones](docs/KNOWN_LIMITATIONS.md)). Los informes de P06 conservan resultados históricos.
 
 ## Trazabilidad del pipeline
 
-Contexto y alcance: `artifacts/00_context/`, `artifacts/01_discovery/`, `artifacts/02_requirements/`; diseño: `artifacts/05_arquitecture/`; implementación, QA y despliegue: `artifacts/06_implementation/`, `artifacts/07_qa/`, `artifacts/08_deployment/`. La cobertura enlaza capacidades MVP con sus fuentes y evidencia de código.
+Contexto y alcance: `artifacts/00_context/`, `artifacts/01_discovery/`, `artifacts/02_requirements/`; diseño: `artifacts/05_architecture/`; implementación, QA, despliegue y documentación: `artifacts/06_implementation/`, `artifacts/07_qa/`, `artifacts/08_deployment/`, `artifacts/09_documentation/`. La cobertura enlaza capacidades MVP con sus fuentes y evidencia de código.

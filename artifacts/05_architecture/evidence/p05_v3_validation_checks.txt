@@ -1,0 +1,63 @@
+# P05 validation of ARCHITECTURE_V3 - mechanical checks (2026-10-14T06:50:03.643Z), HEAD 5a5daf3
+=== 1. V3 differs from V2 only where intended
+hunks: 12
+PASS  V3 has the same number of top-level sections as V2 | 18 sections
+lines only in V2: 13; lines only in V3: 22
+  - V2 only: | Version | 2.0 |
+  - V2 only: | Previous version | `history/ARCHITECTURE_v1.0.md` (READY_WITH_ASSUMPTIONS; validation PASS_WITH_WARNINGS) |
+  - V2 only: | Generated | 2026-10-10 |
+  - V2 only: | Backend | The Express app is exported from one of the entry files Vercel detects (for example `src/index.js`
+  - V2 only: | Deep links | Client routes such as `/mis-citas` must return the client entry page. A `vercel.json` rewrite s
+  - V2 only: | Decision | One Vercel project from the GitHub repository. The React build goes to `public/`. The Express app
+  - V2 only: | Consequences | Same origin keeps SameSite=Lax cookies and the Origin check simple. Express needs a final JSO
+  - V2 only: | P05-RISK-013 | Deep links fail, or static files are not served alongside the Express function | Combination 
+  - V2 only: | 3 | Build and deploy the **skeleton**: Express app with COMP-003 (Origin check, session resolution, feature 
+  - V2 only: **None.** Every v1.0 decision is resolved (§16.3). The only verification still pending is the step-0 deploymen
+  - V2 only: | P05-ASM-012 | ASSUMPTION | Vercel topology: React build in `public/`, Express for `/api/*`, SPA rewrite for 
+  - V2 only: | P05-ASM-019 | PROPOSAL | All API routes under `/api`; Express exported from a Vercel-detected entry file | C
+  - V2 only: | Step-0 deployment checks (P05-ASM-012, ADR-006 library) | Stories that rely on deep links | At step 0 |
+identifiers in changed lines: ADR-006, ADR-014, COMP-002, COMP-003, COMP-004, COMP-010, CR-024, CR-025, P05-ASM-011, P05-ASM-012, P05-ASM-013, P05-ASM-016, P05-ASM-019, P05-CHG-001, P05-RISK-008, P05-RISK-013, P05-RISK-019, P05-RISK-020
+PASS  removed lines mention only the deployment view items (ASM-012/019, RISK-013, ADR-014, §5.5, §15.1, metadata)
+PASS  API_SPEC_V1.yaml and DATA_MODEL_V1.md unchanged (git clean)
+=== 2. identifier integrity in V3
+PASS  ADR inventory equals ADR headings | 18 vs 18
+PASS  P05-RISK ids unique and contiguous | 20 ids, last 20
+PASS  P05-ASM ids unique and contiguous | 19 ids, last 19
+PASS  P05-CHG-001 is defined exactly once (section 1.4) and referenced only as P05-CHG-001
+P05-CHG-001 mentions: 10
+=== 3. every upstream identifier cited in V3 exists upstream
+PASS  276 cited upstream IDs exist in the inputs
+=== 4. coverage of the inputs
+PASS  all 17 UX screens cited in V3
+PASS  all 20 UX flows cited in V3 (compressed lists expanded)
+PASS  all 34 backlog items appear in section 14.1
+PASS  all 42 requirement IDs of the backlog appear in V3
+PASS  all 85 acceptance criteria of the committed (P0) and ordering (P1) stories are cited in V3 or API_SPEC
+all backlog acceptance criteria: 114; cited: 87; not cited (Group A/B, extension only): 27
+scope values in the backlog: ["MVP_SUPPORTING","MVP_CORE"]; priorities: ["P0","P2","P3","P1"]
+PASS  every backlog row is present in 14.1
+=== 5. technology terms
+technology names in added lines: vercel, @vercel/static-build, @vercel/node, express, postgresql, neon, react
+NEW names relative to V2 text: @vercel/static-build, @vercel/node
+=== 6. V3 section 1.4 statements against the repository
+PASS  vercel.json has two builds: package.json @vercel/static-build (distDir public) and src/index.js @vercel/node
+PASS  routes: /api/(.*) -> /src/index.js, then filesystem, then /(.*) -> /index.html
+PASS  src/index.js imports express (unused) and default-exports createApp(...)
+PASS  src/application.js exists and src/app.js does not
+PASS  commit b308d6a exists | fix(deploy): avoid Vercel app entrypoint detection
+PASS  commit 599ead6 exists | fix(deploy): make Express entrypoint detectable by Vercel
+PASS  commit 87bad3c exists | fix(deploy): place static assets under src/public
+PASS  commit 9efd49e exists | fix(deploy): change versel.json to fix routing in production
+PASS  commit 0d232d1 exists | fix(deploy): configure separate static and Express builds
+PASS  SMOKE-01 exists in scripts/smoke-test.js
+PASS  SMOKE-06 exists in scripts/smoke-test.js
+PASS  SMOKE-07 exists in scripts/smoke-test.js
+PASS  SMOKE-08 exists in scripts/smoke-test.js
+PASS  SMOKE-09 exists in scripts/smoke-test.js
+PASS  evidence file shows 5 failed Production smoke runs
+failed deployments cited (three) are the statuses 17:28Z, 17:37Z, 18:45Z recorded in the P08 re-run (GitHub deployment statuses API)
+=== 7. companion documents consistent with V3 (unchanged areas)
+client-backend interface IDs cited in V3 and absent from API_SPEC (excluding internal IF-014..IF-024): none
+PASS  8 tables of DATA_MODEL present in V3 data section
+
+RESULT: 30 PASS, 0 FAIL
