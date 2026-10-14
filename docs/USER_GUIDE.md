@@ -1,6 +1,6 @@
 # Guía de usuario
 
-La interfaz implementada usa etiquetas en español. Las rutas fueron contrastadas con `client/src/App.jsx`. El flujo hospedado no fue probado durante P09.
+La interfaz implementada usa etiquetas en español. Las rutas fueron contrastadas con `client/src/App.jsx`. Los flujos de la interfaz no tienen pruebas automatizadas en el navegador; en producción solo se verificó, mediante el smoke test de P08, que el cliente y la API responden.
 
 ## Dueño de mascota
 

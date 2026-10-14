@@ -1,0 +1,103 @@
+# P09 re-run: independent checks of the documentation against the repository (2026-10-14T05:51:40.504Z), HEAD 8c439b7 + uncommitted documentation changes
+=== 1. markdown links resolve
+26 relative links checked, 0 broken
+=== 2. backticked file and directory paths exist
+MISSING in docs/ARCHITECTURE.md: @vercel/static-build
+MISSING in docs/ARCHITECTURE.md: @vercel/node
+MISSING in docs/KNOWN_LIMITATIONS.md: src/app.js
+MISSING in docs/REQUIREMENTS_COVERAGE.md: slots.js
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: artifacts/05_arquitecture
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: p08_rerun_ci_local.txt
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: p08_rerun_ci_local.txt
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: artifacts/...
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: src/app.js
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: TEST_ANALYSIS_REPORT.md
+MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
+106 path-like tokens checked, 17 missing
+=== 3. API routes documented vs registered
+registered (method path): GET /health | GET /health/db | GET /provider/offerings | POST /provider/services | POST /provider/products | POST /auth/sign-out | POST /auth/sign-in | GET /session | POST /auth/sign-up/owner | POST /auth/sign-up/provider | GET /owner/pets | GET /provider/profile | PUT /provider/profile | GET /provider/working-hours | PUT /provider/working-hours | GET /services/:serviceId/booking-context | GET /owner/appointments | GET /provider/appointments | POST /owner/appointments | GET /search | GET /providers/:providerId
+ok      GET /api/health
+ok      GET /api/health/db
+ok      POST /api/auth/sign-up/owner
+ok      POST /api/auth/sign-up/provider
+ok      POST /api/auth/sign-in
+ok      POST /api/auth/sign-out
+ok      GET /api/session
+ok      GET /api/owner/pets
+ok      GET /api/provider/profile
+ok      PUT /api/provider/profile
+ok      GET /api/provider/working-hours
+ok      PUT /api/provider/working-hours
+ok      GET /api/provider/offerings
+ok      POST /api/provider/services
+ok      POST /api/provider/products
+ok      GET /api/search
+ok      GET /api/providers/:providerId
+ok      GET /api/services/:serviceId/booking-context
+ok      GET /api/owner/appointments
+ok      POST /api/owner/appointments
+ok      GET /api/provider/appointments
+=== 4. sign-out handler has no session guard
+Router({ db, config, clock }) {
+    const router = Router();
+  
+    router.post('/auth/sign-out', async (req, res) => {
+      const token = readCookie(req.headers.cookie, SESSION_COOKIE_NAME);
+      if (token) {
+        await db.query(
+          'UPDATE session SET ended_at = $2 WHERE token_hash = $1 AND ended_at IS NULL',
+          [hashSessionToken(tok
+=== 5. database tables in DATA_MODEL vs migration
+migration tables: account, session, pet, provider_profile, working_hours, offering, appointment, product_order
+ok      account mentioned in DATA_MODEL.md
+ok      session mentioned in DATA_MODEL.md
+ok      pet mentioned in DATA_MODEL.md
+ok      provider_profile mentioned in DATA_MODEL.md
+ok      working_hours mentioned in DATA_MODEL.md
+ok      offering mentioned in DATA_MODEL.md
+ok      appointment mentioned in DATA_MODEL.md
+ok      product_order mentioned in DATA_MODEL.md
+=== 6. client routes in USER_GUIDE vs App.jsx
+App.jsx routes: /estado-tecnico, /, /sign-in, /owner/sign-up, /provider/sign-up, /owner/home, /owner/appointments, /owner/providers/:providerId, /owner/services/:serviceId/book, /provider/profile, /provider/appointments, /provider/working-hours, /provider/catalog, /provider/services/new, /provider/products/new, /not-found, *
+ok      /owner/sign-up
+ok      /sign-in
+ok      /owner/home
+ok      /owner/appointments
+ok      /provider/sign-up
+ok      /sign-in
+ok      /provider/profile
+ok      /provider/working-hours
+ok      /provider/services/new
+ok      /provider/products/new
+ok      /provider/catalog
+ok      /provider/appointments
+ok      /estado-tecnico
+=== 7. environment variables in SETUP vs .env.example / code
+NODE_ENV                 SETUP:yes .env.example:yes code/scripts:yes
+APP_ORIGIN               SETUP:yes .env.example:yes code/scripts:yes
+DATABASE_URL             SETUP:yes .env.example:yes code/scripts:yes
+DATABASE_URL_UNPOOLED    SETUP:yes .env.example:yes code/scripts:yes
+FEATURES                 SETUP:yes .env.example:yes code/scripts:yes
+SESSION_IDLE_MINUTES     SETUP:yes .env.example:yes code/scripts:yes
+SESSION_ABSOLUTE_HOURS   SETUP:yes .env.example:yes code/scripts:yes
+PORT                     SETUP:yes .env.example:yes code/scripts:yes
+TEST_DATABASE_URL        SETUP:yes .env.example:yes code/scripts:no 
+BASE_URL                 SETUP:yes .env.example:yes code/scripts:yes
+SMOKE_CHECKS             SETUP:yes .env.example:no  code/scripts:yes
+SMOKE_REQUIRE_ALL        SETUP:yes .env.example:no  code/scripts:yes
+SMOKE_BASE_URL           SETUP:yes .env.example:no  code/scripts:no 
+variables read by code and absent from SETUP: 
+=== 8. stale phrases that treat the deployment as unverified or P08 as blocked
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:5: - Version: 1.1 (updated 2026-10-14 after the P08 re-run; version 1.0 of 2026-10-13 was written while P08 was BLOCKED)
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:9: - Validation Dependency: P00–P06 reports reviewed; P07 `PASS_WITH_WARNINGS` (`artifacts/07_qa/TEST_ANALYSIS_REPORT.md`, round 2, 2026-10-12; version 1.0 of this report re
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:14: Spanish developer and user documentation describing the current VetCare implementation, its setup, routes, data, tests, capability coverage, and known limits. The deploym
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:69: | P09-VERIFY-011 | Relative links and `artifacts/...` paths in README and docs | README, docs/* | Script check of every link and backticked path | VERIFIED_BY_EXECUTION |
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:80: | P09-DISC-006 | ARTIFACT_CONFLICT | The deployment configuration that works differs from the architecture: ARCHITECTURE_V2 §5.5 and P05-ASM-012/019 assume Vercel auto-de
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:96: | P09-GAP-001 | CLOSED in 1.1. Hosted deployment behavior and smoke result were unverified in 1.0 | P08 re-run supplied the URL, the deployed commit and 9/9 smoke evidenc
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:149: READY_WITH_ASSUMPTIONS. All required documents are present; technical statements are grounded by execution, inspection or a verified artifact, or marked unverified. The d

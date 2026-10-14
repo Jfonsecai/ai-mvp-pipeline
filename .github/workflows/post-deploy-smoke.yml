@@ -4,8 +4,8 @@
 # Triggers:
 #   deployment_status   Vercel publishes a GitHub "deployment_status" event for each deployment.
 #   workflow_dispatch   manual fallback (Actions > Post-deploy smoke test > Run workflow) with the URL to
-#                       check. Use it if the automatic trigger does not fire (assumption P08-ASSUMPTION-002,
-#                       not yet confirmed against a real Vercel deployment) or to re-check a deployment.
+#                       check. Use it if the automatic trigger does not fire or to re-check a deployment
+#                       (the automatic trigger was confirmed on 2026-10-13: P08-ASSUMPTION-002 closed).
 #
 # The workflow creates no secrets and writes no data. Repository variables (Settings > Variables,
 # public values):
@@ -15,7 +15,8 @@
 #                   to the origin of the URL checked. It enables the sign-in check (SMOKE-06), which
 #                   verifies Argon2 and the database path on the platform. The job FAILS when that check
 #                   cannot run, instead of finishing green with an unverified check (SMOKE_REQUIRE_ALL).
-# Status: NOT YET EXECUTED. It runs only once the repository is connected to Vercel (COND-001).
+# Status: EXECUTED on GitHub Actions against Production (green for 73e009c and 8c439b7). See
+# artifacts/08_deployment/DEPLOYMENT.md sections 7 and 9.
 name: Post-deploy smoke test
 
 on:

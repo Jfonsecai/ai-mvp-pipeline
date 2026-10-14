@@ -1,0 +1,55 @@
+# P10 validation checks (2026-10-14T05:54:19.928Z)
+JSON parses: yes
+=== required top-level fields (P10 template)
+evaluation_version           present
+overall_verdict              present
+evaluation_date              present
+mvp_maturity                 present
+requirements                 present
+testing                      present
+deployment                   present
+documentation                present
+success_criteria             present
+user_and_business_outcomes   present
+findings                     present
+limitations                  present
+evidence_sources             present
+=== verdict and date
+verdict JSON=NEEDS_ITERATION report=NEEDS_ITERATION -> agree
+evaluation_date ISO 8601: valid (2026-10-14T05:52:36Z)
+allowed verdict value: true
+=== requirement counts: JSON vs table in section 3
+ids in table: P01-MVP-001, P01-MVP-002, P01-MVP-003, P01-MVP-005, P01-MVP-006, P01-MVP-007, P01-MVP-008, P01-MVP-009, P01-MVP-010
+total                table=9 json=9 -> agree
+verified             table=5 json=5 -> agree
+partially_verified   table=3 json=3 -> agree
+not_implemented      table=1 json=1 -> agree
+success_criteria vs requirements: [5,3,1,0] vs [5,3,1,0]
+=== findings: JSON vs table in section 8
+finding ids: EVAL-002, EVAL-003, EVAL-004, EVAL-005, EVAL-007, EVAL-008, EVAL-009, EVAL-010, EVAL-011, EVAL-006, EVAL-001
+blocker table=0 json=0; high 2/2; medium 5/5; low 3/3; resolved 1/1
+all agree: true
+=== tests: arithmetic and sources
+project 175 + qa 143 = 318; json total 318
+evidence file contains "# pass 175": true; "# pass 143": true
+=== deployment fields vs P08 and live evidence
+smoke 9 passed in live evidence: true
+required_status_checks off in live evidence: true
+DEPLOYMENT.md status READY_WITH_ASSUMPTIONS: true
+P08 validation result PASS_WITH_WARNINGS: true
+=== referenced files exist
+missing references: 0
+=== no zero-for-unknown: null/zero fields in JSON
+requirements.not_verified = 0
+testing.tests_failed = 0
+testing.tests_skipped = 0
+testing.project_suite.failed = 0
+testing.project_suite.skipped = 0
+testing.qa_suite.failed = 0
+testing.qa_suite.skipped = 0
+testing.unresolved_blocker_defects = 0
+testing.unresolved_critical_defects = 0
+deployment.smoke_checks.failed = 0
+deployment.smoke_checks.skipped = 0
+success_criteria.unmeasured = 0
+findings.blocker = 0
