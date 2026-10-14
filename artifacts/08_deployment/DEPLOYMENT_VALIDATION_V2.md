@@ -260,3 +260,19 @@ Confirm:
 - No tests were accepted merely because a workflow step existed: the suites were re-executed, and the first local run's skipped and refused tests are reported in section 6.
 - No deployment was marked successful without adequate evidence: Vercel deployment records, workflow runs and a direct smoke run against Production support it.
 - Findings are evidence-based. Where evidence is unavailable (logs, Vercel dashboard, Neon, branch protection details beyond the public API) the finding says so.
+
+## 21. Addendum of 2026-10-14: changes made after this validation
+
+The project team asked for four follow-ups after the report above was written. The findings are not re-rated by rewriting the report above; this addendum records what each change does to them. The overall result stays **PASS_WITH_WARNINGS**.
+
+| Finding | Change | Status after the change |
+|---|---|---|
+| VAL-001 (CI is not an enforced gate) | None. The required status check on `main` is a GitHub setting that was not changed. Not re-queried after the report | **Open** |
+| VAL-002 (runner image and actions) | `ci.yml` and `post-deploy-smoke.yml` now use `runs-on: ubuntu-24.04`, `actions/checkout@v7` and `actions/setup-node@v7`. Checked: both YAML files parse, the `v7` major tags exist in both action repositories, the v7 release notes list no change to the inputs the workflows use | **Mitigated, not confirmed.** The changed workflows have not run on GitHub. Closes after one green CI run on a pull request and one green post-deployment smoke run (a green CI run on a pull request is the first available evidence; it does not need a deployment) |
+| VAL-003 (architecture and code comment drift) | `ARCHITECTURE_V3.md` records the deployment configuration as change P05-CHG-001 (§1.4, §5.5, ADR-014, P05-ASM-012/019, P05-RISK-013, §15.1). The header comment of `src/index.js` was rewritten (comment only; `node --check` passes) | **Resolved**, and `ARCHITECTURE_V3.md` has since been validated by the P05 validator (`ARCHITECTURE_VALIDATION_V3.md`, PASS; it added risk P05-RISK-020 for the reliance on legacy `builds` and deprecated `handle: filesystem`). Remaining limit: whether `import express` is still necessary was not tested |
+| VAL-006 (unobserved production behaviors, no UI evidence) | The team reported that it ran the manual production check (browser, test account, cookie `Secure`, `FEATURES`, Node.js version). `evidence/manual_production_check_2026-10-14.md` records the attestation | **Closed as human attestation of a passing result** (the team reports that all the manual tests passed). The individual observed values were not provided, so they are not recorded, and the assistant did not reproduce them. `NODE_ENV` and the Neon locale were not named in the report and stay unrecorded |
+| VAL-005 (Node.js version on Vercel) | Covered by the same manual check, as reported | Closed as human attestation (reported as passed), value not recorded |
+| Independence limitation (section 2) | The team reported that a person who did not write these artifacts has reviewed them | The limitation is reduced by that review, which is also a human statement: no review record was provided to the assistant |
+| VAL-004, VAL-007, VAL-008 | None | Unchanged |
+
+Conditions to revalidate (section 19) are updated: VAL-002 needs the first green run of the changed workflows; VAL-001 needs the required check.

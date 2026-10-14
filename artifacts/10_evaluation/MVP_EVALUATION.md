@@ -2,6 +2,8 @@
 
 **Revision note.** This is the second issue of the evaluation. The first issue (2026-10-13, on the `evaluation` branch) was written while P08 was `BLOCKED` and said that no deployment had been verified. P08 was re-run on 2026-10-14 and the application is deployed and verified, so sections 1, 2, 4, 5, 6, 7, 8, 9, 10 and 11 were updated. The requirement table (section 3) was corrected: the first issue merged two capabilities (provider profile and provider working hours) and listed working hours twice; the table now uses the nine capability IDs of `PRODUCT_VISION_V4.md`. The verdict did not change.
 
+**Addendum of the same day (2026-10-14).** After the first draft of this issue the team (a) corrected the architecture (`ARCHITECTURE_V3.md`, change P05-CHG-001) and the header comment of `src/index.js`, (b) pinned both workflows (`ubuntu-24.04`, `actions/checkout@v7`, `actions/setup-node@v7`), (c) reported a manual check of the hosted application in a browser with a test account, **with all the manual tests passed**, and (d) reported a review of P08, P09 and P10 by a person who did not write them. The text below includes those facts and labels each one by its evidence level: (a) and (b) are verifiable in the repository; (c) and (d) are human attestations that the evaluator did not observe and for which no observed values or review record were provided; the changed workflows have not run on GitHub.
+
 ## 1. Executive Summary
 
 - Overall verdict: NEEDS_ITERATION
@@ -13,7 +15,7 @@
   - Substantial automated test evidence: 175 project tests and 143 QA tests, all passing on the deployed commit.
 - Most important limitations and risks:
   - Product ordering is not implemented; pet management, catalog maintenance and appointment management are partial.
-  - The deployment is verified at smoke-test level only: no browser-level test of the user interface exists, and nothing that needs a signed-in session was exercised on the hosted application.
+  - The deployment is verified at smoke-test level by evidence; the team reports a manual browser check of the main journeys on Production in which all the tests passed (human attestation, no individual observed values recorded), and no automated test of the user interface exists.
   - The CI check is not a required check on `main`, and Vercel deploys in parallel with CI, so a failing commit is not technically prevented from reaching Production.
   - No real-user or business data exists to support adoption or outcome claims.
 - What the verdict does and does not establish:
@@ -29,7 +31,7 @@ The approved baseline of the repository:
 - `artifacts/00_context/PROJECT_CONTEXT_V4.md`
 - `artifacts/01_discovery/PRODUCT_VISION_V4.md` (nine MVP capabilities, `P01-MVP-001` to `-010` without the retired `-004`; success criteria `P01-SUCCESS-001` to `-008`)
 - `artifacts/02_requirements/REQUIREMENTS_V3.md`
-- `artifacts/05_architecture/ARCHITECTURE_V2.md`
+- `artifacts/05_architecture/ARCHITECTURE_V3.md` (v3.0 corrects only the deployment view of `ARCHITECTURE_V2.md`; validated by `ARCHITECTURE_VALIDATION_V3.md`, PASS)
 
 ### Sources inspected
 
@@ -48,15 +50,15 @@ The approved baseline of the repository:
 
 ### Evaluation limitations
 
-- The hosted application was checked only with the read-only smoke test. No account was created and no signed-in flow was run on the hosted application.
-- Browser/UI automation is absent; UI behavior is not directly exercised anywhere.
+- The evaluator checked the hosted application only with the read-only smoke test. No account was created and no signed-in flow was run by the evaluator. The team reports a manual browser check with a test account on 2026-10-14 (`artifacts/08_deployment/evidence/manual_production_check_2026-10-14.md`); it is a human attestation without recorded values and was not reproduced.
+- Browser/UI automation is absent; the only UI evidence is the team-reported manual check.
 - No real-user or business metrics were available.
-- The P08 and P09 validations were produced by the same assistant that produced the artifacts; this evaluation relied on external evidence (GitHub API, live HTTP service, executions) rather than on those reports alone.
+- The P08 and P09 validations were produced by the same assistant that produced the artifacts; this evaluation relied on external evidence (GitHub API, live HTTP service, executions) rather than on those reports alone. The team reports that a person who did not write them has reviewed P08, P09 and P10; no review record was provided.
 - Some implementation and validation reports (P06 per-story reports, the 2026-10-12 runtime report) describe earlier states.
 
 ## 3. Requirements and Feature Assessment
 
-The nine capability areas are the nine current MVP capabilities of `PRODUCT_VISION_V4.md`; the statuses come from `docs/REQUIREMENTS_COVERAGE.md` and were re-checked against the registered routes and modules. "VERIFIED" here means: implemented and covered by passing automated tests at API level; no capability has browser-level test evidence.
+The nine capability areas are the nine current MVP capabilities of `PRODUCT_VISION_V4.md`; the statuses come from `docs/REQUIREMENTS_COVERAGE.md` and were re-checked against the registered routes and modules. "VERIFIED" here means: implemented and covered by passing automated tests at API level; no capability has automated browser-level test evidence (the team reports a manual browser check of the main journeys, without recorded values).
 
 | ID | Capability | Status | Evidence |
 |---|---|---|---|
@@ -101,15 +103,15 @@ The current verified result is the final post-fix state, executed on the deploye
 
 ### Security, reliability, maintainability, compatibility findings
 
-- Security: origin enforcement, authorization checks and no-sensitive-data behaviors are covered by the QA suite; on the hosted platform the origin guard (SMOKE-05) and the Argon2 sign-in path (SMOKE-06) behave correctly, HTTPS with HSTS is served, API responses are `no-store`, and no secret appears in the repository, workflows or documents (P08 scan). The `Secure` cookie attribute over real HTTPS, `NODE_ENV` and `FEATURES` in Production were not observed.
+- Security: origin enforcement, authorization checks and no-sensitive-data behaviors are covered by the QA suite; on the hosted platform the origin guard (SMOKE-05) and the Argon2 sign-in path (SMOKE-06) behave correctly, HTTPS with HSTS is served, API responses are `no-store`, and no secret appears in the repository, workflows or documents (P08 scan). The `Secure` cookie attribute over real HTTPS and `FEATURES` in Production were checked by hand by the team, who report that the checks passed (attestation, no individual values recorded); `NODE_ENV` was not observed.
 - Reliability: the smoke test shows the function, routing and database path work. No uptime, error-rate or load measurement exists. Neon scales to zero, so the first request after idle can take seconds.
 - Maintainability: modular architecture and a documentation set that agrees with the code (route, table, variable and link checks pass). The deployment depends on an unused `import express` in `src/index.js` and on the file name `src/application.js` to satisfy Vercel's detection, which is fragile and is documented.
-- Compatibility: the Node.js version used by Vercel was not observed (`engines.node` is `>=22`). The CI environment will change on 2026-10-19 (runner image and action runtimes).
+- Compatibility: `engines.node` is `>=22`; the team reports having checked the Node.js version Vercel uses and that the check passed (value not recorded). The CI runner image and action versions were pinned on 2026-10-14 ahead of the 2026-10-19 change of `ubuntu-latest`; the new combination has not run on GitHub yet.
 
 ### Explicit measurement gaps
 
 - No browser UI test suite.
-- No hosted test of a signed-in flow, of the UI, of load or of failover.
+- No automated hosted test of a signed-in flow or the UI, and none of load or failover; the manual check is an unrecorded attestation.
 - No user adoption or business-performance metrics.
 - No formal performance or security certification benchmarks.
 
@@ -133,8 +135,9 @@ P08 status: `READY_WITH_ASSUMPTIONS`; P08 validation: `PASS_WITH_WARNINGS` (2026
 ### Verification results and outstanding prerequisites
 
 - Verified: build, 318 tests, Production deployment, nine smoke checks (health, database, session, guards, origin refusal, Argon2 sign-in path, client page, deep links, JSON 404), revision correspondence for the client.
-- Not verified: UI behavior; signed-in flows; the `Secure` cookie; `FEATURES` and `NODE_ENV` values; the Node.js version on Vercel; rollback (Vercel and Neon); Preview deployments; the Neon database locale.
-- Outstanding prerequisites for stronger readiness: make `build-and-test` a required check on `main` (a GitHub setting for the repository admin); pin the runner image and move the actions to a current major before or soon after 2026-10-19; a browser-level check of the main journeys.
+- Verified only by human attestation (team, 2026-10-14; all manual tests reported as passed, no individual values recorded): UI behavior of the main journeys; signed-in flows; the `Secure` cookie; `FEATURES`; the Node.js version on Vercel.
+- Not verified: `NODE_ENV` in the function; rollback (Vercel and Neon); Preview deployments; the Neon database locale; the changed workflows (not yet run on GitHub).
+- Outstanding prerequisites for stronger readiness: make `build-and-test` a required check on `main` (a GitHub setting for the repository admin); one green CI run and one green smoke run with the pinned workflows; recorded values and, preferably, an automated browser-level test of the main journeys.
 - Deployment success, a green workflow and a passing smoke test are not proof of production readiness for real users, and are not presented as such.
 
 ## 6. Documentation and Traceability
@@ -143,7 +146,7 @@ P08 status: `READY_WITH_ASSUMPTIONS`; P08 validation: `PASS_WITH_WARNINGS` (2026
 
 The documentation set is present and now agrees with the verified state:
 
-- `README.md`, `docs/SETUP.md`, `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/DATA_MODEL.md`, `docs/USER_GUIDE.md`, `docs/TESTING.md`, `docs/REQUIREMENTS_COVERAGE.md`, `docs/KNOWN_LIMITATIONS.md`, `artifacts/09_documentation/DOCUMENTATION_REPORT.md` (v1.1), and `artifacts/08_deployment/DEPLOYMENT.md` (v2.0).
+- `README.md`, `docs/SETUP.md`, `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/DATA_MODEL.md`, `docs/USER_GUIDE.md`, `docs/TESTING.md`, `docs/REQUIREMENTS_COVERAGE.md`, `docs/KNOWN_LIMITATIONS.md`, `artifacts/09_documentation/DOCUMENTATION_REPORT.md` (v1.2), and `artifacts/08_deployment/DEPLOYMENT.md` (v2.0).
 - P09 status `READY_WITH_ASSUMPTIONS`; its validation `PASS_WITH_WARNINGS`. The evaluator's mechanical checks (relative links, documented routes against registered routes, tables, client routes, variables) found no broken reference after three small corrections made in that round.
 
 ### Relevant traceability gaps
@@ -154,7 +157,7 @@ The documentation set is present and now agrees with the verified state:
 
 ### Important inconsistencies between artifacts
 
-- **Architecture versus the working deployment (P09-DISC-006, P08 VAL-003):** `ARCHITECTURE_V2.md` §5.5 and assumption P05-ASM-019 assume that Vercel detects `src/index.js` and a `rewrites` rule. The working configuration uses explicit `builds` and `routes`, a renamed entry file and an unused import. The change keeps the same components and target but is not recorded in the architecture, and the header comment of `src/index.js` still says "UNVERIFIED on Vercel".
+- **Architecture versus the working deployment (P09-DISC-006, P08 VAL-003): resolved on 2026-10-14.** `ARCHITECTURE_V2.md` §5.5 and assumption P05-ASM-019 assumed that Vercel detects `src/index.js` and a `rewrites` rule; the working configuration uses explicit `builds` and `routes`, a renamed entry file and an unused import. `ARCHITECTURE_V3.md` §1.4 now records it as P05-CHG-001 and the header comment of `src/index.js` was rewritten. V3 was validated by the P05 validator (`ARCHITECTURE_VALIDATION_V3.md`, PASS, which also added risk P05-RISK-020: the working configuration relies on a legacy Vercel property, `builds`, and a deprecated one, `handle: filesystem`; both still work). Limit: it was not tested whether the unused `import express` is still needed.
 - The first issue of this evaluation, `DEPLOYMENT.md` v1.0 and `DOCUMENTATION_REPORT.md` v1.0 described the deployment as blocked or an unverified report; those statements are superseded and the current versions agree.
 - Historical implementation and test reports describe earlier states; they are read as snapshots.
 
@@ -171,12 +174,12 @@ The project's approved success criteria are `P01-SUCCESS-001` to `-008`. They ma
 
 Detailed assessment:
 
-- Met / demonstrated: five capability areas (search, accounts/authentication, provider profile, working hours, booking) are supported by passing automated tests and implementation records; the hosted application serves them behind a verified deployment, but their user interface is not browser-tested.
+- Met / demonstrated: five capability areas (search, accounts/authentication, provider profile, working hours, booking) are supported by passing automated tests and implementation records; the hosted application serves them behind a verified deployment; their user interface has no automated tests and a team-reported manual check without recorded values.
 - Partially met: three capability areas (catalog, pet management, appointment management).
 - Not met: product ordering.
 - Operational outcomes: the application is reachable, serves the client, answers its API and reaches its database on the target platform. That is the only operational measurement available.
 - User and business outcomes: none can be assessed. To evaluate adoption, a real user group and measures such as completed bookings and returning users would have to be collected after launch.
-- `P01-SUCCESS-007` (a path from need to appointment without any outside channel) cannot be judged without a browser-level or real-user run of the whole journey on the hosted application.
+- `P01-SUCCESS-007` (a path from need to appointment without any outside channel) cannot be judged by the evaluator: the team reports having walked the main journeys by hand on 2026-10-14, but no record exists of the whole path from need to appointment.
 
 ## 8. Risks and Prioritized Recommendations
 
@@ -189,9 +192,9 @@ Open findings are ordered by priority. EVAL-001 of the first issue is resolved a
 | EVAL-004 | Appointment management is incomplete beyond booking and listing. | MEDIUM | Requirement coverage; P01-MVP-007, P01-SUCCESS-006 | Aligns the MVP with the approved cancel/reschedule behavior | Implement manual cancellation and rescheduling after confirming UX decisions |
 | EVAL-005 | Catalog maintenance is incomplete. | MEDIUM | `README.md`; coverage; P01-MVP-003, P01-SUCCESS-002 | Completes provider-side lifecycle | Implement update/delete and validate with tests |
 | EVAL-007 | CI is not an enforced gate for Production: `build-and-test` is not a required check on `main`, and Vercel deploys in parallel with CI. | MEDIUM | GitHub branch API (`required_status_checks` off); timestamps of run 38477141692 and deployment 7051516022; P08 VAL-001, P08-RISK-002 | A failing commit could no longer reach Production unnoticed | The repository admin makes `build-and-test` required on `main` and records it; revalidate P08 |
-| EVAL-008 | Hosted verification is limited to a read-only smoke test: no UI test, no signed-in flow, and unobserved Production settings (`Secure` cookie, `FEATURES`, `NODE_ENV`, Neon locale). | MEDIUM | `DEPLOYMENT.md` §9, §14; P08 VAL-006; P07 findings F-04, W-3 | Real evidence that the journeys work for a user | Run the main owner and provider journeys in a browser on Production with a test account before a demonstration; consider a browser-level test suite |
-| EVAL-009 | The CI environment will change on 2026-10-19: `ubuntu-latest` becomes Ubuntu 26 and the `@v4` actions run on Node.js 24 by force. | MEDIUM | Workflow annotations of 2026-10-14; P08 VAL-002, P08-RISK-008 | Keeps the verified pipeline reproducible | Pin `ubuntu-24.04`, move the actions to a current major, confirm with one green run |
-| EVAL-010 | The architecture and a code comment disagree with the working deployment (P09-DISC-006). | LOW | `ARCHITECTURE_V2.md` §5.5; `vercel.json`; `src/index.js` header; P08 VAL-003 | Documents stay a reliable source of truth | Record the change through change control and refresh the comment |
+| EVAL-008 | No automated test of the user interface, and the manual production check (browser, test account, `Secure` cookie, `FEATURES`, Node.js version) is a team attestation without recorded values. | LOW | `artifacts/08_deployment/evidence/manual_production_check_2026-10-14.md`; P07 findings F-04, W-3; P08 VAL-006 | Repeatable evidence for the journeys | Record the observed values in the evidence file; consider a browser-level test suite. Downgraded from MEDIUM after the team reported the manual check |
+| EVAL-009 | The pinned CI environment (`ubuntu-24.04`, `actions/checkout@v7`, `actions/setup-node@v7`, changed 2026-10-14 ahead of the 2026-10-19 change of `ubuntu-latest`) has not run on GitHub. | LOW | Workflow files; P08 VAL-002, P08-RISK-008 | Keeps the verified pipeline reproducible | Open a pull request and confirm one green CI run, then one green smoke run. Downgraded from MEDIUM after the change was applied |
+| EVAL-010 | RESOLVED on 2026-10-14. The architecture and a code comment disagreed with the working deployment (P09-DISC-006). | RESOLVED | `ARCHITECTURE_V3.md` §1.4 (P05-CHG-001); `src/index.js` header | n/a | None; V3 validated (PASS). Open details: the need for the unused `import express` is untested, and the reliance on legacy Vercel properties is registered as P05-RISK-020 |
 | EVAL-011 | Rollback (Vercel promote, Neon restore) was never exercised; migrations have no down step. | LOW | `DEPLOYMENT.md` §10; P08 VAL-007 | Confidence to recover | Exercise one rollback on the real project |
 | EVAL-006 | Real-user outcome data is unavailable, so product value cannot be demonstrated. | LOW | No usage telemetry or business data | Future proof of value | Collect metrics once real users exist |
 | EVAL-001 | RESOLVED. The first issue reported that deployment was blocked (BLOCKER). | RESOLVED | P08 re-run: deployment verified; `DEPLOYMENT_VALIDATION_V2.md` | n/a | None; remaining deployment follow-ups are EVAL-007 to EVAL-011 |
@@ -200,9 +203,9 @@ Open findings are ordered by priority. EVAL-001 of the first issue is resolved a
 
 Evidence, tests or measurements needed to resolve outstanding uncertainties:
 
-- A browser-level walk-through (manual or automated) of the owner and provider journeys on Production with a test account, including the session cookie over HTTPS.
-- Confirmation of the Production settings that are only inferred (`FEATURES` empty, `NODE_ENV`, Node.js version, Neon locale).
-- The required status check on `main`, then one green CI and smoke run after the runner and action changes.
+- A recorded or automated browser-level walk-through of the owner and provider journeys on Production (the team reports a manual one without recorded values).
+- The Production settings that are only attested or inferred, written down (`FEATURES` empty, `NODE_ENV`, Node.js version, Neon locale).
+- The required status check on `main`, then one green CI and smoke run with the pinned runner and actions.
 - Completion or explicit deferral of the missing ordering, pet, catalog and appointment-management workflows.
 - Real user or business metrics, if the team wants to claim product impact.
 
@@ -220,7 +223,7 @@ Final verdict: NEEDS_ITERATION
 Justification:
 
 - The repository contains credible evidence of a working MVP core: 318 passing automated tests, a verified build, and a deployment on the target platform with a passing smoke test that the evaluator reproduced.
-- The reason for the verdict is no longer the deployment (the first issue's BLOCKER is resolved). It is the incomplete scope: product ordering is not implemented and pet, catalog and appointment management are partial, together with verification gaps that matter for a release (no UI-level evidence, an unenforced CI gate, unobserved production settings).
+- The reason for the verdict is no longer the deployment (the first issue's BLOCKER is resolved). It is the incomplete scope: product ordering is not implemented and pet, catalog and appointment management are partial, together with verification gaps that matter for a release (no automated UI evidence and a manual check that is attested but not recorded, an unenforced CI gate, workflows changed but not yet run).
 - There is no unresolved BLOCKER or CRITICAL defect, and P07 and P08 are `PASS_WITH_WARNINGS`, so the verdict is not `BLOCKED`. `READY_FOR_NEXT_STAGE` is not supported because the approved scope is incomplete and the user interface is unverified.
 
 This verdict does not say the project has failed. It says that the evidence supports technical progress and a working deployed core, but not a release as planned or proven business value.
@@ -229,7 +232,7 @@ This verdict does not say the project has failed. It says that the evidence supp
 
 The following evaluation tasks remain incomplete because the necessary evidence is absent or not executable in the inspected environment:
 
-- Browser-level and signed-in verification of the hosted application (no test account or UI tests exist; creating accounts on the production database was not done).
+- Browser-level and signed-in verification of the hosted application by the evaluator (no test account or UI tests were available to the evaluator; creating accounts on the production database was not done). The team-reported manual check is the only UI evidence.
 - Inspection of the Vercel and Neon dashboards (rollback, Node.js version, locale, variable values).
 - Real-user and business-outcome assessment.
 - Full validation of all remaining story-level requirements beyond the implemented flows.

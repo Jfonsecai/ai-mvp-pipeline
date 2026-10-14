@@ -202,3 +202,17 @@ After changes to the deployment configuration, the workflows, or the source of t
 - No product or technical decision was made; P09-DISC-006 remains open.
 - No implementation defect was fixed.
 - Findings are evidence-based; the limits of the evidence (hosted UI, signed-in flows, logs) are disclosed.
+
+## 22. Addendum of 2026-10-14: documentation updated after this validation
+
+After this report was written, the P08 follow-ups changed facts that the documentation states. `DOCUMENTATION_REPORT.md` is now version 1.2. The statements were updated in README, `docs/SETUP.md`, `docs/ARCHITECTURE.md`, `docs/KNOWN_LIMITATIONS.md` and `docs/USER_GUIDE.md`, and re-checked:
+
+| Check | Result |
+|---|---|
+| Relative links, re-run with the same script: 27 checked (one more than before: the link to `ARCHITECTURE_V3.md`); path-like tokens: 109 | 0 broken links. The tokens listed as not found are the false positives of section 6 plus the action names `actions/checkout@v7` and `actions/setup-node@v7`, which are not paths |
+| P09-DISC-006 | Resolved: `ARCHITECTURE_V3.md` §1.4 exists (verified by reading it) and records P05-CHG-001; the comment in `src/index.js` was rewritten (verified by `git diff`, `node --check`) |
+| VAL-N04 (open architecture discrepancy) | Closed. V3 was validated by the P05 validator afterwards (`ARCHITECTURE_VALIDATION_V3.md`, PASS). Limit: it was not tested whether the unused `import express` is still needed (both stated in the documents) |
+| VAL-N05 (no UI-level verification) | Reduced: the documents now say that the team reported a manual production check on 2026-10-14 with the result "all passed" and no individual values recorded; the documentation presents it as a human attestation, not as a verified fact. There are still no automated UI tests |
+| Workflow facts in the documentation (`ubuntu-24.04`, `@v7`) | Checked against the two workflow files. The documents say the changed workflows have not run on GitHub; that statement is true at the time of writing and must be revisited after the first green run |
+
+The result stays **PASS_WITH_WARNINGS**; the warnings that remain are the human-attestation level of the manual check and the unexecuted workflows.

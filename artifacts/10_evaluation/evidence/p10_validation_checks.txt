@@ -1,4 +1,4 @@
-# P10 validation checks (2026-10-14T05:54:19.928Z)
+# P10 validation checks (2026-10-14T06:50:03.767Z)
 JSON parses: yes
 === required top-level fields (P10 template)
 evaluation_version           present
@@ -27,7 +27,7 @@ not_implemented      table=1 json=1 -> agree
 success_criteria vs requirements: [5,3,1,0] vs [5,3,1,0]
 === findings: JSON vs table in section 8
 finding ids: EVAL-002, EVAL-003, EVAL-004, EVAL-005, EVAL-007, EVAL-008, EVAL-009, EVAL-010, EVAL-011, EVAL-006, EVAL-001
-blocker table=0 json=0; high 2/2; medium 5/5; low 3/3; resolved 1/1
+blocker table=0 json=0; high 2/2; medium 3/3; low 4/4; resolved 2/2
 all agree: true
 === tests: arithmetic and sources
 project 175 + qa 143 = 318; json total 318

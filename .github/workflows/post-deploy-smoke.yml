@@ -37,18 +37,19 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production')
-    runs-on: ubuntu-latest
+    # Pinned (P08-RISK-008): ubuntu-latest moves to Ubuntu 26 on 2026-10-19. Change the image on purpose, not by drift.
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       # For a deployment event this is the deployed commit; for a manual run github.event.deployment is
       # empty and the checkout falls back to the revision the workflow was started from.
       - name: Checkout the deployed revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.deployment.sha }}
 
       - name: Set up Node.js (version from .nvmrc)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 

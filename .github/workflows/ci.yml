@@ -24,7 +24,8 @@ concurrency:
 jobs:
   build-and-test:
     name: build-and-test
-    runs-on: ubuntu-latest
+    # Pinned (P08-RISK-008): ubuntu-latest moves to Ubuntu 26 on 2026-10-19. Change the image on purpose, not by drift.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     # Throwaway PostgreSQL for the database tests. It is reachable only from this runner and is
@@ -51,10 +52,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js (version from .nvmrc)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm

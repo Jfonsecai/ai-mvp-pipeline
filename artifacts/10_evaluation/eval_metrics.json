@@ -17,8 +17,16 @@
     "tests_passed": 318,
     "tests_failed": 0,
     "tests_skipped": 0,
-    "project_suite": { "passed": 175, "failed": 0, "skipped": 0 },
-    "qa_suite": { "passed": 143, "failed": 0, "skipped": 0 },
+    "project_suite": {
+      "passed": 175,
+      "failed": 0,
+      "skipped": 0
+    },
+    "qa_suite": {
+      "passed": 143,
+      "failed": 0,
+      "skipped": 0
+    },
     "coverage_percent": 98.74,
     "coverage_note": "Combined line coverage measured in P07 on its own revision; not re-measured in this evaluation.",
     "unresolved_blocker_defects": 0,
@@ -30,18 +38,24 @@
     "p08_validation": "PASS_WITH_WARNINGS",
     "deployed_revision": "8c439b7",
     "production_url": "https://vetcare-mvp.vercel.app",
-    "smoke_checks": { "passed": 9, "failed": 0, "skipped": 0 },
+    "smoke_checks": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
     "ci_check_required_on_main": false,
-    "ui_verified_on_hosted_app": false
+    "ui_verified_on_hosted_app": "TEAM_REPORTED_PASSED_NO_VALUES_RECORDED",
+    "workflows_pinned_not_yet_run": true,
+    "architecture_reference": "artifacts/05_architecture/ARCHITECTURE_V3.md",
+    "architecture_validation": "PASS"
   },
   "documentation": {
     "status": "PARTIALLY_VERIFIED",
     "p09_status": "READY_WITH_ASSUMPTIONS",
     "p09_validation": "PASS_WITH_WARNINGS",
-    "major_gaps": 2,
+    "major_gaps": 1,
     "gap_notes": [
-      "Architecture and the header comment of src/index.js disagree with the working Vercel configuration (P09-DISC-006).",
-      "Hosted user-interface and signed-in behavior is not covered by any document because it was never verified."
+      "The team-reported manual check of the hosted user interface (reported as passed) has no individual values recorded, and no automated UI test exists."
     ]
   },
   "success_criteria": {
@@ -62,24 +76,26 @@
   "findings": {
     "blocker": 0,
     "high": 2,
-    "medium": 5,
-    "low": 3,
-    "resolved_since_previous_issue": 1
+    "medium": 3,
+    "low": 4,
+    "resolved_since_previous_issue": 2
   },
   "limitations": [
-    "The hosted application was checked only with the read-only smoke test; no UI or signed-in flow was exercised.",
+    "The evaluator checked the hosted application only with the read-only smoke test; the manual browser check is a team attestation without recorded values.",
     "Browser/UI automation evidence is missing.",
     "The Vercel and Neon dashboards were not inspected (rollback, Node.js version, locale, variable values).",
+    "The pinned workflows (ubuntu-24.04, actions v7) have not run on GitHub yet.",
     "GitHub Actions and Vercel logs are not publicly readable; causes of earlier failed deployment attempts are inferred from commits.",
     "No real-user or business metrics were available.",
-    "Some implementation and validation reports are historical snapshots rather than live runtime proof."
+    "Some implementation and validation reports are historical snapshots rather than live runtime proof.",
+    "The working Vercel configuration relies on a legacy property (builds) and a deprecated one (handle: filesystem); both still work (ARCHITECTURE_V3.md P05-RISK-020)."
   ],
   "evidence_sources": [
     "artifacts/00_context/PROJECT_CONTEXT_V4.md",
     "artifacts/01_discovery/PRODUCT_VISION_V4.md",
     "artifacts/02_requirements/REQUIREMENTS_V3.md",
     "artifacts/03_planning/product_backlog_priori_v2.json",
-    "artifacts/05_architecture/ARCHITECTURE_V2.md",
+    "artifacts/05_architecture/ARCHITECTURE_V3.md",
     "artifacts/06_implementation/IMPLEMENTATION_LOG.md",
     "artifacts/06_implementation/FOUNDATION_VALIDATION.md",
     "artifacts/06_implementation/IMPLEMENTATION_INDEX.md",
@@ -95,6 +111,8 @@
     "artifacts/09_documentation/DOCUMENTATION_VALIDATION_V2.md",
     "artifacts/10_evaluation/evidence/p10_live_checks.txt",
     "README.md",
-    "docs/REQUIREMENTS_COVERAGE.md"
+    "docs/REQUIREMENTS_COVERAGE.md",
+    "artifacts/08_deployment/evidence/manual_production_check_2026-10-14.md",
+    "artifacts/05_architecture/ARCHITECTURE_VALIDATION_V3.md"
   ]
 }

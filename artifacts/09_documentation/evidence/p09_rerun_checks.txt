@@ -1,10 +1,12 @@
-# P09 re-run: independent checks of the documentation against the repository (2026-10-14T05:51:40.504Z), HEAD 8c439b7 + uncommitted documentation changes
+# P09 re-run: independent checks of the documentation against the repository (2026-10-14T06:50:03.873Z), HEAD 8c439b7 + uncommitted documentation changes
 === 1. markdown links resolve
-26 relative links checked, 0 broken
+27 relative links checked, 0 broken
 === 2. backticked file and directory paths exist
 MISSING in docs/ARCHITECTURE.md: @vercel/static-build
 MISSING in docs/ARCHITECTURE.md: @vercel/node
 MISSING in docs/KNOWN_LIMITATIONS.md: src/app.js
+MISSING in docs/KNOWN_LIMITATIONS.md: actions/checkout@v7
+MISSING in docs/KNOWN_LIMITATIONS.md: actions/setup-node@v7
 MISSING in docs/REQUIREMENTS_COVERAGE.md: slots.js
 MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: artifacts/05_arquitecture
 MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: p08_rerun_ci_local.txt
@@ -19,7 +21,7 @@ MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT.md
 MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
 MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: TEST_ANALYSIS_REPORT.md
 MISSING in artifacts/09_documentation/DOCUMENTATION_REPORT.md: DEPLOYMENT_VALIDATION_V2.md
-106 path-like tokens checked, 17 missing
+109 path-like tokens checked, 19 missing
 === 3. API routes documented vs registered
 registered (method path): GET /health | GET /health/db | GET /provider/offerings | POST /provider/services | POST /provider/products | POST /auth/sign-out | POST /auth/sign-in | GET /session | POST /auth/sign-up/owner | POST /auth/sign-up/provider | GET /owner/pets | GET /provider/profile | PUT /provider/profile | GET /provider/working-hours | PUT /provider/working-hours | GET /services/:serviceId/booking-context | GET /owner/appointments | GET /provider/appointments | POST /owner/appointments | GET /search | GET /providers/:providerId
 ok      GET /api/health
@@ -94,10 +96,10 @@ SMOKE_REQUIRE_ALL        SETUP:yes .env.example:no  code/scripts:yes
 SMOKE_BASE_URL           SETUP:yes .env.example:no  code/scripts:no 
 variables read by code and absent from SETUP: 
 === 8. stale phrases that treat the deployment as unverified or P08 as blocked
-artifacts/09_documentation/DOCUMENTATION_REPORT.md:5: - Version: 1.1 (updated 2026-10-14 after the P08 re-run; version 1.0 of 2026-10-13 was written while P08 was BLOCKED)
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:5: - Version: 1.2 (updated 2026-10-14 after the P08 follow-ups: ARCHITECTURE_V3, workflow pinning, team-reported manual production check; version 1.1 of the same day followe
 artifacts/09_documentation/DOCUMENTATION_REPORT.md:9: - Validation Dependency: P00–P06 reports reviewed; P07 `PASS_WITH_WARNINGS` (`artifacts/07_qa/TEST_ANALYSIS_REPORT.md`, round 2, 2026-10-12; version 1.0 of this report re
 artifacts/09_documentation/DOCUMENTATION_REPORT.md:14: Spanish developer and user documentation describing the current VetCare implementation, its setup, routes, data, tests, capability coverage, and known limits. The deploym
 artifacts/09_documentation/DOCUMENTATION_REPORT.md:69: | P09-VERIFY-011 | Relative links and `artifacts/...` paths in README and docs | README, docs/* | Script check of every link and backticked path | VERIFIED_BY_EXECUTION |
-artifacts/09_documentation/DOCUMENTATION_REPORT.md:80: | P09-DISC-006 | ARTIFACT_CONFLICT | The deployment configuration that works differs from the architecture: ARCHITECTURE_V2 §5.5 and P05-ASM-012/019 assume Vercel auto-de
+artifacts/09_documentation/DOCUMENTATION_REPORT.md:80: | P09-DISC-006 | ARTIFACT_CONFLICT (RESOLVED in 1.2) | The deployment configuration that works differed from the architecture: ARCHITECTURE_V2 §5.5 and P05-ASM-012/019 as
 artifacts/09_documentation/DOCUMENTATION_REPORT.md:96: | P09-GAP-001 | CLOSED in 1.1. Hosted deployment behavior and smoke result were unverified in 1.0 | P08 re-run supplied the URL, the deployed commit and 9/9 smoke evidenc
 artifacts/09_documentation/DOCUMENTATION_REPORT.md:149: READY_WITH_ASSUMPTIONS. All required documents are present; technical statements are grounded by execution, inspection or a verified artifact, or marked unverified. The d
