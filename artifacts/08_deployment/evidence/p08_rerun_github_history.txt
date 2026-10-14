@@ -1,0 +1,96 @@
+# P08 re-run: GitHub Actions and Vercel deployment history, read from the public GitHub REST API
+# Retrieved (UTC): 2026-10-14T05:41:57.998Z
+# Source: https://api.github.com/repos/Jfonsecai/ai-mvp-pipeline/actions/runs?per_page=100 and /deployments?per_page=100 (unauthenticated, public repository)
+# Limits: job logs are not downloadable without authentication, so failure causes below are inferred from the fix commits, not read from logs.
+
+## Workflow runs, oldest first (time, workflow, event, branch, commit, conclusion)
+2026-10-12T22:12:07Z | CI | push | main | 4a47423 | success
+2026-10-13T17:11:36Z | Post-deploy smoke test | deployment_status | main | 4a47423 | failure
+2026-10-13T17:28:19Z | Post-deploy smoke test | deployment_status | main | 4a47423 | skipped
+2026-10-13T17:37:45Z | Post-deploy smoke test | deployment_status | main | 4a47423 | skipped
+2026-10-13T17:43:26Z | Post-deploy smoke test | deployment_status | main | 4a47423 | failure
+2026-10-13T18:01:59Z | Post-deploy smoke test | deployment_status | dev | b308d6a | skipped
+2026-10-13T18:02:22Z | CI | pull_request | dev | b308d6a | success
+2026-10-13T18:08:15Z | CI | pull_request | dev | 599ead6 | success
+2026-10-13T18:08:37Z | Post-deploy smoke test | deployment_status | dev | 599ead6 | skipped
+2026-10-13T18:09:58Z | CI | push | main | 72059e4 | success
+2026-10-13T18:10:20Z | Post-deploy smoke test | deployment_status | main | 72059e4 | failure
+2026-10-13T18:20:29Z | Post-deploy smoke test | deployment_status | dev | 87bad3c | skipped
+2026-10-13T18:21:18Z | CI | pull_request | dev | 87bad3c | success
+2026-10-13T18:22:22Z | CI | pull_request | dev | 00eb89c | success
+2026-10-13T18:22:47Z | Post-deploy smoke test | deployment_status | dev | 00eb89c | skipped
+2026-10-13T18:25:21Z | CI | push | main | ac8c484 | success
+2026-10-13T18:25:53Z | Post-deploy smoke test | deployment_status | main | ac8c484 | failure
+2026-10-13T18:45:34Z | Post-deploy smoke test | deployment_status | main | ac8c484 | skipped
+2026-10-13T18:55:52Z | Post-deploy smoke test | deployment_status | dev | 4705393 | skipped
+2026-10-13T18:56:16Z | CI | pull_request | dev | 4705393 | success
+2026-10-13T18:58:44Z | CI | pull_request | dev | c7dca23 | success
+2026-10-13T18:59:13Z | Post-deploy smoke test | deployment_status | dev | c7dca23 | skipped
+2026-10-13T18:59:54Z | CI | push | main | 155ea31 | success
+2026-10-13T19:00:09Z | Post-deploy smoke test | deployment_status | main | 155ea31 | failure
+2026-10-13T19:40:59Z | Post-deploy smoke test | deployment_status | dev | 7e0aee3 | skipped
+2026-10-13T19:41:23Z | CI | pull_request | dev | 7e0aee3 | success
+2026-10-13T19:42:37Z | CI | pull_request | dev | 51c5d1b | success
+2026-10-13T19:43:14Z | Post-deploy smoke test | deployment_status | dev | 51c5d1b | skipped
+2026-10-13T19:49:31Z | CI | push | main | 73e009c | success
+2026-10-13T19:49:50Z | Post-deploy smoke test | deployment_status | main | 73e009c | success
+2026-10-13T20:54:53Z | Post-deploy smoke test | deployment_status | docs | 184a10d | skipped
+2026-10-13T20:55:22Z | CI | pull_request | docs | 184a10d | success
+2026-10-13T22:20:37Z | CI | push | main | 8c439b7 | success
+2026-10-13T22:20:52Z | Post-deploy smoke test | deployment_status | main | 8c439b7 | success
+2026-10-13T22:25:26Z | Post-deploy smoke test | deployment_status | evaluation | 649d8a4 | skipped
+2026-10-13T22:50:53Z | Post-deploy smoke test | deployment_status | evaluation | 1bbfa6e | skipped
+2026-10-13T22:53:40Z | Post-deploy smoke test | deployment_status | evaluation | 5a9acf5 | skipped
+2026-10-13T23:13:11Z | CI | pull_request | copilot/evaluation | 8f7cd3b | failure
+2026-10-13T23:13:27Z | Post-deploy smoke test | deployment_status |  | 8f7cd3b | skipped
+2026-10-13T23:15:41Z | CI | pull_request | copilot/evaluation | c8a0f9d | success
+2026-10-13T23:15:51Z | Post-deploy smoke test | deployment_status | copilot/evaluation | c8a0f9d | skipped
+2026-10-13T23:23:08Z | Post-deploy smoke test | deployment_status | evaluation | 94b13b5 | skipped
+2026-10-13T23:27:21Z | Post-deploy smoke test | deployment_status | evaluation | c0b39dd | skipped
+2026-10-13T23:46:11Z | CI | pull_request | copilot/update-success-criteria-clarification | ed46a67 | failure
+2026-10-13T23:46:23Z | Post-deploy smoke test | deployment_status |  | ed46a67 | skipped
+2026-10-13T23:48:21Z | CI | pull_request | copilot/update-success-criteria-clarification | 3b18749 | success
+2026-10-13T23:48:32Z | Post-deploy smoke test | deployment_status | copilot/update-success-criteria-clarification | 3b18749 | skipped
+2026-10-13T23:50:30Z | Post-deploy smoke test | deployment_status | evaluation | e64a962 | skipped
+2026-10-13T23:53:30Z | Post-deploy smoke test | deployment_status | evaluation | 21c2af9 | skipped
+
+## Deployments created by vercel[bot], oldest first (time, environment, commit)
+2026-10-13T17:11:34Z | Production | 4a47423
+2026-10-13T18:01:57Z | Preview | b308d6a
+2026-10-13T18:08:35Z | Preview | 599ead6
+2026-10-13T18:10:17Z | Production | 72059e4
+2026-10-13T18:20:27Z | Preview | 87bad3c
+2026-10-13T18:22:45Z | Preview | 00eb89c
+2026-10-13T18:25:51Z | Production | ac8c484
+2026-10-13T18:55:50Z | Preview | 4705393
+2026-10-13T18:59:11Z | Preview | c7dca23
+2026-10-13T19:00:08Z | Production | 155ea31
+2026-10-13T19:40:57Z | Preview | 7e0aee3
+2026-10-13T19:43:12Z | Preview | 51c5d1b
+2026-10-13T19:49:48Z | Production | 73e009c
+2026-10-13T20:54:51Z | Preview | 184a10d
+2026-10-13T22:20:50Z | Production | 8c439b7
+2026-10-13T22:25:24Z | Preview | 649d8a4
+2026-10-13T22:50:52Z | Preview | 1bbfa6e
+2026-10-13T22:53:39Z | Preview | 5a9acf5
+2026-10-13T23:13:25Z | Preview | 8f7cd3b
+2026-10-13T23:15:49Z | Preview | c8a0f9d
+2026-10-13T23:23:07Z | Preview | 94b13b5
+2026-10-13T23:27:19Z | Preview | c0b39dd
+2026-10-13T23:46:21Z | Preview | ed46a67
+2026-10-13T23:48:30Z | Preview | 3b18749
+2026-10-13T23:50:28Z | Preview | e64a962
+2026-10-13T23:53:28Z | Preview | 21c2af9
+
+## Counts
+CI runs: 19 (success 17, failure 2)
+Post-deploy smoke runs on main (Production): 10 (success 2, failure 5, skipped 3)
+Post-deploy smoke runs on other branches (Preview, skipped by design): 20
+
+## Current HEAD 8c439b7 (Production deployment 2026-10-13T22:20:50Z)
+CI push run 38477141692: build-and-test success; every step success (Install, Require the test database, Build, Tests project suite, Tests QA suite), 2026-10-13T22:20:40Z to 22:21:23Z
+Post-deploy smoke run 38477169616: smoke success; step Smoke test the deployed application success, 2026-10-13T22:20:55Z to 22:21:03Z
+Note: the Vercel deployment (created 22:20:50Z) started before the CI run finished (22:21:23Z): CI does not gate the deployment.
+
+## Branch protection of main (public API: GET /repos/.../branches/main)
+protected: true; protection.enabled: false; required_status_checks.enforcement_level: off; contexts: [] -> the check build-and-test is NOT required

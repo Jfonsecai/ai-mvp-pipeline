@@ -1,6 +1,6 @@
 # API
 
-La API HTTP de Express se monta bajo `/api`. Métodos, paths y guards se verificaron por inspección de los registros de rutas y handlers. El contrato de payloads está especificado en `artifacts/05_arquitecture/API_SPEC_V1.yaml`; esta tabla resume las rutas registradas.
+La API HTTP de Express se monta bajo `/api`. Métodos, paths y guards se verificaron por inspección de los registros de rutas y handlers. El contrato de payloads está especificado en `artifacts/05_architecture/API_SPEC_V1.yaml`; esta tabla resume las rutas registradas.
 
 | Método | Ruta | Acceso / notas |
 |---|---|---|

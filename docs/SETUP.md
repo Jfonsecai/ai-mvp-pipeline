@@ -52,27 +52,38 @@ npm run migrate:status
 npm run migrate
 ```
 
-Ambos comandos requieren `DATABASE_URL_UNPOOLED`. El primero informa migraciones aplicadas/pendientes; el segundo aplica migraciones SQL de `migrations/`. No edite migraciones ya aplicadas. La configuración del proyecto indica que se ejecutan fuera del build de Vercel.
+Ambos comandos requieren `DATABASE_URL_UNPOOLED`. El primero informa migraciones aplicadas/pendientes; el segundo aplica migraciones SQL de `migrations/`. No edite migraciones ya aplicadas. El migrador se niega a ejecutarse cuando la variable `VERCEL` está definida (la define la plataforma), de modo que las migraciones nunca corren dentro de un build de Vercel.
 
 ## Build
 
-`npm run build` construye el cliente en `public/`. El comando existe, pero no se ejecutó durante P09 porque escribe artefactos de build.
+`npm run build` construye el cliente en `public/` (directorio ignorado por git). Se ejecutó con éxito el 2026-10-14 sobre el commit `8c439b7` (`artifacts/08_deployment/evidence/p08_rerun_ci_local.txt`).
 
 ## Pruebas
 
-`npm test` ejecuta el runner de Node. Configure `TEST_DATABASE_URL` solo con una base desechable para incluir las pruebas DB; sin esa variable, las pruebas dependientes de base de datos se omiten. Consulte [TESTING](TESTING.md). P09 no ejecutó este comando.
+`npm test` ejecuta el runner de Node y carga `.env`. Configure `TEST_DATABASE_URL` solo con una base desechable para incluir las pruebas DB; sin esa variable, las pruebas dependientes de base de datos se omiten. La suite de QA (`node --test "artifacts/07_qa/test_suites/**/*.test.js"`) **no** carga `.env`: exporte `TEST_DATABASE_URL` en el shell antes de ejecutarla. Consulte [TESTING](TESTING.md).
 
 ## Despliegue y verificación
 
-El repositorio contiene configuración y documentación para Vercel/Neon. El usuario informa que el despliegue ya se realizó. Sin embargo, el último `artifacts/08_deployment/DEPLOYMENT_VALIDATION.md` inspeccionado sigue registrando BLOCKED y no hay evidencia hospedada actualizada en esta generación. Por tanto, despliegue y disponibilidad actuales están **UNVERIFIED**.
+El despliegue está hecho y verificado por la etapa P08 (re-ejecución del 2026-10-14; detalle completo, procedimiento y solución de problemas en [DEPLOYMENT](../artifacts/08_deployment/DEPLOYMENT.md)):
 
-Para el smoke test `node scripts/smoke-test.js`:
+- **Dónde:** Vercel (cliente estático y una función para la API Express) y PostgreSQL en Neon. El dominio de producción es https://vetcare-mvp.vercel.app. Las URL únicas de cada despliegue están protegidas por la autenticación de Vercel; el dominio público no.
+- **Cómo:** la integración Git de Vercel construye y despliega cada push (producción para `main`, vista previa para las demás ramas) con la configuración de `vercel.json` (`builds` y `routes`). No se usa Docker. GitHub Actions ejecuta la integración continua (`.github/workflows/ci.yml`: instalación, build y pruebas) y, tras cada despliegue de producción exitoso, el smoke test (`.github/workflows/post-deploy-smoke.yml`).
+- **Variables de Vercel (por entorno):** `APP_ORIGIN` (obligatoria; debe ser exactamente el origen público), `DATABASE_URL` (la inyecta la integración de Neon), `FEATURES` (vacía en producción) y opcionalmente las dos variables de sesión. `DATABASE_URL_UNPOOLED` solo se usa para migraciones desde una máquina controlada; no la guarde en GitHub ni en el build de Vercel.
+- **Migraciones:** no forman parte del despliegue; se aplican a mano, antes de la publicación que las necesite, con `npm run migrate:status` y `npm run migrate`.
+
+Estado verificado (commit `8c439b7`): la integración continua pasó en GitHub Actions, Vercel desplegó producción y el smoke test pasó tanto en el workflow como al ejecutarlo a mano contra el dominio público (9 de 9 comprobaciones). El equipo reporta además una prueba manual en producción el 2026-10-14 (registro, inicio de sesión, búsqueda, reserva, cookie `Secure`, `FEATURES` y versión de Node); el equipo reporta que todas pasaron, sin valores individuales registrados. Aún sin verificar: la reversión de un despliegue y el entorno de vista previa. Los workflows se cambiaron después de esa verificación (`ubuntu-24.04`, acciones `@v7`) y todavía no se han ejecutado en GitHub. La comprobación de CI no es obligatoria para publicar en `main` (ajuste de GitHub pendiente del administrador).
+
+Para ejecutar el smoke test a mano (solo lee; no crea cuentas ni datos):
+
+```sh
+BASE_URL=https://vetcare-mvp.vercel.app APP_ORIGIN=https://vetcare-mvp.vercel.app SMOKE_REQUIRE_ALL=1 node scripts/smoke-test.js
+```
 
 | Variable | Requerida | Propósito |
 |---|---|---|
-| BASE_URL | Sí | Origen desplegado que se inspecciona. |
-| APP_ORIGIN | Opcional localmente; requerido para completar SMOKE-06 en CI | Debe coincidir con el origen comprobado; habilita la verificación de inicio de sesión contra DB. |
+| BASE_URL | Sí | Origen desplegado que se inspecciona, sin ruta final. |
+| APP_ORIGIN | Opcional localmente; requerida para completar SMOKE-06 en CI | Debe coincidir con el origen comprobado; habilita la verificación de inicio de sesión contra DB. |
 | SMOKE_CHECKS | No | Selección `api`, `static` o `all` (por defecto `all`). |
 | SMOKE_REQUIRE_ALL | No | Con valor `1`, un chequeo omitido falla el proceso. |
 
-El workflow de GitHub también lee la variable de repositorio `SMOKE_BASE_URL` como URL pública recomendada y `APP_ORIGIN`; el workflow exige que el chequeo requerido se ejecute. No se ejecutó contra un destino hospedado durante P09. Los nombres y el comportamiento se verificaron por inspección de `scripts/smoke-test.js` y `.github/workflows/post-deploy-smoke.yml`.
+El workflow de GitHub lee las variables de repositorio `SMOKE_BASE_URL` (dominio público, obligatoria en la práctica porque la URL única del despliegue está protegida) y `APP_ORIGIN`, y exige que ningún chequeo se omita.

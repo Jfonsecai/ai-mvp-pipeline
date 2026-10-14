@@ -1,0 +1,63 @@
+# P08 validation V2 - independent static checks (2026-10-14T05:44:24Z) on HEAD 8c439b7 + uncommitted re-run files
+=== 1. workflows parse as YAML and key properties
+.github/workflows/ci.yml | on: push,pull_request | permissions: {"contents":"read"} | jobs: build-and-test
+  job build-and-test runs-on ubuntu-latest timeout 15 steps: Checkout > Set up Node.js (version from .nvmrc) > Install dependencies (lockfile only) > Require the test database > Build (client bundle into public/) > Tests (project suite) > Tests (P07 QA suite)
+.github/workflows/post-deploy-smoke.yml | on: deployment_status,workflow_dispatch | permissions: {"contents":"read"} | jobs: smoke
+  job smoke runs-on ubuntu-latest timeout 5 steps: Checkout the deployed revision > Set up Node.js (version from .nvmrc) > Smoke test the deployed application
+ci services: ["postgres"] image postgres:16
+ci has deploy step: no deploy command (steps listed above)
+=== 2. secret scan (workflows, scripts, vercel.json, DEPLOYMENT.md, evidence, .env.example)
+no assignments of credential-like values found
+.env.example:12:DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+.env.example:15:DATABASE_URL_UNPOOLED=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+.env.example:31:# TEST_DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/vetcare_test
+no secrets.* references in workflows
+=== 3. DEPLOYMENT.md has the 15 required sections in order
+## 1. Document Metadata
+## 2. Deployment Overview
+## 3. Prerequisites
+## 4. Architecture and Runtime Requirements
+## 5. Environment Configuration
+## 6. Docker Configuration
+## 7. CI/CD Workflow
+## 8. Deployment Procedure
+## 9. Deployment Verification
+## 10. Rollback / Recovery
+## 11. Troubleshooting
+## 12. Security Notes
+## 13. Traceability
+## 14. Known Limitations and Assumptions
+## 15. Deployment Status
+=== 4. environment variables read by the code vs documented
+env.APP_ORIGIN env.DATABASE_URL env.FEATURES env.NODE_ENV env.SESSION_ABSOLUTE_HOURS env.SESSION_IDLE_MINUTES process.env.APP_ORIGIN process.env.BASE_URL process.env.DATABASE_URL_UNPOOLED process.env.PORT process.env.SMOKE_CHECKS process.env.SMOKE_REQUIRE_ALL process.env.VERCEL 
+APP_ORIGIN documented in DEPLOYMENT.md: 7
+DATABASE_URL documented in DEPLOYMENT.md: 5
+DATABASE_URL_UNPOOLED documented in DEPLOYMENT.md: 3
+FEATURES documented in DEPLOYMENT.md: 2
+SESSION_IDLE_MINUTES documented in DEPLOYMENT.md: 1
+SESSION_ABSOLUTE_HOURS documented in DEPLOYMENT.md: 1
+NODE_ENV documented in DEPLOYMENT.md: 2
+PORT documented in DEPLOYMENT.md: 1
+TEST_DATABASE_URL documented in DEPLOYMENT.md: 6
+SMOKE_BASE_URL documented in DEPLOYMENT.md: 5
+BASE_URL documented in DEPLOYMENT.md: 1
+SMOKE_REQUIRE_ALL documented in DEPLOYMENT.md: 2
+SMOKE_CHECKS documented in DEPLOYMENT.md: 0
+VERCEL documented in DEPLOYMENT.md: 2
+=== 5. repository refs in DEPLOYMENT.md exist
+ok  src/index.js
+ok  src/application.js
+ok  scripts/smoke-test.js
+ok  scripts/migrate.js
+ok  scripts/dev-server.js
+ok  vercel.json
+ok  .nvmrc
+ok  migrations/001_initial_schema.sql
+ok  client/vite.config.js
+ok  artifacts/05_architecture/ARCHITECTURE_V2.md
+ok  artifacts/05_architecture/ARCHITECTURE_VALIDATION_V2.md
+ok  artifacts/07_qa/TEST_EXECUTION_REPORT.md
+ok  artifacts/07_qa/TEST_ANALYSIS_REPORT.md
+ok  artifacts/07_qa/BUG_FIX_REPORT.md
+=== 6. tracked secrets: .env tracked in git?
+.env.example
