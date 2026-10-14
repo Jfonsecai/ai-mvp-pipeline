@@ -107,7 +107,7 @@ The report was updated after the first draft (see the addendum at the top of `MV
 | EVAL-008 downgraded MEDIUM to LOW | Justified in proportion to the evidence: a human attestation that the manual check passed, with no individual values recorded. Not removed, because nothing reproducible exists. The word "closed" is not used anywhere in the evaluation for the UI evidence |
 | EVAL-009 downgraded MEDIUM to LOW | Justified: the change is applied and checked statically (YAML parses, major tags exist). It is not "resolved" because the workflows have not run on GitHub |
 | EVAL-010 resolved | Justified: `ARCHITECTURE_V3.md` §1.4 exists and the `src/index.js` header was rewritten (verified by reading both). V3 has since been validated by the P05 validator (`ARCHITECTURE_VALIDATION_V3.md`, PASS). Residual: the need for `import express` is untested, and P05-RISK-020 (legacy Vercel properties) is open |
-| `eval_metrics.json` | `deployment.ui_verified_on_hosted_app` changed from a boolean to the string `TEAM_REPORTED_MANUAL_NO_VALUES_RECORDED` so that it does not read as a measured result; `documentation.major_gaps` is 1 |
+| `eval_metrics.json` | `deployment.ui_verified_on_hosted_app` changed from a boolean to the string `TEAM_REPORTED_PASSED_NO_VALUES_RECORDED` so that it does not read as a measured result; `documentation.major_gaps` is 1 |
 | Verdict | Unchanged and still justified: the incomplete scope (ordering, pets, catalog, appointment management) is untouched by these changes |
 
 The validation status stays **PASS_WITH_WARNINGS**.
