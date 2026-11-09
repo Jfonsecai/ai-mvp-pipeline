@@ -1,0 +1,14 @@
+# P08 re-run: smoke test against the public production domain
+# date (UTC): 2026-10-14T05:34:47Z
+# command: BASE_URL=https://vetcare-mvp.vercel.app APP_ORIGIN=https://vetcare-mvp.vercel.app SMOKE_REQUIRE_ALL=1 node scripts/smoke-test.js
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+PASS SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+PASS SMOKE-07 GET / serves the client entry page from public/
+PASS SMOKE-08 a client deep link returns the entry page (SPA rewrite, P05-ASM-012)
+PASS SMOKE-09 an unknown /api path stays a JSON NOT_FOUND and is not rewritten to the client
+9 passed, 0 failed, 0 skipped (not verified) against https://vetcare-mvp.vercel.app
+exit code: 0

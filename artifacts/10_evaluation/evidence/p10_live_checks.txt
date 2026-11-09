@@ -1,0 +1,22 @@
+# P10 evaluation: live checks run by the evaluator (2026-10-14T05:52:36Z)
+=== smoke test against Production (read-only)
+PASS SMOKE-01 GET /api/health answers {"status":"ok"} (the function runs and /api is routed)
+PASS SMOKE-02 GET /api/health/db reaches PostgreSQL through DATABASE_URL
+PASS SMOKE-03 GET /api/session answers state "none" without a cookie and is not cacheable
+PASS SMOKE-04 a protected route without a session answers UNAUTHENTICATED (guards are live)
+PASS SMOKE-05 a state-changing request from a foreign origin is refused (CR-021)
+PASS SMOKE-06 sign-in with unknown credentials answers INVALID_CREDENTIALS (Argon2 and database path; needs APP_ORIGIN)
+PASS SMOKE-07 GET / serves the client entry page from public/
+PASS SMOKE-08 a client deep link returns the entry page (SPA rewrite, P05-ASM-012)
+PASS SMOKE-09 an unknown /api path stays a JSON NOT_FOUND and is not rewritten to the client
+9 passed, 0 failed, 0 skipped (not verified) against https://vetcare-mvp.vercel.app
+exit code: 0
+=== latest Production deployments (GitHub API)
+2026-10-13T22:20:50Z Production 8c439b7
+2026-10-13T19:49:48Z Production 73e009c
+2026-10-13T19:00:08Z Production 155ea31
+=== main branch head and required checks
+head 8c439b7 protected true required_status_checks {"enforcement_level":"off","contexts":[],"checks":[]}
+=== client assets served vs local build
+assets/index-CoTgvBCE.js assets/index-pgEQph93.css 
+index-CoTgvBCE.js index-pgEQph93.css 
