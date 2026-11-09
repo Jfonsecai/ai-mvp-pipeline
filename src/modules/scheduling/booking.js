@@ -161,6 +161,10 @@ export async function getBookingContext(db, { ownerId, serviceId, weekStart, now
 export async function bookSlot(pool, { ownerId, service, petId, startsAt, modality, visitAddress, now }) {
   return withTransaction(pool, async (client) => {
     if (!(await lockProvider(client, service.providerId))) throw new Outcome('NOT_FOUND');
+    // Iteration 2 (CR-029): the service (removal takes the same provider lock) and the pet (removal
+    // takes FOR UPDATE) must still be active when the appointment is inserted.
+    if (!(await getServiceFacts(client, service.id))) throw new Outcome('NOT_FOUND');
+    if (!(await getOwnerPet(client, ownerId, petId, { lock: true }))) throw new Outcome('NOT_FOUND');
     const hours = await listWorkingHours(client, service.providerId);
     const bookedStarts = service.providerType === 'independent'
       ? await listScheduledStarts(client, service.providerId, startsAt, new Date(startsAt.getTime() + HOUR_MS))

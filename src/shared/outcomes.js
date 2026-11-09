@@ -14,6 +14,7 @@ export const OUTCOME_HTTP_STATUS = Object.freeze({
   NO_PETS: 422,
   PRODUCT_UNAVAILABLE: 409,
   ORDER_STATUS_CHANGED: 409,
+  APPOINTMENT_NOT_CHANGEABLE: 409, // iteration 2: started or cancelled appointment (EDGE-010)
   UNEXPECTED: 500,
 });
 

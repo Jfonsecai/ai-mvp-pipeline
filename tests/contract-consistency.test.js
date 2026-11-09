@@ -17,7 +17,7 @@ const flat = migration.replace(/\s+/g, ' '); // whitespace-insensitive compariso
 
 test('API_SPEC.yaml is the OpenAPI 3.1 document the foundation was built from', () => {
   assert.equal(spec.openapi, '3.1.0');
-  assert.equal(spec.info.version, '1.0.0');
+  assert.equal(spec.info.version, '2.0.0');
 });
 
 test('enumerations equal API_SPEC.yaml components.schemas', () => {

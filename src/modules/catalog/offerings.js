@@ -130,7 +130,7 @@ export async function listProviderOfferings(db, providerId) {
   const result = await db.query(
     `SELECT id, kind, name, price_cop, species, modality, available
        FROM offering
-      WHERE provider_id = $1
+      WHERE provider_id = $1 AND removed_at IS NULL
       ORDER BY created_at, id`,
     [providerId],
   );
@@ -151,7 +151,7 @@ export async function getServiceFacts(db, serviceId) {
   const result = await db.query(
     `SELECT id, provider_id, provider_type, name, price_cop, species, modality
        FROM offering
-      WHERE id = $1 AND kind = 'service'`,
+      WHERE id = $1 AND kind = 'service' AND removed_at IS NULL`,
     [serviceId],
   );
   const row = result.rows[0];

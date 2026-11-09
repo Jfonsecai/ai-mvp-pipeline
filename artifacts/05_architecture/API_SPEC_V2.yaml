@@ -1812,15 +1812,15 @@ components:
       type: object
       additionalProperties: false
       required: [id, name, species, breed, ageYears]
-      description: A pet with all its fields, for SCR-UX-019 and SCR-UX-020 (US-005, US-006).
+      description: A pet with all its fields, for SCR-UX-019 and SCR-UX-020 (US-005, US-006). Optional fields are omitted when empty (CTR-003 convention, like `address`).
       properties:
         id: { $ref: '#/components/schemas/Id' }
         name: { type: string }
         species: { $ref: '#/components/schemas/Species' }
         breed: { type: string }
         ageYears: { type: integer, minimum: 0 }
-        weightKg: { type: [number, 'null'] }
-        heightCm: { type: [integer, 'null'] }
+        weightKg: { type: number, exclusiveMinimum: 0 }
+        heightCm: { type: integer, minimum: 1 }
     RemovalResult:
       type: object
       additionalProperties: false
@@ -1885,8 +1885,8 @@ components:
           enum: [searched, empty_query]
           description: '`empty_query` → MSG-VOICE-EMPTY, no search was run (AC-120).'
         query:
-          type: [string, 'null']
-          description: Text actually searched, to place in the search box (AC-117, AC-159). Null for `empty_query`.
+          type: string
+          description: Text actually searched, to place in the search box (AC-117, AC-159). Omitted for `empty_query`.
         species: { $ref: '#/components/schemas/SpeciesFilter' }
         retried:
           type: boolean

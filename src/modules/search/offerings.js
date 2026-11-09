@@ -55,6 +55,33 @@ function searchResult(row) {
   return result;
 }
 
+/**
+ * IF-007 / IF-045 search query, shared by the text search, the voice search and the assistant
+ * (BR-042: voice adds no other matching). `q` is already validated and trimmed; `species` is a
+ * SpeciesFilter. Removed offerings are excluded (CR-029).
+ */
+export async function searchOfferings(db, { q, species = 'all' }) {
+  // Text and species both apply (AC-086); "all" adds no condition (AC-043).
+  const params = [escapeLikePattern(q)];
+  let speciesCondition = '';
+  if (species !== 'all') {
+    params.push(species);
+    speciesCondition = ' AND o.species = $2';
+  }
+
+  const result = await db.query(
+      `SELECT o.id, o.kind, o.name, o.price_cop, o.species, o.modality, o.available,
+              p.provider_id, p.public_name, p.provider_type
+         FROM offering o
+         JOIN provider_profile p ON p.provider_id = o.provider_id
+        WHERE translate(lower(o.name), '${ACCENT_FROM}', '${ACCENT_TO}')
+              LIKE '%' || translate(lower($1), '${ACCENT_FROM}', '${ACCENT_TO}') || '%' ESCAPE E'\\\\'
+          AND o.removed_at IS NULL${speciesCondition}`,
+    params,
+  );
+  return result.rows.map(searchResult);
+}
+
 export function createSearchRouter({ db, guard }) {
   const router = Router();
 
@@ -63,25 +90,7 @@ export function createSearchRouter({ db, guard }) {
     const speciesFilter = validateSpeciesFilter(req.query.species);
     const fields = [...(validation.fields ?? []), ...(speciesFilter.fields ?? [])];
     if (fields.length) throw new Outcome('VALIDATION_FAILED', { fields });
-
-    // Text and species both apply (AC-086); "all" adds no condition (AC-043).
-    const params = [escapeLikePattern(validation.value)];
-    let speciesCondition = '';
-    if (speciesFilter.value !== 'all') {
-      params.push(speciesFilter.value);
-      speciesCondition = ' AND o.species = $2';
-    }
-
-    const result = await db.query(
-      `SELECT o.id, o.kind, o.name, o.price_cop, o.species, o.modality, o.available,
-              p.provider_id, p.public_name, p.provider_type
-         FROM offering o
-         JOIN provider_profile p ON p.provider_id = o.provider_id
-        WHERE translate(lower(o.name), '${ACCENT_FROM}', '${ACCENT_TO}')
-              LIKE '%' || translate(lower($1), '${ACCENT_FROM}', '${ACCENT_TO}') || '%' ESCAPE E'\\\\'${speciesCondition}`,
-      params,
-    );
-    res.json({ results: result.rows.map(searchResult) });
+    res.json({ results: await searchOfferings(db, { q: validation.value, species: speciesFilter.value }) });
   });
 
   return router;

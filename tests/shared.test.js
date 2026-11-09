@@ -42,7 +42,8 @@ test('features: parses a comma list, trims, deduplicates and rejects unknown nam
 });
 
 test('outcomes: closed list with the HTTP statuses of API_SPEC', () => {
-  assert.equal(OUTCOME_CODES.length, 13);
+  assert.equal(OUTCOME_CODES.length, 14); // API_SPEC_V2 adds APPOINTMENT_NOT_CHANGEABLE (iteration 2)
+  assert.equal(new Outcome('APPOINTMENT_NOT_CHANGEABLE').status, 409);
   assert.equal(new Outcome('NOT_FOUND').status, 404);
   assert.equal(new Outcome('SESSION_EXPIRED').status, 401);
   assert.throws(() => new Outcome('MADE_UP'), TypeError);

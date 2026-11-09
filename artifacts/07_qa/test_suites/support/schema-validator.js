@@ -1,4 +1,4 @@
-// P07.1 helper (not a test file): a small OpenAPI 3.1 schema validator, enough for API_SPEC_V1.yaml.
+// P07.1 helper (not a test file): a small OpenAPI 3.1 schema validator, enough for API_SPEC_V2.yaml.
 // It supports the keywords the specification actually uses: $ref, type, enum, const, required,
 // properties, additionalProperties:false, items, minItems/maxItems, minimum/maximum,
 // exclusiveMinimum, minLength/maxLength, pattern, format (uuid, date, date-time, email), oneOf, allOf.
@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { parse } from 'yaml';
 import { ROOT } from './harness.js';
 
-export const API_SPEC_PATH = 'artifacts/05_architecture/API_SPEC_V1.yaml';
+export const API_SPEC_PATH = 'artifacts/05_architecture/API_SPEC_V2.yaml';
 export const spec = parse(readFileSync(join(ROOT, API_SPEC_PATH), 'utf8'));
 
 const FORMATS = {
