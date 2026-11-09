@@ -81,6 +81,8 @@ test('AC-136 to AC-140: offerings rows (name, species, price, provider), order b
   assert.equal(a.items[1].label.startsWith('Vacuna B'), true);
   assert.deepEqual(a.searchLink, { q: 'vacuna', species: 'cat' });
   assert.equal(answers.offerings({ query: 'baño', species: 'all', results: [] }).text, 'No encontré servicios ni productos para «baño».');
+  const retried = answers.offerings({ query: 'alimento para gato adulto', species: 'cat', retried: true, results: [r('Alimento para gato adulto', 90000)] });
+  assert.equal(retried.text, 'Encontré 1 resultado para «alimento para gato adulto». Te muestro 1:'); // F-01: no duplicated species
 });
 
 test('AC-141 / AC-142: next appointments, one and none', () => {

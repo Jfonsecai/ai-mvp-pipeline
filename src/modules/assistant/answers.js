@@ -91,12 +91,14 @@ const SPECIES_SUFFIX = { dog: ' para perros', cat: ' para gatos', all: '' };
 const SPECIES_LABEL = { dog: 'Perro', cat: 'Gato' };
 
 /** INT-02 / INT-03 (AC-136 to AC-140). `search` is the voice-search result (query, species, results). */
-export function offerings({ query, species, results }) {
+export function offerings({ query, species, results, retried = false }) {
   if (!results.length) return answer('no_match', `No encontré servicios ni productos para «${query}».`, { linkTo: 'search' });
   const sorted = [...results].sort((a, b) => a.priceCop - b.priceCop || a.name.localeCompare(b.name, 'es'));
   const shown = sorted.slice(0, MAX_ITEMS);
   const count = sorted.length === 1 ? '1 resultado' : `${sorted.length} resultados`;
-  return answer('offerings', `Encontré ${count} para «${query}»${SPECIES_SUFFIX[species]}. Te muestro ${shown.length}:`, {
+  // When the BR-053 retry kept the species words, the query already names the species (F-01).
+  const suffix = retried ? '' : SPECIES_SUFFIX[species];
+  return answer('offerings', `Encontré ${count} para «${query}»${suffix}. Te muestro ${shown.length}:`, {
     items: shown.map((r) => ({
       label: `${r.name} — ${SPECIES_LABEL[r.species]} — ${price(r.priceCop)} — ${r.provider.name}`,
       target: { screen: 'provider_profile', providerId: r.provider.id },
