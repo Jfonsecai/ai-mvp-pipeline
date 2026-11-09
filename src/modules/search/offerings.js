@@ -1,6 +1,7 @@
 // COMP-008 Search and Discovery — US-016 text search and US-017 species filter (IF-007, read-only).
 import { Router } from 'express';
 import { Outcome } from '../../shared/outcomes.js';
+import { voiceSearch } from './voice-phrase.js';
 
 const MAX_QUERY_LENGTH = 120;
 const SPECIES_FILTERS = new Set(['all', 'dog', 'cat']); // API_SPEC SpeciesFilter
@@ -91,6 +92,22 @@ export function createSearchRouter({ db, guard }) {
     const fields = [...(validation.fields ?? []), ...(speciesFilter.fields ?? [])];
     if (fields.length) throw new Outcome('VALIDATION_FAILED', { fields });
     res.json({ results: await searchOfferings(db, { q: validation.value, species: speciesFilter.value }) });
+  });
+
+  // IF-041 (US-035): the browser sends only the recognized text; it is not stored or logged (CR-027).
+  router.post('/search/voice', guard({ role: 'owner' }), async (req, res) => {
+    const body = req.body ?? {};
+    const fields = [];
+    const transcript = typeof body.transcript === 'string' ? body.transcript.trim() : undefined;
+    if (body.transcript === undefined || transcript === '') fields.push({ field: 'transcript', reason: 'REQUIRED' });
+    else if (transcript === undefined) fields.push({ field: 'transcript', reason: 'INVALID_FORMAT' });
+    else if ([...transcript].length > 300) fields.push({ field: 'transcript', reason: 'TOO_LONG' });
+    const speciesFilter = validateSpeciesFilter(body.species);
+    if (speciesFilter.fields) fields.push(...speciesFilter.fields);
+    if (fields.length) throw new Outcome('VALIDATION_FAILED', { fields });
+
+    const outcome = await voiceSearch((args) => searchOfferings(db, args), transcript, speciesFilter.value);
+    res.json({ transcript, ...outcome });
   });
 
   return router;

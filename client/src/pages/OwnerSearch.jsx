@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
+import VoiceInputButton from '../voice/VoiceInputButton.jsx';
+
+// UX_SPEC_V3 §8 voice messages (US-035).
+const MSG_VOICE_NOHEAR = 'No te escuchamos. Intenta de nuevo o escribe tu búsqueda.';
+const MSG_VOICE_DENIED = 'No tenemos permiso para usar el micrófono. Puedes escribir, o permitir el micrófono en la configuración del navegador.';
+const MSG_VOICE_EMPTY = 'Dinos qué servicio o producto necesitas, por ejemplo: «vacuna para mi gato».';
 
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
 const SPECIES_OPTIONS = [
@@ -47,10 +53,57 @@ export default function OwnerSearch() {
   const [results, setResults] = useState([]);
   const [searchState, setSearchState] = useState('initial');
   const [queryError, setQueryError] = useState('');
+  const [heard, setHeard] = useState('');
+  const [voiceAlert, setVoiceAlert] = useState(null); // { variant: 'info' | 'warning', text }
+  const [searchParams] = useSearchParams();
   const requestId = useRef(0);
   const registered = Boolean(locationState?.name || locationState?.pet?.name);
 
   useEffect(() => () => { requestId.current += 1; }, []);
+
+  // "Ver todos en Buscar" from the assistant (AC-139, ARCHITECTURE_V4 §10): ?q=&species= are read once.
+  useEffect(() => {
+    const q = searchParams.get('q')?.trim();
+    if (!q) return;
+    const requested = searchParams.get('species');
+    const speciesValue = ['dog', 'cat'].includes(requested) ? requested : 'all';
+    setQuery(q);
+    setSpecies(speciesValue);
+    void runSearch(q, speciesValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // US-035: the browser recognized `transcript`; the server interprets it and searches (IF-041).
+  async function voiceSearch(transcript) {
+    const currentRequest = ++requestId.current;
+    setVoiceAlert(null);
+    setQueryError('');
+    setHeard(transcript);
+    setSearchState('loading');
+    try {
+      const response = await apiFetch('/api/search/voice', { method: 'POST', body: { transcript, species } });
+      if (requestId.current !== currentRequest) return;
+      setSpecies(response.species);
+      if (response.outcome === 'empty_query') {
+        setVoiceAlert({ variant: 'info', text: MSG_VOICE_EMPTY }); // AC-120: no search was run
+        setSearchState(submittedQuery ? 'complete' : 'initial');
+        return;
+      }
+      setQuery(response.query); // AC-117 / AC-159: the text actually searched, editable
+      setSubmittedQuery(response.query);
+      setSubmittedSpecies(response.species);
+      setResults(response.results);
+      setSearchState('complete');
+    } catch {
+      if (requestId.current === currentRequest) setSearchState('error');
+    }
+  }
+
+  function voiceError(kind) {
+    setVoiceAlert(kind === 'not_allowed'
+      ? { variant: 'warning', text: MSG_VOICE_DENIED } // AC-123
+      : { variant: 'info', text: MSG_VOICE_NOHEAR }); // AC-121
+  }
 
   // Runs the search for already-normalized text with the given species filter (US-017).
   async function runSearch(normalized, speciesValue) {
@@ -76,6 +129,7 @@ export default function OwnerSearch() {
       return;
     }
     setQueryError('');
+    setVoiceAlert(null);
     setQuery(normalized);
     await runSearch(normalized, species);
   }
@@ -117,11 +171,22 @@ export default function OwnerSearch() {
               setQueryError('');
             }}
           />
+          <VoiceInputButton
+            label="Buscar por voz"
+            disabled={searchState === 'loading'}
+            onTranscript={(transcript) => void voiceSearch(transcript)}
+            onError={voiceError}
+          />
           <button className="primary-button search-submit" type="submit" disabled={searchState === 'loading'}>
             {searchState === 'loading' ? 'Buscando…' : 'Buscar'}
           </button>
         </div>
         {queryError && <span className="field-error" id="offering-query-error">{queryError}</span>}
+        {heard && <p className="voice-heard">
+          Escuché: «{heard}»{' '}
+          <button className="link-button" type="button" onClick={() => setHeard('')}>Ocultar</button>
+        </p>}
+        {voiceAlert && <div className={voiceAlert.variant === 'warning' ? 'warning-alert' : 'info-alert'} role="status">{voiceAlert.text}</div>}
         <fieldset className="species-filter">
           <legend>Especie</legend>
           {SPECIES_OPTIONS.map(({ value, label }) => <label className="species-option" key={value}>

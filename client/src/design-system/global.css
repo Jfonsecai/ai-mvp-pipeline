@@ -154,7 +154,17 @@ body {
 .search-card h1 { margin: 0; font-size: var(--font-size-2xl); line-height: var(--line-height-tight); }
 .search-subtitle { color: var(--color-text-secondary); }
 .search-form { margin-top: var(--spacing-6); }
-.search-controls { display: grid; grid-template-columns: 1fr; gap: var(--spacing-3); }
+.search-controls { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: var(--spacing-3); align-items: center; }
+.search-controls .search-submit { grid-column: 1 / -1; }
+/* COMP-UX-023 voice input (UX_SPEC_V3 §5) */
+.voice-input { display: inline-flex; align-items: center; gap: var(--spacing-2); }
+.voice-button { display: inline-flex; align-items: center; justify-content: center; width: var(--size-control-height); height: var(--size-control-height); border: var(--border-width-default) solid var(--color-border-input); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-primary); font-size: var(--font-size-lg); cursor: pointer; transition: background var(--motion-duration-fast); }
+.voice-button:hover { background: var(--color-primary-subtle); }
+.voice-button:disabled { background: var(--color-bg-muted); color: var(--color-text-disabled); cursor: not-allowed; }
+.voice-button-listening, .voice-button-listening:hover { border-color: var(--color-primary); background: var(--color-primary); color: var(--color-on-primary); }
+.voice-status { color: var(--color-primary); font-size: var(--font-size-sm); }
+.voice-status:empty { display: none; }
+.voice-heard { margin: var(--spacing-2) 0 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
 .search-controls input { width: 100%; min-height: var(--size-control-height); padding: var(--spacing-3); border: var(--border-width-default) solid var(--color-border-input); border-radius: var(--radius-sm); font: inherit; }
 .search-controls input[aria-invalid="true"] { border-color: var(--color-error); }
 .search-submit { margin-top: 0; }
@@ -217,7 +227,8 @@ body {
 }
 
 @media (min-width: 1024px) {
-  .search-controls { grid-template-columns: minmax(0, 1fr) max-content; align-items: end; }
+  .search-controls { grid-template-columns: minmax(0, 1fr) max-content max-content; align-items: end; }
+  .search-controls .search-submit { grid-column: auto; }
   .species-filter { grid-template-columns: repeat(3, max-content); justify-content: start; }
   .search-results-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .appointment-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -1,6 +1,6 @@
 # Implementation Index
 
-Last updated: 2026-10-12
+Last updated: 2026-11-09
 
 | HU ID | HU title | Priority / sprint | Implementation status | Validation status | Implementation log | Validation report | Blockers / warnings | Last updated |
 |---|---|---|---|---|---|---|---|---|
@@ -19,3 +19,10 @@ Last updated: 2026-10-12
 | US-020 | Book a home visit | P0 / SPRINT-001 | READY_WITH_LIMITATIONS | FAIL | `artifacts/06_implementation/increments/US-020_IMPLEMENTATION_LOG.md` | `artifacts/06_implementation/increments/US-020_IMPLEMENTATION_VALIDATION.md` | AC-052 fails because provider appointment visibility (US-024) is not implemented (F-01, HIGH); address persistence and AC-053/054 pass. Browser interaction unverified; 193 tests and build pass. | 2026-10-12 |
 | US-021 | View my appointments | P0 / SPRINT-001 | READY_FOR_VALIDATION | PASS_WITH_WARNINGS | `artifacts/06_implementation/increments/US-021_IMPLEMENTATION_LOG.md` | `artifacts/06_implementation/increments/US-021_IMPLEMENTATION_VALIDATION.md` | Hosted Vercel/Neon condition COND-001, provider-side mutation workflows, and separate human/P07 review remain outside this increment; all US-021 acceptance criteria pass locally. | 2026-10-12 |
 | US-024 | See my scheduled appointments | P0 / SPRINT-001 | READY_FOR_VALIDATION | PASS_WITH_WARNINGS | `artifacts/06_implementation/increments/US-024_IMPLEMENTATION_LOG.md` | `artifacts/06_implementation/increments/US-024_IMPLEMENTATION_VALIDATION.md` | Hosted Vercel/Neon condition COND-001 and live browser-to-PostgreSQL flow remain for external/P07 follow-up; all three US-024 acceptance criteria pass locally. | 2026-10-12 |
+
+## SPRINT-002 (iteration 2)
+
+| HU ID | HU title | Priority / sprint | Implementation status | Validation status | Implementation log | Validation report | Blockers / warnings | Last updated |
+|---|---|---|---|---|---|---|---|---|
+| Step 0 | Iteration 2 prerequisites (migration 002, contract V2, removal filters, shared search) | — / SPRINT-002 | DONE (commit `700e63f`) | Covered by the test runs in the US-035 log | `artifacts/06_implementation/increments/US-035_IMPLEMENTATION_LOG.md` §5.1 | — | Migration 002 must be applied to Neon before deploying. | 2026-11-09 |
+| US-035 | Search by voice | P0 / SPRINT-002 | READY_FOR_VALIDATION | NOT_VALIDATED | `artifacts/06_implementation/increments/US-035_IMPLEMENTATION_LOG.md` | — | Real-microphone check on Chrome desktop/Android pending deployment (browser test used a simulated recognizer). | 2026-11-09 |

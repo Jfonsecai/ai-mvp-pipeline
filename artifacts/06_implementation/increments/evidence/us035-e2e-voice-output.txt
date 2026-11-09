@@ -1,0 +1,8 @@
+["AC-115/117","vacunación",true,"Escuché: «busco vacunación para mi perro» Ocultar","1 resultado para «vacunación»"]
+["AC-159","alimento para gato adulto",true,"1 resultado para «alimento para gato adulto»"]
+["AC-120","Dinos qué servicio o producto necesitas, por ejemplo: «vacuna para mi gato»."]
+["AC-121","No te escuchamos. Intenta de nuevo o escribe tu búsqueda."]
+["AC-123","No tenemos permiso para usar el micrófono. Puedes escribir, o permitir el micrófono en la configuración del navegador."]
+["AC-118","1 resultado para «baño»"]
+["AC-122 no mic without voice support",0]
+["?q= hand-off","vacunación",true,"1 resultado para «vacunación»"]

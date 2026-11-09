@@ -1,0 +1,28 @@
+# npm test (2026-11-09, local PostgreSQL 16)
+# tests 189
+# pass 189
+# fail 0
+# skipped 0
+# QA suite
+# tests 143
+# pass 143
+# fail 0
+# skipped 0
+# US-035 tests
+ok 1 - AC-115: "busco vacunación para mi perro" → text "vacunación", species dog
+ok 2 - BR-043 / BR-044: species words, connectors and leading fillers, case- and accent-insensitive
+ok 3 - AC-119: no species named → species null (the current filter stays)
+ok 4 - AC-120 / EDGE-036: only fillers and species → empty query
+ok 5 - EDGE-037: both species named → filter all, both words and their conjunction removed
+ok 6 - BR-044: fillers are removed only at the start and at the end, never in the middle
+ok 7 - the interpreted text is cut to the 120-character search limit (P05-ASM-023)
+ok 8 - BR-053 / AC-159: retry with the species words kept when the cleaned text finds nothing
+ok 9 - voiceSearch: no retry when results exist, no species was spoken, or the query is empty
+ok 10 - AC-115 / AC-117 / BR-042: spoken species filters; results equal the typed search; removed offerings excluded
+ok 11 - AC-119: no spoken species keeps the current filter
+ok 12 - AC-120: only fillers and species → empty_query, no search
+ok 13 - AC-159 / BR-053: an offering name with a species word is found by the retry
+ok 14 - validation and access: missing transcript, wrong species, provider session
+# tests 14
+# pass 14
+# fail 0
