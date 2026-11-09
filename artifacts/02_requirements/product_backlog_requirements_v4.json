@@ -1,11 +1,11 @@
 {
   "backlog_metadata": {
-    "version": "4.0",
-    "previous_version": "3.0",
+    "version": "4.1",
+    "previous_version": "4.0",
     "stage": "P02",
     "status": "READY_WITH_ASSUMPTIONS",
     "source": "REQUIREMENTS_V4.md v4.0 (REQUIREMENTS_V3.md v3.0 + PRODUCT_VISION_V4.md v4.0 + PRODUCT_VISION_V5_ITERATION2.md v5.0)",
-    "source_version": "P02 v3.0 + CR-027 + team decisions TD-21 to TD-30 (2026-11-09)",
+    "source_version": "P02 v3.0 + CR-027 + team decisions TD-21 to TD-33 (2026-11-09)",
     "generated": "2026-11-09",
     "item_status_values": [
       "DEFINED",
@@ -37,7 +37,8 @@
         "DEFERRED": "Valid requirement, postponed beyond iteration 2 (TD-29)."
       },
       "note": "Team iteration decision recorded by P02; priority, story_points, release, sprint and assigned_developers remain reserved for P03."
-    }
+    },
+    "revision_note": "v4.1 addresses REQUIREMENTS_VALIDATION_V4.md findings (TD-31 to TD-33)."
   },
   "epics": [
     {
@@ -540,7 +541,10 @@
           "A-P02Q-006",
           "A-P02Q-011",
           "TD-07",
-          "TD-10"
+          "TD-10",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -595,7 +599,10 @@
         "p01_elements": [
           "P01-MVP-005",
           "P01-NEED-002",
-          "A-P01Q-031"
+          "A-P01Q-031",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -650,7 +657,10 @@
           "P01-SUCCESS-001",
           "A-P01Q-031",
           "A-P02Q-011",
-          "TD-07"
+          "TD-07",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -715,7 +725,10 @@
           "P01-SUCCESS-001",
           "A-P01Q-031",
           "A-P02Q-008",
-          "A-P02Q-P038"
+          "A-P02Q-P038",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -988,7 +1001,10 @@
           "P01-MVP-003",
           "P01-NEED-007",
           "P01-SUCCESS-002",
-          "A-P01Q-023"
+          "A-P01Q-023",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1043,7 +1059,10 @@
           "P01-MVP-003",
           "P01-NEED-007",
           "P01-SUCCESS-002",
-          "A-P02Q-008"
+          "A-P02Q-008",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1158,7 +1177,10 @@
         "p01_elements": [
           "P01-MVP-003",
           "P01-NEED-007",
-          "P01-SUCCESS-002"
+          "P01-SUCCESS-002",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1212,7 +1234,10 @@
           "P01-MVP-003",
           "P01-NEED-007",
           "P01-SUCCESS-002",
-          "A-P02Q-003"
+          "A-P02Q-003",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1710,7 +1735,10 @@
           "P01-NEED-004",
           "P01-SUCCESS-006",
           "A-P01Q-019",
-          "A-P02Q-016"
+          "A-P02Q-016",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1772,7 +1800,10 @@
           "P01-MVP-007",
           "P01-NEED-004",
           "P01-SUCCESS-006",
-          "A-P01Q-019"
+          "A-P01Q-019",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1889,7 +1920,10 @@
           "P01-NEED-008",
           "P01-SUCCESS-006",
           "A-P01Q-026",
-          "A-P02Q-016"
+          "A-P02Q-016",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -1945,7 +1979,10 @@
           "P01-MVP-007",
           "P01-NEED-008",
           "P01-SUCCESS-006",
-          "A-P01Q-026"
+          "A-P01Q-026",
+          "CR-027",
+          "P01-MVP-013",
+          "TD-30"
         ]
       },
       "iteration_2_status": "COMMITTED"
@@ -2505,6 +2542,12 @@
           "given": "a pet owner who denies microphone permission",
           "when": "they try to search by voice",
           "then": "they are told that the microphone is not allowed and typed search remains available"
+        },
+        {
+          "id": "AC-159",
+          "given": "an offering named \"Alimento para gato adulto\" for cats and no offering matching \"alimento adulto\"",
+          "when": "the owner says \"alimento para gato adulto\"",
+          "then": "the search runs again with the text \"alimento para gato adulto\" and the cat filter, the offering is shown, and that text is in the search box"
         }
       ],
       "business_rule_ids": [
@@ -2513,7 +2556,8 @@
         "BR-043",
         "BR-044",
         "BR-050",
-        "BR-051"
+        "BR-051",
+        "BR-053"
       ],
       "edge_case_ids": [
         "EDGE-033",
@@ -2521,7 +2565,8 @@
         "EDGE-035",
         "EDGE-036",
         "EDGE-037",
-        "EDGE-038"
+        "EDGE-038",
+        "EDGE-047"
       ],
       "dependency_ids": [
         "DEP-001",
@@ -2546,7 +2591,8 @@
           "TD-24",
           "TD-25",
           "TD-26",
-          "TD-27"
+          "TD-27",
+          "TD-31"
         ]
       }
     },
@@ -2667,8 +2713,14 @@
         {
           "id": "AC-131",
           "given": "there are clinics and independent veterinarians",
-          "when": "the owner asks only for clinics or only for home-visit / independent veterinarians",
+          "when": "the owner asks only for clinics or only for independent veterinarians",
           "then": "only providers of that type are counted and listed"
+        },
+        {
+          "id": "AC-160",
+          "given": "a clinic with a service offered at the owner's home, a clinic with only in-clinic services, and an independent veterinarian with services",
+          "when": "the owner asks \"¿Qué veterinarios a domicilio hay?\"",
+          "then": "the first clinic and the independent veterinarian are counted and listed, and the clinic with only in-clinic services is not"
         },
         {
           "id": "AC-132",
@@ -2696,9 +2748,11 @@
         }
       ],
       "business_rule_ids": [
+        "BR-007",
         "BR-046",
         "BR-047",
-        "BR-052"
+        "BR-052",
+        "BR-054"
       ],
       "edge_case_ids": [
         "EDGE-040",
@@ -2724,7 +2778,8 @@
           "INT-04)",
           "P01-NEED-014",
           "P01-SUCCESS-010",
-          "CR-027"
+          "CR-027",
+          "TD-32"
         ]
       }
     },

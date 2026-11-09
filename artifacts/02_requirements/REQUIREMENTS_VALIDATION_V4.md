@@ -11,6 +11,7 @@
 | Requirements version | `REQUIREMENTS_V4.md` 4.0 (status READY_WITH_ASSUMPTIONS) |
 | Backlog version | `product_backlog_requirements_v4.json` 4.0 (status READY_WITH_ASSUMPTIONS) |
 | **Overall result** | **PASS_WITH_WARNINGS** |
+| Re-validation | v4.1 re-validated on 2026-11-09: **PASS_WITH_WARNINGS**, 0 medium, 6 low (§20) |
 | Previous report | `REQUIREMENTS_VALIDATION_V3.md` (PASS_WITH_WARNINGS: 1 medium, 5 low) |
 
 **Inputs reviewed:**
@@ -290,3 +291,42 @@ The requirements are ready for P03 planning of iteration 2:
 ## 19. Auditor Integrity Statement
 
 This validation did not modify `REQUIREMENTS_V4.md`, `product_backlog_requirements_v4.json` or any input artifact. No inconsistency was silently corrected, no requirement was added or removed, and no product decision was made: VAL-002 and VAL-003 describe possible corrections for the team or for the requirements generation process to choose. The scripted results quoted in this report were produced by reading the artifacts from disk on the validation date. The same AI generated the requirements and this validation, so independence is limited; a human review is recommended (VAL-013).
+
+---
+
+## 20. Re-validation of v4.1
+
+**Scope.** `REQUIREMENTS_V4.md` and `product_backlog_requirements_v4.json` were revised to v4.1 to address the findings of this report (REQUIREMENTS §1 "Revision 4.1"; team decisions TD-31 to TD-33, taken under the team's explicit delegation of 2026-11-09). The scripted checks of §1 were run again on v4.1, and the changed items were reviewed by hand.
+
+**Scripted results (v4.1).** 9 epics, 50 FR, 8 NFR, 42 US, 160 AC, 54 BR, 47 EDGE; no duplicate ID; no reference to an undefined ID; 42 / 42 stories and 160 / 160 acceptance criteria identical between the Markdown and the JSON (including BR/EDGE/DEP lists and, for EPIC-009, the trace); planning fields still null or empty; JSON valid.
+
+| Finding | Status | Evidence |
+|---|---|---|
+| VAL-001 | **Accepted by delegation** (TD-33). No formal P01 validation exists; residual LOW, carried as VAL-R01. | REQUIREMENTS §1, §12 |
+| VAL-002 | **Resolved.** BR-053 retries the search with the species words kept when the cleaned text finds nothing; EDGE-047 and AC-159 cover the example "alimento para gato adulto". This matches the substring search verified in `src/modules/search/offerings.js` (the full phrase is a substring of the offering name). | BR-053, EDGE-047, AC-159, FR-041 |
+| VAL-003 | **Resolved.** AC-131 now filters by provider type only; BR-054 and AC-160 define "a domicilio" as providers of either type with at least one home-visit service, consistent with BR-007. | BR-054, AC-131, AC-160, FR-044 |
+| VAL-004 | **Accepted by delegation** (TD-33): the team accepted the refinements without reading them item by item; residual LOW, merged into VAL-R01. | REQUIREMENTS §1 |
+| VAL-005 | Unchanged; acceptable (no change was required). | — |
+| VAL-006 | **Resolved.** BR-047 defines the order of listed items. | BR-047 |
+| VAL-007 | **Resolved.** The mute choice is remembered on the same device and browser. | FR-049, BR-049 |
+| VAL-008 | **Resolved.** BR-044 is case- and accent-insensitive. | BR-044 |
+| VAL-009 | Unchanged; acceptable. | — |
+| VAL-010 | **Resolved.** The 12 promoted stories cite CR-027, P01-MVP-013 and TD-30 in both artifacts. | Story trace lines; JSON `traceability` |
+| VAL-011 | Unchanged (LOW, carried). | — |
+| VAL-012 | **Partly resolved.** The legend now explains the combined basis labels; splitting US-019 is left to P03. | Legend |
+| VAL-013 | Unchanged (LOW, process). | — |
+
+**New review of the changed items.** BR-053 and BR-054 are product rules traceable to TD-31 and TD-32, add no scope and are testable through AC-159 and AC-160. AC-131 still covers the type filter. No technology term was introduced. No new finding.
+
+**Remaining findings (all LOW):**
+
+| Finding ID | Description |
+|---|---|
+| VAL-R01 | The iteration 2 addendum and the TD-19 refinements were accepted by delegation, not by a formal P01 validation or an item-by-item team review (former VAL-001, VAL-004). |
+| VAL-005 | FR-041, FR-044 and FR-047 group several testable behaviors. |
+| VAL-009 | `iteration_2_status` is close to a release decision (recorded team decision). |
+| VAL-011 | P00/P01 not consolidated. |
+| VAL-012 | US-019 remains broad (for P03). |
+| VAL-013 | Same-AI generation and validation. |
+
+**Re-validation decision.** No critical, high or medium finding remains. The artifacts are usable with non-blocking findings: **PASS_WITH_WARNINGS**. P03 may start with `REQUIREMENTS_V4.md` v4.1, `product_backlog_requirements_v4.json` v4.1 and this report.

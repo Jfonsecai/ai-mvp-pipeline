@@ -1,6 +1,6 @@
 # Requirements Specification
 
-> **Classification legend:** **DIRECT** = stated in P01 or by a team answer · **REFINED** = made more concrete without adding scope · **ASSUMED** = interpretation labeled as an assumption · **REQUIRES_DECISION** = the team must decide · **PROPOSAL** = suggestion for the team, not a decision.
+> **Classification legend:** **DIRECT** = stated in P01 or by a team answer · **REFINED** = made more concrete without adding scope · **ASSUMED** = interpretation labeled as an assumption · **REQUIRES_DECISION** = the team must decide · **PROPOSAL** = suggestion for the team, not a decision · **DIRECT / CONFIRMED_ASSUMPTION** = direct, with a part that was an assumption and is now confirmed by the team · **DIRECT / REFINED** = direct, with a part made more concrete.
 >
 > **Source references:**
 > - `P01-*` identifiers refer to `PRODUCT_VISION.md` v4.0. `A-P01Q-0nn` are team answers recorded in `PROJECT_CONTEXT_V4.md`. `P00 ANS-Q0nn` are answers recorded in `INITIAL_PROJECT_INPUT_V2.md`.
@@ -8,19 +8,36 @@
 > - P02 assumptions and questions use the prefixes `P02-ASM-` and `P02-Q-`, because `ASM-` and `Q-` are already used by P00.
 > - **`TD-01` to `TD-20`** are the team decisions recorded in the cascade prompt of 2026-10-10 (§1, "Integration of the Team Decisions"). **TD-19** is the standing rule: new refinements generated in this cascade are approved unless the team objects. These are reference conventions, not new requirement IDs.
 > - IDs from v1.0 and v2.0 are kept with their meaning. New items continue the sequences: FR-039, NFR-005, US-034, AC-102 to AC-114, BR-039, BR-040, EDGE-027 to EDGE-032. No new dependency ID is created, because P03 uses the next dependency numbers.
+- **v4.1:** **TD-31 to TD-33** are decisions taken under the team's explicit delegation of 2026-11-09 to resolve the findings of `REQUIREMENTS_VALIDATION_V4.md` (§1, "Revision 4.1"). New IDs: AC-159, AC-160, BR-053, BR-054, EDGE-047.
 - **v4.0 (iteration 2):** `P01-MVP-011` to `-014`, `P01-NEED-013`, `-014`, `P01-SUCCESS-009` to `-011`, `P01-OOS-011` to `-016`, `P01-ASSUMPTION-027` to `-030`, `P01-RISK-014` to `-016`, `INT-01` to `INT-06`, **`CR-027`** and **`TD-21` to `TD-30`** refer to `PRODUCT_VISION_V5_ITERATION2.md`. All v3.0 IDs and texts are kept. New items continue the sequences: EPIC-009, FR-040 to FR-050, NFR-006 to NFR-008, US-035 to US-042, AC-115 to AC-158, BR-041 to BR-052, EDGE-033 to EDGE-046, P02-ASM-017 to P02-ASM-021. New dependencies start at **DEP-018**, because P03 v2.0 uses DEP-011 to DEP-017.
 
 ## 1. Document Metadata
 
-- **Version:** 4.0
+- **Version:** 4.1 (4.0 + corrections of the P02 validation findings)
 - **Stage:** P02 — Requirements Engineering
 - **Status:** READY_WITH_ASSUMPTIONS
 - **Generated From:** `REQUIREMENTS_V3.md` (REQUIREMENTS v3.0, kept in full), `product_backlog_requirements_v3.json` (P02 backlog v3.0), `PRODUCT_VISION_V4.md` (P01 v4.0, base vision) and `PRODUCT_VISION_V5_ITERATION2.md` (P01 v5.0 iteration 2 addendum, Change Request CR-027, team decisions TD-21 to TD-30).
 - **Validation Dependency:** `PRODUCT_VISION_VALIDATION.md` v4.0 (PASS_WITH_WARNINGS) for the base vision; `REQUIREMENTS_VALIDATION_V3.md` for v3.0. **The iteration 2 addendum has no P01 validation** (it was authored by the team as a delta to skip P00/P01, CR-027 §2); this is the reason for READY_WITH_ASSUMPTIONS (§12).
 - **Previous Versions:** `REQUIREMENTS_V3.md`, `product_backlog_requirements_v3.json`; earlier versions in `REQUIREMENTS_V1.md`, `REQUIREMENTS_V2.md`.
-- **Generation Date:** 2026-11-09 (v3.0: 2026-10-10)
+- **Generation Date:** 2026-11-09 (v4.0 and v4.1; v3.0: 2026-10-10)
 - **Companion artifact:** `product_backlog_requirements_v4.json` v4.0 (same IDs and content).
 - **Mode:** delta. Sections, rows and stories of v3.0 are unchanged unless listed in the v3.0 → v4.0 Change Log (§12). Iteration 2 additions are marked **(v4.0)**.
+
+### Revision 4.1 — Validation Findings Addressed
+
+`REQUIREMENTS_VALIDATION_V4.md` (PASS_WITH_WARNINGS, 4 medium, 9 low). On 2026-11-09 the team delegated the resolution of every finding ("haz lo que consideres y funcione mejor"). The decisions below were taken under that delegation and are recorded as team decisions TD-31 to TD-33.
+
+| Finding | Decision | Effect in v4.1 |
+|---|---|---|
+| VAL-002 (species words inside offering names) | **TD-31:** a voice search first runs with the cleaned text. If it returns no result and species words were removed, it runs once more with the species words kept in the text (filler words still removed) and the same species filter. The text that produced the shown results is the one placed in the search box. | BR-053, EDGE-047, AC-159; FR-041 updated. |
+| VAL-003 ("a domicilio" vs provider type) | **TD-32:** a question by **provider type** ("clínicas", "veterinarios independientes") filters by type. A question about **home visits** ("a domicilio") lists providers, of either type, with at least one service offered at the owner's home. | BR-054, AC-160; AC-131 reworded (type only); FR-044 updated. |
+| VAL-001 (addendum not validated by P01), VAL-004 (TD-19 refinements not read) | **TD-33:** the team accepts the iteration 2 addendum and the refinements of v4.0 (BR-043, BR-044, BR-048, BR-049, BR-052, AC-148, P02-ASM-017 to -021) **by delegation**, without a formal P01 validation or an item-by-item review. | Recorded; READY_WITH_ASSUMPTIONS kept because the review was delegated, not performed (§12). |
+| VAL-006 (order of the 5 items) | Providers are listed by name (alphabetical); offerings by price, lowest first, then by name; appointments nearest first (already BR-048). | BR-047 updated. |
+| VAL-007 ("may be remembered") | The mute choice **is** remembered on the same device and browser; it is not stored by the platform. | FR-049, BR-049 updated. |
+| VAL-008 (case/accents in BR-044) | Filler words are matched case- and accent-insensitively. | BR-044 updated. |
+| VAL-010 (trace of promoted stories) | CR-027, P01-MVP-013 and TD-30 added to the trace of the 12 promoted stories (Markdown and JSON). | Trace lines updated. |
+| VAL-012 (legend; US-019) | Legend completed. US-019 is left to P03 (a planning decision). | Legend updated. |
+| VAL-005, VAL-009, VAL-011, VAL-013 | No change required by the validator. | — |
 
 ### Integration of Iteration 2 (v4.0)
 
@@ -169,15 +186,15 @@ The requirements cover the MVP defined in P01 v4.0, as refined by the team's ans
 
 ### 2.2 Requirement Status
 
-| Item | v4.0 | v3.0 | Notes |
+| Item | v4.1 | v3.0 | Notes |
 |---|---|---|---|
 | Epics | 9 | 8 | EPIC-009 new |
 | Functional requirements | 50 | 39 | FR-040 to FR-050 new: DIRECT or DIRECT / REFINED 10, REFINED 1 |
 | Non-functional requirements | 8 | 5 | NFR-006 to NFR-008 new |
 | User stories | 42 | 34 | US-035 to US-042 new; DEFINED: 42 |
-| Acceptance criteria | 158 | 114 | AC-115 to AC-158 new; no earlier AC changed |
-| Business rules | 52 | 40 | BR-041 to BR-052 new; 0 REQUIRES_DECISION |
-| Edge cases | 46 | 32 | EDGE-033 to EDGE-046 new; 0 REQUIRES_DECISION |
+| Acceptance criteria | 160 | 114 | AC-115 to AC-160 new (AC-159, AC-160 in v4.1); AC-131 reworded in v4.1; no v3.0 AC changed |
+| Business rules | 54 | 40 | BR-041 to BR-054 new (BR-053, BR-054 in v4.1); 0 REQUIRES_DECISION |
+| Edge cases | 47 | 32 | EDGE-033 to EDGE-047 new (EDGE-047 in v4.1); 0 REQUIRES_DECISION |
 | Dependencies (P02) | 15 | 10 | DEP-018 to DEP-022 new (DEP-011 to DEP-017 belong to P03) |
 | Assumptions (open) | 1 | 1 | P02-ASM-017 to -021 new, CONFIRMED (TD-19) |
 | Open questions | 1 | 1 | No new question (TD-19) |
@@ -288,15 +305,15 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 | FR-038 | **Product stock availability.** The platform shall allow a provider to mark each of its products as available or not available, and shall not allow ordering a product that is not available. A newly published product is available. | EPIC-008 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — A-P02Q-003 ("no hay stock"); indicator and default: TD-13; not-available products stay visible: P02-ASM-016 |
 | FR-039 | **Sign-out.** The platform shall allow a signed-in user of either account type to sign out from the menu of their interface, ending the session and returning to the sign-in screen. | EPIC-001 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — TD-03 (replaces the no-sign-out decision of AVISO-R1) |
 | FR-040 | **Voice search input (v4.0).** The platform shall allow a signed-in pet owner to start a search from the search screen by speaking a phrase in Spanish instead of typing it. The phrase is converted into text, and the owner can see what was heard. | EPIC-009 | MVP_CORE | Unassigned (P03) | DIRECT — P01-MVP-011; P01-NEED-013; TD-24, TD-25 |
-| FR-041 | **Voice phrase interpretation (v4.0).** For a voice search, the platform shall interpret the phrase before searching: when it names a species (dog or cat), the species filter is set to that species; the species words and the filler words defined in BR-043 and BR-044 are removed; the remaining text is placed in the search box, where the owner can edit it, and the search runs with that text and filter. If no text remains, no search runs and the owner is asked to say or type what they need. | EPIC-009 | MVP_CORE | Unassigned (P03) | DIRECT / REFINED — P01-MVP-011 (species and filler rules); word lists refined in BR-043, BR-044 (P02-ASM-017, CONFIRMED by TD-19) |
+| FR-041 | **Voice phrase interpretation (v4.0).** For a voice search, the platform shall interpret the phrase before searching: when it names a species (dog or cat), the species filter is set to that species; the species words and the filler words defined in BR-043 and BR-044 are removed; the remaining text is placed in the search box, where the owner can edit it, and the search runs with that text and filter. If no text remains, no search runs and the owner is asked to say or type what they need. If the search returns no result and species words were removed, it runs once more with those words kept (BR-053). | EPIC-009 | MVP_CORE | Unassigned (P03) | DIRECT / REFINED — P01-MVP-011 (species and filler rules); word lists refined in BR-043, BR-044 (P02-ASM-017, CONFIRMED by TD-19); retry: TD-31 |
 | FR-042 | **Voice capture feedback (v4.0).** While listening, the platform shall show a visible listening state and let the owner stop. When nothing is recognized, no search runs and the owner is told so and can retry or type. | EPIC-009 | MVP_CORE | Unassigned (P03) | DIRECT — P01-MVP-011; TD-26 |
 | FR-043 | **Assistant conversation (v4.0).** The platform shall offer signed-in pet owners an assistant, opened from their interface, where they can ask questions by typing or, when supported, by voice, and see their questions and the assistant's answers as a conversation during the visit. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012; TD-24, TD-26, TD-27 |
-| FR-044 | **Assistant: providers (v4.0).** The assistant shall answer questions about the available providers (all, only clinics, or only independent veterinarians) and about a named provider's address, contact and working days and hours, using the providers' public profiles and working hours. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012 (INT-01, INT-04) |
+| FR-044 | **Assistant: providers (v4.0).** The assistant shall answer questions about the available providers (all, only clinics, only independent veterinarians, or those offering home visits) and about a named provider's address, contact and working days and hours, using the providers' public profiles and working hours. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012 (INT-01, INT-04); home-visit meaning: TD-32 |
 | FR-045 | **Assistant: offerings and prices (v4.0).** The assistant shall answer which services or products match a requested name, optionally for a species, with their price and provider, using the same matching as the text search and the species filter. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012 (INT-02, INT-03); same matching: REFINED (BR-042) |
 | FR-046 | **Assistant: my appointments (v4.0).** The assistant shall answer a pet owner's questions about their own upcoming scheduled appointments, with date, time, service, provider and pet. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012 (INT-05); "upcoming": P02-ASM-018 (CONFIRMED, TD-19) |
 | FR-047 | **Assistant: help and fallback (v4.0).** The assistant shall answer requests for help with example questions; when a question is not recognized, it shall say so and show example questions; when a question is recognized but no data matches, it shall say so explicitly instead of guessing. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012 (INT-06, fallback) |
 | FR-048 | **Assistant answer format (v4.0).** Each answer that lists items shall list at most 5, state the total when there are more, and link each item (and, for offerings, the full results) to the corresponding screen. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT / REFINED — P01-MVP-012 ("at most N, e.g. 5", links); total and results link: P02-ASM-019 (CONFIRMED, TD-19) |
-| FR-049 | **Spoken answers (v4.0).** The assistant shall read each answer aloud in Spanish in addition to showing it as text. Voice replies are on by default; the owner can mute and unmute them and stop a reading in progress. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012; TD-25, TD-28 |
+| FR-049 | **Spoken answers (v4.0).** The assistant shall read each answer aloud in Spanish in addition to showing it as text. Voice replies are on by default; the owner can mute and unmute them and stop a reading in progress; the mute choice is remembered on the same device and browser. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | DIRECT — P01-MVP-012; TD-25, TD-28 |
 | FR-050 | **Read aloud on detail screens (v4.0, optional).** The platform shall allow a pet owner to listen to a spoken summary of a provider's public profile and of one of their appointments. | EPIC-009 | MVP_SUPPORTING | Unassigned (P03) | REFINED — P01-MVP-014 (CONDITIONAL, TD-30); summary contents: P02-ASM-020 (CONFIRMED, TD-19) |
 
 ## 5. Non-Functional Requirements
@@ -497,7 +514,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-006, A-P02Q-011, TD-07, TD-10
+- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-006, A-P02Q-011, TD-07, TD-10, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -538,7 +555,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged; partially available after iteration 1, verify the acceptance criteria
-- **P01 trace:** P01-MVP-005, P01-NEED-002, A-P01Q-031
+- **P01 trace:** P01-MVP-005, P01-NEED-002, A-P01Q-031, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -579,7 +596,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-011, TD-07
+- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-011, TD-07, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -616,7 +633,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-008, A-P02Q-P038
+- **P01 trace:** P01-MVP-005, P01-NEED-002, P01-SUCCESS-001, A-P01Q-031, A-P02Q-008, A-P02Q-P038, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -792,7 +809,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_CORE
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P01Q-023
+- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P01Q-023, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -829,7 +846,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_CORE
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P02Q-008
+- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P02Q-008, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -907,7 +924,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_CORE
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002
+- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -944,7 +961,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_CORE
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P02Q-003
+- **P01 trace:** P01-MVP-003, P01-NEED-007, P01-SUCCESS-002, A-P02Q-003, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -1247,7 +1264,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-007, P01-NEED-004, P01-SUCCESS-006, A-P01Q-019, A-P02Q-016
+- **P01 trace:** P01-MVP-007, P01-NEED-004, P01-SUCCESS-006, A-P01Q-019, A-P02Q-016, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -1288,7 +1305,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-007, P01-NEED-004, P01-SUCCESS-006, A-P01Q-019
+- **P01 trace:** P01-MVP-007, P01-NEED-004, P01-SUCCESS-006, A-P01Q-019, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -1370,7 +1387,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-007, P01-NEED-008, P01-SUCCESS-006, A-P01Q-026, A-P02Q-016
+- **P01 trace:** P01-MVP-007, P01-NEED-008, P01-SUCCESS-006, A-P01Q-026, A-P02Q-016, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -1407,7 +1424,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED — promoted from CONDITIONAL (CR-027, P01-MVP-013, TD-30); content unchanged
-- **P01 trace:** P01-MVP-007, P01-NEED-008, P01-SUCCESS-006, A-P01Q-026
+- **P01 trace:** P01-MVP-007, P01-NEED-008, P01-SUCCESS-006, A-P01Q-026, CR-027, P01-MVP-013, TD-30
 
 #### Acceptance Criteria
 
@@ -1764,7 +1781,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_CORE
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED (CR-027, TD-30)
-- **P01 trace:** P01-MVP-011, P01-NEED-013, P01-SUCCESS-009, P01-SUCCESS-011, CR-027, TD-22, TD-24, TD-25, TD-26, TD-27
+- **P01 trace:** P01-MVP-011, P01-NEED-013, P01-SUCCESS-009, P01-SUCCESS-011, CR-027, TD-22, TD-24, TD-25, TD-26, TD-27, TD-31
 
 #### Acceptance Criteria
 
@@ -1804,14 +1821,18 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
   - Given a pet owner who denies microphone permission
   - When they try to search by voice
   - Then they are told that the microphone is not allowed and typed search remains available
+- AC-159:
+  - Given an offering named "Alimento para gato adulto" for cats and no offering matching "alimento adulto"
+  - When the owner says "alimento para gato adulto"
+  - Then the search runs again with the text "alimento para gato adulto" and the cat filter, the offering is shown, and that text is in the search box
 
 #### Business Rules
 
-- BR-041, BR-042, BR-043, BR-044, BR-050, BR-051
+- BR-041, BR-042, BR-043, BR-044, BR-050, BR-051, BR-053
 
 #### Edge Cases
 
-- EDGE-033, EDGE-034, EDGE-035, EDGE-036, EDGE-037, EDGE-038
+- EDGE-033, EDGE-034, EDGE-035, EDGE-036, EDGE-037, EDGE-038, EDGE-047
 
 #### Dependencies
 
@@ -1882,7 +1903,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - **Scope:** MVP_SUPPORTING
 - **Status:** DEFINED
 - **Iteration 2:** COMMITTED (CR-027, TD-30)
-- **P01 trace:** P01-MVP-012 (INT-01, INT-04), P01-NEED-014, P01-SUCCESS-010, CR-027
+- **P01 trace:** P01-MVP-012 (INT-01, INT-04), P01-NEED-014, P01-SUCCESS-010, CR-027, TD-32
 
 #### Acceptance Criteria
 
@@ -1892,8 +1913,12 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
   - Then the assistant answers with the total number of providers and lists up to 5 of them with their name and type (clinic or independent veterinarian), each linking to its public profile
 - AC-131:
   - Given there are clinics and independent veterinarians
-  - When the owner asks only for clinics or only for home-visit / independent veterinarians
+  - When the owner asks only for clinics or only for independent veterinarians
   - Then only providers of that type are counted and listed
+- AC-160:
+  - Given a clinic with a service offered at the owner's home, a clinic with only in-clinic services, and an independent veterinarian with services
+  - When the owner asks "¿Qué veterinarios a domicilio hay?"
+  - Then the first clinic and the independent veterinarian are counted and listed, and the clinic with only in-clinic services is not
 - AC-132:
   - Given a provider named "Clínica Patitas" with working days and hours
   - When the owner asks "¿Cuál es el horario de Clínica Patitas?"
@@ -1913,7 +1938,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 
 #### Business Rules
 
-- BR-046, BR-047, BR-052
+- BR-007, BR-046, BR-047, BR-052, BR-054
 
 #### Edge Cases
 
@@ -2211,15 +2236,17 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 | BR-041 | **(v4.0)** Voice search and the assistant are available only to signed-in pet owners; providers do not have them. | FR-040, FR-043; US-035, US-036 | CONFIRMED (TD-24; P01-OOS-013) |
 | BR-042 | **(v4.0)** A voice search returns exactly the results of a typed search with the interpreted text and species filter; voice adds no other matching. The assistant uses the same matching for offerings. | FR-041, FR-045; US-035, US-038 | REFINED (P01-MVP-011, -012) — CONFIRMED (TD-19) |
 | BR-043 | **(v4.0)** Species words, case- and accent-insensitive: "perro", "perros", "perrito", "perritos" → dog; "gato", "gatos", "gatito", "gatitos" → cat. A species word is removed together with a connector right before it ("para", "para mi", "para mis", "de"). If the phrase names both species, the species filter is all. | FR-041, FR-045; US-035, US-038 | DIRECT (P01-MVP-011 list); plurals of diminutives, connectors and both-species rule: P02-ASM-017, CONFIRMED (TD-19) |
-| BR-044 | **(v4.0)** Filler words are removed only at the start and the end of the phrase, never in the middle (so "corte de uñas" is kept): at the start "busco", "buscar", "quiero", "necesito", "me gustaría", "estoy buscando", followed by "un", "una", "unos", "unas", "el", "la", "los", "las"; at the end "por favor". | FR-041; US-035 | DIRECT (P01-MVP-011 examples); start/end-only rule and list: P02-ASM-017, CONFIRMED (TD-19) |
+| BR-044 | **(v4.0)** Filler words are removed only at the start and the end of the phrase, never in the middle (so "corte de uñas" is kept): at the start "busco", "buscar", "quiero", "necesito", "me gustaría", "estoy buscando", followed by "un", "una", "unos", "unas", "el", "la", "los", "las"; at the end "por favor". Matching is case- and accent-insensitive. | FR-041; US-035 | DIRECT (P01-MVP-011 examples); start/end-only rule and list: P02-ASM-017, CONFIRMED (TD-19) |
 | BR-045 | **(v4.0)** The assistant is read-only: it never books, cancels, reschedules, orders or modifies data. For an action, it says it can only give information and points to the screen where the action is done. | FR-043; US-036 | CONFIRMED (TD-23; P01-OOS-011) |
 | BR-046 | **(v4.0)** The assistant answers only from current platform data (provider profiles, working hours, offerings and the asking owner's appointments) and fixed help texts. It does not answer questions outside that information, including medical or veterinary advice, which are treated as unrecognized. | FR-044 to FR-047; US-036 to US-040 | DIRECT (P01-MVP-012: "using its own data"; P01-OOS-012); medical advice as unrecognized: P02-ASM-021, CONFIRMED (TD-19) |
-| BR-047 | **(v4.0)** An assistant answer lists at most 5 items; when there are more, it states the total and, for offerings, links to the full search results. | FR-048; US-037 to US-039 | DIRECT (P01-MVP-012); total and link: P02-ASM-019, CONFIRMED (TD-19) |
+| BR-047 | **(v4.0)** An assistant answer lists at most 5 items; when there are more, it states the total and, for offerings, links to the full search results. Providers are listed by name (alphabetical); offerings by price, lowest first, then by name; appointments as in BR-048. | FR-048; US-037 to US-039 | DIRECT (P01-MVP-012); total and link: P02-ASM-019, CONFIRMED (TD-19); order: VAL-006 decision (TD-33 delegation) |
 | BR-048 | **(v4.0)** Upcoming appointments are the asking owner's scheduled (not cancelled) appointments whose start time is later than now, ordered nearest first. No other user's appointments are used. | FR-046; US-039 | REFINED (P01-MVP-012; NFR-002) — P02-ASM-018, CONFIRMED (TD-19) |
-| BR-049 | **(v4.0)** Voice replies are on by default; the owner can mute or unmute them; the choice may be remembered on the device only. Stopping ends only the current reading. A new answer stops any reading in progress. | FR-049, FR-050; US-041, US-042 | CONFIRMED (TD-28); new answer stops current reading: REFINED, CONFIRMED (TD-19) |
+| BR-049 | **(v4.0)** Voice replies are on by default; the owner can mute or unmute them; the choice is remembered on the same device and browser only, never by the platform. Stopping ends only the current reading. A new answer stops any reading in progress. | FR-049, FR-050; US-041, US-042 | CONFIRMED (TD-28); new answer stops current reading: REFINED, CONFIRMED (TD-19) |
 | BR-050 | **(v4.0)** No audio, transcription or assistant conversation is stored by the platform; the conversation ends when the owner leaves or reloads the assistant. | FR-040, FR-043; US-035, US-036 | CONFIRMED (TD-27; P01-OOS-014) |
 | BR-051 | **(v4.0)** Typed input is always available as an alternative to voice input, and text is always shown with spoken output. | FR-040, FR-043, FR-049, FR-050; US-035, US-036, US-041, US-042 | CONFIRMED (TD-26) |
 | BR-052 | **(v4.0)** A provider is identified in a question by a case- and accent-insensitive partial match on its public name. If several providers match, the assistant lists up to 5 and asks the owner to be more specific. | FR-044; US-037 | REFINED (P01-MVP-012, INT-04) — CONFIRMED (TD-19) |
+| BR-053 | **(v4.1)** If a voice search with the cleaned text returns no result and species words were removed, the search runs once more with the species words kept in the text (filler words still removed) and the same species filter. The search box shows the text that produced the results shown. | FR-041; US-035 | CONFIRMED (TD-31) |
+| BR-054 | **(v4.1)** For the assistant, a provider-type question filters by type (clinic / independent veterinarian); a home-visit question ("a domicilio") lists providers of either type with at least one service offered at the owner's home. | FR-044; US-037 | CONFIRMED (TD-32; consistent with BR-007) |
 
 ## 8. Edge Cases
 
@@ -2271,6 +2298,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 | EDGE-044 | **(v4.0)** The owner asks a new question while an answer is being read. | US-041 | The reading in progress stops and the new answer is read. | DEFINED (BR-049) |
 | EDGE-045 | **(v4.0)** The named provider has not defined working days and hours. | US-037 | The assistant says the provider has not defined its working hours. | DEFINED (consequence of EDGE-014) |
 | EDGE-046 | **(v4.0)** The owner asks for an action (book, cancel) or for medical advice. | US-036, US-040 | No action is performed and no advice is given; the assistant explains it gives platform information only and points to the relevant screen. | DEFINED (BR-045, BR-046) |
+| EDGE-047 | **(v4.1)** An owner says the name of an offering that contains a species word (e.g. "alimento para gato adulto"). | US-035 | The cleaned text finds nothing, so the search is repeated with the species words kept and finds the offering (BR-053). | DEFINED (TD-31) |
 
 ## 9. Dependencies
 
@@ -2389,8 +2417,8 @@ DEP-011 to DEP-017 are planning dependencies defined by P03 v2.0 (`PRIORITIZATIO
 | P01-MVP-009 Product ordering | EPIC-008 | FR-032 to FR-038 | US-027 to US-033 | AC-069–AC-073, AC-089–AC-101, AC-110–AC-111 |
 | P01-SUCCESS-007 End-to-end journey without outside channels | EPIC-001, -002, -005, -006 | FR-001, FR-005, FR-017, FR-018, FR-020 to FR-022 | US-001, US-016, US-017, US-018, US-019 | AC-001–AC-005, AC-038–AC-051, AC-074–AC-075, AC-086, AC-102, AC-108–AC-109 |
 | P00 [PLAT], ANS-Q016; A-P02Q-014 Web, Chrome, computers and phones, Spanish | All | NFR-003, NFR-004 | All | All |
-| **(v4.0)** P01-MVP-011 Voice search; P01-NEED-013; P01-SUCCESS-009, -011 | EPIC-009 | FR-040 to FR-042; NFR-006 to NFR-008 | US-035 | AC-115–AC-123 |
-| **(v4.0)** P01-MVP-012 Assistant (INT-01 to INT-06) with spoken answers; P01-NEED-014; P01-SUCCESS-010, -011 | EPIC-009 | FR-043 to FR-049; NFR-002, NFR-006 to NFR-008 | US-036 to US-041 | AC-124–AC-154 |
+| **(v4.0)** P01-MVP-011 Voice search; P01-NEED-013; P01-SUCCESS-009, -011 | EPIC-009 | FR-040 to FR-042; NFR-006 to NFR-008 | US-035 | AC-115–AC-123, AC-159 |
+| **(v4.0)** P01-MVP-012 Assistant (INT-01 to INT-06) with spoken answers; P01-NEED-014; P01-SUCCESS-010, -011 | EPIC-009 | FR-043 to FR-049; NFR-002, NFR-006 to NFR-008 | US-036 to US-041 | AC-124–AC-154, AC-160 |
 | **(v4.0)** P01-MVP-013 Completion of V1 management workflows; P01-SUCCESS-001, -002, -006 | EPIC-002, EPIC-004, EPIC-007 | FR-005 to FR-008, FR-012, FR-013, FR-015, FR-016, FR-027, FR-028, FR-030, FR-031 (unchanged) | US-004 to US-007, US-011, US-012, US-014, US-015, US-022, US-023, US-025, US-026 | Unchanged (see v3.0 rows above) |
 | **(v4.0)** P01-MVP-014 Read aloud (optional) | EPIC-009 | FR-050 | US-042 | AC-155–AC-158 |
 
@@ -2404,12 +2432,25 @@ v4.0 keeps every v3.0 requirement and adds the iteration 2 voice capabilities (E
 
 **Why not READY:**
 
-- The iteration 2 addendum (`PRODUCT_VISION_V5_ITERATION2.md`) was authored by the team as a delta and **has not been validated by P01** (CR-027 skips P00/P01). P02 validation should check it as an input.
+- The iteration 2 addendum (`PRODUCT_VISION_V5_ITERATION2.md`) was authored by the team as a delta and **has not been validated by P01** (CR-027 skips P00/P01). In v4.1 the team accepted it, and the TD-19 refinements, by delegation (TD-33), without a formal review.
 - Voice recognition quality and browser support are product risks (P01-RISK-014, -015) that cannot be removed by requirements; they are mitigated by NFR-006 and the editable text.
 
 **Still open, with no effect on the requirements:** P01-QUESTION-033 and P01-ASSUMPTION-002 (as in v3.0).
 
 **Baseline:** subject to the P02 validation, v4.0 is the input of P03 for iteration 2. P03 should plan US-035 to US-041 and the 12 promoted stories, keep US-042 conditional and US-027 to US-033 deferred (§2.4, TD-29, TD-30).
+
+### Change Log (v4.0 → v4.1)
+
+| Change | Source |
+|---|---|
+| Voice search retry with species words kept: BR-053, EDGE-047, AC-159; FR-041. | VAL-002; TD-31 |
+| Home-visit providers question: BR-054, AC-160; AC-131 reworded to provider type only; FR-044. | VAL-003; TD-32 |
+| Order of listed items in assistant answers: BR-047. | VAL-006 |
+| Mute choice remembered on the device: FR-049, BR-049. | VAL-007 |
+| Case- and accent-insensitive filler words: BR-044. | VAL-008 |
+| CR-027, P01-MVP-013, TD-30 added to the trace of the 12 promoted stories. | VAL-010 |
+| Legend completed with the combined basis labels. | VAL-012 |
+| Addendum and TD-19 refinements accepted by delegation. | VAL-001, VAL-004; TD-33 |
 
 ### Change Log (v3.0 → v4.0)
 
