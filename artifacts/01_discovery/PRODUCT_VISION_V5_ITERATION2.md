@@ -250,7 +250,7 @@ prompts/system/SYSTEM_PROMPT.md
 Instructions to add to the P02 run:
 
 - Work in **delta mode**: keep EPIC-001..008, FR-001..039, NFR-001..005, US-001..034 and all BR/EDGE/DEP/Q IDs unchanged.
-- Add EPIC-009 *Voice Search and Assistant*; continue numbering from FR-040, NFR-006, US-035, AC-115, BR-041, EDGE-033, DEP-011, P02-Q-019.
+- Add EPIC-009 *Voice Search and Assistant*; continue numbering from FR-040, NFR-006, US-035, AC-115, BR-041, EDGE-033, DEP-018 (DEP-011 to DEP-017 are used by P03), P02-ASM-017, P02-Q-019.
 - Mark the stories of §5.3 with scope status committed for iteration 2 and US-027..033 as deferred (TD-29), without changing their content.
 - Keep requirements technology-neutral (TD-22 is recorded for P05).
 - Apply TD-19: do not raise blocking questions; record new assumptions as CONFIRMED (standing rule).
