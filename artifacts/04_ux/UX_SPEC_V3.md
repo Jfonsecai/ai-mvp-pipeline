@@ -8,7 +8,7 @@
 | Field | Value |
 |---|---|
 | Stage | P04 — UX Design |
-| Version | 3.0 (delta over 2.0) |
+| Version | 3.1 (3.0 + corrections of `UX_SPEC_VALIDATION_V3.md`: P04-VAL-001 to -006) |
 | Sprint | **`SPRINT-002`** — the single current delivery sprint. The P04 prompt names it `SPRINT-001`; for iteration 2 that identifier means `SPRINT-002` (P03 PRIOR-005, P03 validation P03V-002). |
 | Delivery scope | P03 v3.1: 19 committed stories (P0 US-035, -036, -038, -040, -041; P1 US-037, -039, US-004 to -007; P2 US-022, -023, -025, -026, US-011, -012, -014, -015) and 1 conditional (US-042). Ordering (US-027 to -033) is deferred: SCR-UX-015 to -017 and COMP-UX-020 are **not rendered**. |
 | Detail level | Full specification for P0 (voice search and assistant). Compact but implementable specification for P1/P2 and the conditional story, reusing V2 components. Deadline 2026-11-10 (TD-34). |
@@ -85,7 +85,7 @@ Adds COMP-UX-023 between the text field and the *"Buscar"* button (at all widths
 |---|---|
 | Purpose | One turn of the assistant conversation. |
 | Used in | SCR-UX-018. |
-| Variants | **Owner message**: right-aligned bubble, max 85 % of the width, `color-primary-subtle` background, `color-text-primary`. If it came from voice, a small line under the text *"Por voz"* (`font-size-sm`, `color-text-secondary`). **Assistant message**: left-aligned, `color-bg-surface`, border `color-border-subtle`, `radius-lg`, padding `spacing-4`; contains the answer sentence, an optional **item list** and optional **links**. |
+| Variants | **Owner message**: right-aligned bubble, max width `size-form-max`, `color-primary-subtle` background, `color-text-primary`. If it came from voice, a small line under the text *"Por voz"* (`font-size-sm`, `color-text-secondary`). **Assistant message**: left-aligned, `color-bg-surface`, border `color-border-subtle`, `radius-lg`, padding `spacing-4`; contains the answer sentence, an optional **item list** and optional **links**. |
 | Item list | Up to 5 rows (BR-047), each a link to its screen (FR-048): provider rows → SCR-UX-005; offering rows → SCR-UX-005 of its provider; appointment rows → SCR-UX-007. Row format per §8 SCR-UX-018 answer templates. Separated by `border-width-default` `color-border-subtle`. |
 | Links | *"Ver todos en Buscar"* (offerings with more than 5 results; opens SCR-UX-004 with the text and species applied, AC-139), *"Ir a Buscar"*, *"Ir a Mis citas"* (action refusals and fallback). Tertiary link style. |
 | Reading state | While its text is being read aloud, the assistant message shows a speaker icon and *"Leyendo…"* (`font-size-sm`, `color-primary`). |
@@ -254,15 +254,14 @@ In these cases no search runs and the previous results (if any) stay. The alert 
 | INT-04 hours | Hours of a named provider (AC-132) | *"[nombre] atiende: [día] de [hora] a [hora]; [día] de [hora] a [hora]."* (working days only, Monday first) | row → SCR-UX-005 |
 | INT-04 no hours | EDGE-045 | *"[nombre] aún no ha definido su horario de atención."* | row → SCR-UX-005 |
 | INT-04 contact | Address/contact (AC-133) | *"[nombre]: dirección [dirección]; teléfono [teléfono]; correo [correo]."* (address omitted if none) | row → SCR-UX-005 |
-| INT-02/03 | Who offers / price (AC-136 to AC-138) | *"Encontré [n] resultados para «[texto]»[ para perros / para gatos]. Te muestro [k]:"* | *"[oferta] — $ [precio] — [proveedor]"* → SCR-UX-005; if n > 5: *"Ver todos en Buscar"* (AC-139) |
-| INT-05 | Next appointments (AC-141) | One: *"Tu próxima cita es el [fecha] a las [hora]: [servicio] con [proveedor] para [mascota]."* Several: *"Tienes [n] citas próximas:"* | *"[fecha] [hora] — [servicio] — [mascota]"* → SCR-UX-007 |
+| INT-02/03 | Who offers / price (AC-136 to AC-138) | *"Encontré [n] resultados para «[texto]»[ para perros / para gatos]. Te muestro [k]:"* | *"[oferta] — [Perro / Gato] — $ [precio] — [proveedor]"* → SCR-UX-005; if n > 5: *"Ver todos en Buscar"* (AC-139) |
+| INT-05 | Next appointments (AC-141) | One: *"Tu próxima cita es el [fecha] a las [hora]: [servicio] con [proveedor] para [mascota]."* Several: *"Tienes [n] citas próximas:"* | *"[fecha] [hora] — [servicio] con [proveedor] — [mascota]"* → SCR-UX-007 |
 | INT-05 none | AC-142, EDGE-041 | *"No tienes citas próximas."* | *"Ir a Buscar"* |
 | Several matches | AC-134, EDGE-042 | *"Encontré varias veterinarias con ese nombre. ¿Cuál de estas?"* | provider rows |
 | No match | AC-135, AC-140, EDGE-040 | *"No encontré [esa veterinaria / servicios ni productos para «[texto]»]."* | *"Ir a Buscar"* |
-| Help | AC-145 | *"Puedo responderte sobre: veterinarias disponibles, quién ofrece un servicio o producto, precios, horarios y contacto de una veterinaria, y tus próximas citas. Prueba: «¿Qué veterinarias a domicilio hay?»."* | — |
-| Fallback | AC-146, EDGE-039 | *"No entendí tu pregunta. Prueba con: «¿Qué veterinarias hay?» o «¿Cuánto cuesta un baño para perro?». También puedes usar Buscar."* | *"Ir a Buscar"* |
+| Help | AC-145 | *"Puedes preguntarme: veterinarias disponibles («¿Qué veterinarias hay?», «¿Qué veterinarios a domicilio hay?»); quién ofrece algo («¿Quién ofrece vacunación para gatos?»); precios («¿Cuánto cuesta una consulta?»); horario y contacto («¿Cuál es el horario de [veterinaria]?», «¿Dónde queda [veterinaria]?»); y tus citas («¿Cuándo es mi próxima cita?»)."* | — |
+| Fallback (also medical or other questions outside the platform: AC-146, AC-147, BR-046, EDGE-039, EDGE-046) | Not recognized | *"No entendí tu pregunta. Prueba con: «¿Qué veterinarias hay?» o «¿Cuánto cuesta un baño para perro?». Si tu mascota necesita atención, busca un servicio y agenda una cita con un veterinario."* | *"Ir a Buscar"* |
 | Action request | AC-129, EDGE-046 | *"Solo puedo darte información. Para [agendar una cita, ve a Buscar / cancelar o reprogramar, ve a Mis citas]."* | *"Ir a Buscar"* / *"Ir a Mis citas"* |
-| Medical advice | AC-147, EDGE-046 | *"No puedo dar consejos médicos. Para eso, agenda una consulta con un veterinario."* | *"Ir a Buscar"* |
 
 The exact matching of questions to these answers is defined by P02 (BR-042 to BR-054) and designed in P05; this table fixes only what the owner sees and hears.
 
@@ -270,7 +269,7 @@ The exact matching of questions to these answers is defined by P02 (BR-042 to BR
 
 - Send a typed question (AC-125) or a voice question (AC-126; the owner message is marked *"Por voz"*).
 - Answer arrives → assistant message appended → if voice is on and supported, it is read aloud (AC-149) and COMP-UX-026 shows *"Detener lectura"*.
-- Item rows and links navigate; leaving the screen stops any reading. Returning within the visit keeps the conversation (P04-ASM-033); reloading or signing out clears it (AC-127, BR-050).
+- Item rows and links navigate. **Leaving the assistant (any navigation), reloading or signing out ends the conversation and stops any reading (AC-127, BR-050)**; opening the assistant again starts with the greeting (P04-ASM-033).
 
 **D. States**
 
@@ -343,7 +342,7 @@ Owner, signed in, on SCR-UX-004, browser with voice input. 1) Tap microphone; al
 
 ### FLOW-UX-023 — Assistant help, fallback and limits (P0)
 
-1) Ask *"ayuda"* → help answer (AC-145). 2) Ask something unrelated → fallback (AC-146). 3) Ask *"cancela mi cita"* → action request answer with *"Ir a Mis citas"* (AC-129). 4) Ask for medical advice → medical-advice answer (AC-147). Screens: SCR-UX-018. Requirements: FR-047; BR-045, BR-046.
+1) Ask *"ayuda"* → help answer (AC-145). 2) Ask something unrelated → fallback (AC-146). 3) Ask *"cancela mi cita"* → action request answer with *"Ir a Mis citas"* (AC-129). 4) Ask for medical advice → the fallback answer, which suggests booking a service (AC-147; no separate medical answer, BR-046). Screens: SCR-UX-018. Requirements: FR-047; BR-045, BR-046.
 
 ### FLOW-UX-024 — Assistant: providers and my appointments (P1)
 
@@ -374,7 +373,7 @@ On SCR-UX-005 or a SCR-UX-007 card, *"Escuchar"* → summary read aloud → *"De
 | P04-ASM-030 | ASSUMPTION | The voice phrase interpretation and the retry of BR-053 happen before the results are shown; the owner sees only the final search. | SCR-UX-004 | Simpler UI; no intermediate empty state. | P05 places the logic (client or server). |
 | P04-ASM-031 | ASSUMPTION | Assistant questions are limited to 200 characters (enough for any supported question). | COMP-UX-025 | Bounded input. | — |
 | P04-ASM-032 | ASSUMPTION | Prices are spoken as "[n] pesos"; the spoken text otherwise equals the displayed text. | SCR-UX-018, COMP-UX-027 | Natural speech. | — |
-| P04-ASM-033 | ASSUMPTION | The conversation survives navigating to another tab and back within the visit, but not a reload or sign-out (consistent with BR-050: not stored by the platform). | SCR-UX-018 | Following a link does not lose the conversation. | — |
+| P04-ASM-033 | ASSUMPTION (v3.1) | The conversation ends whenever the owner leaves the assistant, reloads or signs out (AC-127); opening it again starts with the greeting. | SCR-UX-018 | Following an item link ends the conversation, as required by AC-127. | — |
 | P04-ASM-034 | ASSUMPTION | The SCR-UX-006 no-pet alert links to *"Agregar mascota"*. | SCR-UX-006 | Recovery path for EDGE-004. | — |
 | P04-ASM-035 | ASSUMPTION | Editing a pet's species is allowed; existing appointments are kept unchanged (P02 does not define a rule). | SCR-UX-020 | Avoids blocking edits. | Team may object (TD-19). |
 | P04-ASM-036 | ASSUMPTION | Editing a service or product does not change appointments already booked (P02 does not define a rule). | SCR-UX-012/-013 | Same as above. | Team may object (TD-19). |
