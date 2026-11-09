@@ -8,7 +8,7 @@
 | Field | Value |
 |---|---|
 | Stage | P05 — Software Architecture |
-| Version | 4.0 (delta over 3.0) |
+| Version | 4.1 (4.0 + corrections of `ARCHITECTURE_VALIDATION_V4.md`: A5-VAL-001 to -005) |
 | Sprint | `SPRINT-002` (the single current sprint; P03 PRIOR-005) |
 | Status | **READY_WITH_ASSUMPTIONS** |
 | Generated | 2026-11-09 (deadline 2026-11-10, TD-34) |
@@ -99,14 +99,14 @@ Unchanged (ADR-002 modular monolith). COMP-013 is a new backend module; COMP-014
 | Dependencies (read-only) | COMP-008 IF-045 (phrase interpretation + search function); COMP-006 IF-019 (provider list, profile, weekly hours); COMP-007 IF-047 (providers with an active home service); COMP-009 IF-046 (owner's upcoming appointments). No table of its own; no writes (CR-028). |
 | Normalization | Lowercase; remove accents (á→a … ü→u, ñ kept); replace punctuation (`¿?¡!.,;:`) with spaces; collapse spaces. The original text is kept for quoting. |
 | Classification | First matching rule wins (P05-ASM-022 keyword lists, Spanish, on normalized text): |
-| 1. `action_request` | Verbs of action on data: `agend`, `reserv`, `cancel`, `reprogram`, `cambia(r) (mi) cita`, `pedir`, `compr`. Link `search` for `agend`/`reserv`/`pedir`/`compr`; `owner_appointments` for `cancel`/`reprogram`/`cambia`. (BR-045, AC-129) |
+| 1. `action_request` | **(v4.1)** An appointment action verb (`agend`, `reserv`, `cancel`, `reprogram`, `cambia`) together with `cita` or `turno`, or a leading imperative (`agenda`, `reserva`, `cancela`, `reprograma`). Link `search` for `agend`/`reserv`; `owner_appointments` for `cancel`/`reprogram`/`cambia`. Purchase words (`compr`, `pedir`, `vend`) are **not** actions: they are offering words (rule 6), because ordering is deferred. (BR-045, AC-129) |
 | 2. `help` | `ayuda`, `que puedo (preguntar|hacer)`, `que sabes`, `como funciona`. (AC-145) |
 | 3. `my_appointments` | `mi cita`, `mis citas`, `proxima cita`, `cuando es mi`, `tengo cita`. (AC-141 to AC-144) |
 | 4. provider detail | A provider name is found in the question (BR-052: every active provider whose normalized public name is contained in the question, or whose name tokens of 3+ letters, excluding `clinica`, `veterinaria`, `veterinario`, `vet`, all appear in it). With hour words (`horario`, `hora`, `abre`, `atiende`, `cierra`) → `provider_hours`; with contact words (`direccion`, `donde`, `queda`, `telefono`, `contacto`, `correo`, `llamar`) → `provider_contact`; several providers → `several_matches`; a detail word but no provider → `no_match`. |
 | 5. `providers` | Provider words (`veterinari`, `clinica`, `proveedor`) with a list word (`hay`, `cuales`, `que`, `disponible`, `lista`). Type: `clinica(s)` → clinics; `independiente(s)` → independents; `domicilio`/`casa` → providers with an active service whose modality is `home` or `both` (BR-054). |
-| 6. `offerings` | Offering words (`quien ofrece`, `donde (hay|venden|ofrecen)`, `cuanto (cuesta|vale)`, `precio`, `valor`, `servicio`, `producto`, `hay`) and a non-empty remainder: the text after removing these words and question words (`quien`, `que`, `cual(es)`, `cuanto`, `donde`, `hay`, `ofrece(n)`, `cuesta(n)`, `vale(n)`, `precio`, `valor`, `de`, `del`, `el`, `la`, `los`, `las`, `un`, `una`) is passed to the **same phrase interpreter as voice search** (IF-045: BR-043 species, BR-044 fillers) and then to the search function, including the BR-053 retry. Empty remainder → `fallback`. |
+| 6. `offerings` | Offering words (`quien ofrece`, `donde (hay|venden|ofrecen|compro|consigo)`, `compr`, `pedir`, `vend`, `cuanto (cuesta|vale)`, `precio`, `valor`, `servicio`, `producto`, `hay`) and a non-empty remainder: the text after removing these words and question words (`quien`, `que`, `cual(es)`, `cuanto`, `donde`, `hay`, `ofrece(n)`, `cuesta(n)`, `vale(n)`, `precio`, `valor`, `de`, `del`, `el`, `la`, `los`, `las`, `un`, `una`) is passed to the **same phrase interpreter as voice search** (IF-045: BR-043 species, BR-044 fillers) and then to the search function, including the BR-053 retry. Empty remainder → `fallback`. |
 | 7. `fallback` | Everything else, including medical questions (BR-046, AC-147). |
-| Composition | `answers.js` turns each intent and its data into `text`, `items` (max 5; order BR-047: providers by name, offerings by price then name, appointments nearest first), `total`, `searchLink` (offerings with total > 5) and `linkTo`, using **exactly** the Spanish templates of UX_SPEC_V3 SCR-UX-018 v3.1 (ADR-019). Formatting: prices `$ 45.000` (es-CO); hours `8:00 a. m.`; dates in Bogotá (ADR-008); weekdays Monday first. The greeting is rendered by the client (it needs no data). |
+| Composition | `greeting` is reserved for the client and never returned by the server (v4.1). `answers.js` turns each intent and its data into `text`, `items` (max 5; order BR-047: providers by name, offerings by price then name, appointments nearest first), `total`, `searchLink` (offerings with total > 5) and `linkTo`, using **exactly** the Spanish templates of UX_SPEC_V3 SCR-UX-018 v3.1 (ADR-019). Formatting: prices `$ 45.000` (es-CO); hours `8:00 a. m.`; dates in Bogotá (ADR-008); weekdays Monday first. The greeting is rendered by the client (it needs no data). |
 | Errors | Validation of `text` (VALIDATION_FAILED); any query failure → UNEXPECTED. No question is ever rejected for content: unknown → `fallback`. |
 
 ### 6.3 COMP-014 — Voice I/O (client)
@@ -118,7 +118,7 @@ Unchanged (ADR-002 modular monolith). COMP-013 is a new backend module; COMP-014
 | `listenOnce()` | One recognition session: `lang = 'es-CO'`, `interimResults = false`, `continuous = false`, `maxAlternatives = 1`. Resolves `{ transcript }` on result; rejects with `not_allowed` (permission denied → MSG-VOICE-DENIED), `no_speech` / `aborted` / other (→ MSG-VOICE-NOHEAR). A `stop()` ends listening (COMP-UX-023 "detener"). Only one session at a time. |
 | `speak(text)` | Cancels any current utterance, then speaks `text` with `lang = 'es-CO'`, choosing a voice whose `lang` is `es-CO`, else any `es-*`, else the default (P05-ASM-021). Exposes `speaking` state for *"Leyendo…"* / *"Detener lectura"*. `stopSpeaking()` cancels. Screens call `stopSpeaking()` on unmount (leaving the screen). |
 | Preference | `voiceReplies` stored in `localStorage` key `vetcare.voiceReplies` (`on` default; BR-049). Device only; never sent to the server. |
-| Privacy | Transcripts are sent only to IF-041/IF-042 and are kept in React state only for the current screen (BR-050). |
+| Privacy | Transcripts are sent only to IF-041/IF-042 and are kept in React state only for the current screen (BR-050). Transcripts sent to IF-042 are cut to 200 characters (v4.1). |
 
 ### 6.4 Changes to existing backend modules
 
@@ -266,6 +266,7 @@ COMMIT
 | MSG-VOICE-EMPTY (AC-120) | IF-041 `outcome: empty_query`. |
 | MSG-VOICE-NOHEAR / -DENIED | COMP-014 `listenOnce` error kinds (client only). |
 | SCR-UX-018 answer table | IF-042 `AssistantAnswer`: `text` = sentence, `items[].label` = row text, `items[].target`, `searchLink`, `linkTo`. Greeting from the client. |
+| *"Ver todos en Buscar"* (AC-139) | **(v4.1)** The client navigates to the owner search route with `?q=&species=` from `searchLink`; SCR-UX-004 reads them once on load, fills the search box and filter, and runs the search. |
 | COMP-UX-026 / -027 | COMP-014 `speak`, `stopSpeaking`, `speaking`, preference. |
 | SCR-UX-019/-020 | IF-009 (ext.), IF-033 to IF-035. |
 | SCR-UX-021 | IF-039, IF-040. |
@@ -388,6 +389,7 @@ No REQUIRES_DECISION item.
 
 - **Not specified:** UI component code; exact regular expressions; test data content.
 - **Next:** P05 validation (quick), then P06 step 0 (§15.1) and track A.
+- **Latent (A5-VAL-005):** the deferred ordering reads (`getOrderContext`, `placeOrder`) do not filter removed products; add `removed_at IS NULL` when ordering resumes (switches stay off in iteration 2).
 - **Docs to update in P09:** API (V2 operations), DATA_MODEL (migration 002), USER_GUIDE (voice), KNOWN_LIMITATIONS (browser support, vendor speech processing).
 
 ## 18. Self-Review
