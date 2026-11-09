@@ -1,0 +1,7 @@
+["network","El reconocimiento de voz no está disponible en este navegador. Prueba en Google Chrome o escribe tu búsqueda.",""]
+["audio-capture","No encontramos un micrófono. Conecta uno o escribe tu búsqueda.",""]
+["service-not-allowed","El reconocimiento de voz no está disponible en este navegador. Prueba en Google Chrome o escribe tu búsqueda.",""]
+["not-allowed","No tenemos permiso para usar el micrófono. Puedes escribir, o permitir el micrófono en la configuración del navegador.",""]
+["no-speech","No te escuchamos. Intenta de nuevo o escribe tu búsqueda.",""]
+["es-CO unsupported → es-ES works",null,"baño"]
+["console",["[VetCare voz] error del reconocimiento: network (es-CO)","[VetCare voz] error del reconocimiento: audio-capture (es-CO)","[VetCare voz] error del reconocimiento: service-not-allowed (es-CO)","[VetCare voz] error del reconocimiento: not-allowed (es-CO)","[VetCare voz] error del reconocimiento: no-speech (es-CO)","[VetCare voz] error del reconocimiento: language-not-supported (es-CO)"]]

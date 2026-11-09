@@ -7,6 +7,9 @@ import VoiceInputButton from '../voice/VoiceInputButton.jsx';
 const MSG_VOICE_NOHEAR = 'No te escuchamos. Intenta de nuevo o escribe tu búsqueda.';
 const MSG_VOICE_DENIED = 'No tenemos permiso para usar el micrófono. Puedes escribir, o permitir el micrófono en la configuración del navegador.';
 const MSG_VOICE_EMPTY = 'Dinos qué servicio o producto necesitas, por ejemplo: «vacuna para mi gato».';
+// Added in the US-035 fix (DEV-I2-002): specific causes instead of MSG-VOICE-NOHEAR for every failure.
+const MSG_VOICE_NOMIC = 'No encontramos un micrófono. Conecta uno o escribe tu búsqueda.';
+const MSG_VOICE_UNAVAILABLE = 'El reconocimiento de voz no está disponible en este navegador. Prueba en Google Chrome o escribe tu búsqueda.';
 
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
 const SPECIES_OPTIONS = [
@@ -100,9 +103,10 @@ export default function OwnerSearch() {
   }
 
   function voiceError(kind) {
-    setVoiceAlert(kind === 'not_allowed'
-      ? { variant: 'warning', text: MSG_VOICE_DENIED } // AC-123
-      : { variant: 'info', text: MSG_VOICE_NOHEAR }); // AC-121
+    if (kind === 'not_allowed') setVoiceAlert({ variant: 'warning', text: MSG_VOICE_DENIED }); // AC-123
+    else if (kind === 'no_microphone') setVoiceAlert({ variant: 'warning', text: MSG_VOICE_NOMIC });
+    else if (kind === 'unavailable') setVoiceAlert({ variant: 'warning', text: MSG_VOICE_UNAVAILABLE });
+    else setVoiceAlert({ variant: 'info', text: MSG_VOICE_NOHEAR }); // AC-121
   }
 
   // Runs the search for already-normalized text with the given species filter (US-017).

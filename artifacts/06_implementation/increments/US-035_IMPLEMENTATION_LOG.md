@@ -113,3 +113,13 @@ Conforms to ARCHITECTURE_V4 v4.1 (CR-027, CR-029, CR-031; ADR-020, ADR-022). Dev
 ## 13. Handoff to P06.4
 
 Validate AC-115 to AC-123 and AC-159 with the evidence above; re-run `npm test` with `TEST_DATABASE_URL`; after deployment, record one real voice search on Chrome desktop and one on Android (values and screenshots).
+
+## 14. Fix after team testing (2026-11-09) — DEV-I2-002
+
+**Report.** On a real device, tapping the microphone stopped at once and showed *"No te escuchamos…"*. An immediate stop is not silence (the browser's `no-speech` arrives after several seconds): the browser returned another error, which COMP-014 mapped to `no_speech` for every cause, hiding it.
+
+**Change.** `client/src/voice/speech.js` now maps the Web Speech error codes to specific kinds and writes the code to the console (`[VetCare voz] error del reconocimiento: <code>`): `not-allowed` → MSG-VOICE-DENIED; `audio-capture` → new MSG-VOICE-NOMIC; `network`, `service-not-allowed`, `language-not-supported`, `bad-grammar` or a failing `start()` → new MSG-VOICE-UNAVAILABLE; `no-speech`/`aborted` → MSG-VOICE-NOHEAR. If `es-CO` is not supported, one retry with `es-ES` (P05-ASM-021). The two new messages are an addition to UX_SPEC_V3 §8 (to record in P09).
+
+**Verification.** Simulated browser errors: 6 / 6 show the expected message and console code (`increments/evidence/us035-e2e-voice-errors-output.txt`); original walk-through 8 / 8; `npm test` 189 / 189.
+
+**Likely cause on the team's device (to confirm with the console code):** `network` — Chromium-based browsers other than Google Chrome (Brave, Opera, some Chromium builds) expose `SpeechRecognition` but cannot reach Google's speech service, and Chrome itself needs internet access to that service. Real-microphone evidence on Google Chrome is still pending.

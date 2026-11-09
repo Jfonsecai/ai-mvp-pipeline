@@ -12,33 +12,65 @@ export const synthesisSupported = () => typeof window !== 'undefined' && 'speech
 
 /**
  * One recognition session (one tap). Returns `{ promise, stop }`. The promise resolves with
- * `{ transcript }` or rejects with an Error whose `kind` is `not_allowed` (permission denied,
- * MSG-VOICE-DENIED) or `no_speech` (nothing recognized or any other failure, MSG-VOICE-NOHEAR).
+ * `{ transcript }` or rejects with an Error whose `kind` is one of:
+ * - `not_allowed`: microphone permission denied (MSG-VOICE-DENIED, AC-123);
+ * - `no_microphone`: no audio input device (`audio-capture`);
+ * - `unavailable`: the browser's speech service cannot be used (`network`, `service-not-allowed`,
+ *   unsupported language) — typical of Chromium-based browsers without Google's speech service;
+ * - `no_speech`: nothing was recognized (MSG-VOICE-NOHEAR, AC-121).
+ * The browser error code is written to the console as `[VetCare voz]` to diagnose real devices.
+ * If `es-CO` is not supported, the session is retried once with `es-ES` (P05-ASM-021).
  */
+const ERROR_KINDS = {
+  'not-allowed': 'not_allowed',
+  'audio-capture': 'no_microphone',
+  network: 'unavailable',
+  'service-not-allowed': 'unavailable',
+  'language-not-supported': 'unavailable',
+  'bad-grammar': 'unavailable',
+  'no-speech': 'no_speech',
+  aborted: 'no_speech',
+};
+
 export function listenOnce() {
   if (!Recognition) throw new Error('Voice input is not supported');
-  const recognition = new Recognition();
-  recognition.lang = LANG;
-  recognition.interimResults = false;
-  recognition.continuous = false;
-  recognition.maxAlternatives = 1;
+  let current = null;
+  let stopped = false;
 
-  const promise = new Promise((resolve, reject) => {
+  const attempt = (lang) => new Promise((resolve, reject) => {
+    const recognition = new Recognition();
+    current = recognition;
+    recognition.lang = lang;
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
     let transcript = '';
-    let failure = null;
+    let errorCode = null;
     recognition.onresult = (event) => {
       transcript = Array.from(event.results).map((result) => result[0]?.transcript ?? '').join(' ').trim();
     };
     recognition.onerror = (event) => {
-      failure = event.error === 'not-allowed' || event.error === 'service-not-allowed' ? 'not_allowed' : 'no_speech';
+      errorCode = event.error;
+      console.warn('[VetCare voz] error del reconocimiento:', event.error, `(${lang})`);
     };
     recognition.onend = () => {
-      if (transcript) resolve({ transcript });
-      else reject(Object.assign(new Error(failure ?? 'no_speech'), { kind: failure ?? 'no_speech' }));
+      if (transcript) return resolve({ transcript });
+      if (errorCode === 'language-not-supported' && lang === LANG && !stopped) {
+        return attempt('es-ES').then(resolve, reject);
+      }
+      const kind = ERROR_KINDS[errorCode] ?? 'no_speech';
+      reject(Object.assign(new Error(kind), { kind, code: errorCode }));
     };
+    try {
+      recognition.start();
+    } catch (error) {
+      console.warn('[VetCare voz] no se pudo iniciar el reconocimiento:', error?.name ?? error);
+      reject(Object.assign(new Error('unavailable'), { kind: 'unavailable', code: error?.name }));
+    }
   });
-  recognition.start();
-  return { promise, stop: () => recognition.stop() };
+
+  const promise = attempt(LANG);
+  return { promise, stop: () => { stopped = true; current?.stop(); } };
 }
 
 function pickVoice() {
