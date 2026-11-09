@@ -6,6 +6,7 @@ import ProviderSignUp from './pages/ProviderSignUp.jsx';
 import ProviderProfile from './pages/ProviderProfile.jsx';
 import OwnerSignUp from './pages/OwnerSignUp.jsx';
 import OwnerSearch from './pages/OwnerSearch.jsx';
+import OwnerAssistant from './pages/OwnerAssistant.jsx';
 import OwnerAppointments from './pages/OwnerAppointments.jsx';
 import ProviderPublicProfile from './pages/ProviderPublicProfile.jsx';
 import BookAppointment from './pages/BookAppointment.jsx';
@@ -83,6 +84,7 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
       </nav>}
       {accountType === 'owner' && <nav className="owner-navigation" aria-label="Menú principal">
         <NavLink to="/owner/home">Buscar</NavLink>
+        <NavLink to="/owner/assistant">Asistente</NavLink>
         <NavLink to="/owner/appointments">Mis citas</NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
@@ -137,6 +139,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/sign-up" element={<GuestOnly session={session}><OwnerSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/provider/sign-up" element={<GuestOnly session={session}><ProviderSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerSearch /></RolePage>} />
+    <Route path="/owner/assistant" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAssistant /></RolePage>} />
     <Route path="/owner/appointments" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAppointments /></RolePage>} />
     <Route path="/owner/providers/:providerId" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><ProviderPublicProfile /></RolePage>} />
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />

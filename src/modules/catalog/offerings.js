@@ -147,11 +147,11 @@ export async function listProviderOfferings(db, providerId) {
  * IF-021 service facts: a read-only query owned by COMP-007 for COMP-009 (booking). Returns null
  * when the identifier is not a service.
  */
-export async function getServiceFacts(db, serviceId) {
+export async function getServiceFacts(db, serviceId, { includeRemoved = false } = {}) {
   const result = await db.query(
     `SELECT id, provider_id, provider_type, name, price_cop, species, modality
        FROM offering
-      WHERE id = $1 AND kind = 'service' AND removed_at IS NULL`,
+      WHERE id = $1 AND kind = 'service'${includeRemoved ? '' : ' AND removed_at IS NULL'}`,
     [serviceId],
   );
   const row = result.rows[0];
@@ -165,6 +165,16 @@ export async function getServiceFacts(db, serviceId) {
     species: row.species,
     modality: row.modality,
   };
+}
+
+/** IF-047 (iteration 2): providers with at least one active service offered at home (BR-054). */
+export async function listProvidersWithHomeService(db) {
+  const result = await db.query(
+    `SELECT DISTINCT provider_id
+       FROM offering
+      WHERE kind = 'service' AND modality IN ('home', 'both') AND removed_at IS NULL`,
+  );
+  return result.rows.map((row) => row.provider_id);
 }
 
 export function createCatalogRouter({ db, guard }) {

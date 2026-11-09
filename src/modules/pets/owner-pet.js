@@ -32,10 +32,11 @@ export async function listOwnerPets(db, ownerId) {
  * was removed (CR-029). With `lock`, the row is read FOR SHARE inside the caller's transaction, so a
  * concurrent removal (FOR UPDATE) and a booking serialize (ARCHITECTURE_V4 §8.3).
  */
-export async function getOwnerPet(db, ownerId, petId, { lock = false } = {}) {
+export async function getOwnerPet(db, ownerId, petId, { lock = false, includeRemoved = false } = {}) {
+  // History views (appointments) keep showing removed pets (CR-029: history is not filtered).
   const result = await db.query(
     `SELECT id, name, species, breed FROM pet
-      WHERE id = $1 AND owner_id = $2 AND removed_at IS NULL${lock ? ' FOR SHARE' : ''}`,
+      WHERE id = $1 AND owner_id = $2${includeRemoved ? '' : ' AND removed_at IS NULL'}${lock ? ' FOR SHARE' : ''}`,
     [petId, ownerId],
   );
   return result.rows[0] ? petSummary(result.rows[0]) : null;

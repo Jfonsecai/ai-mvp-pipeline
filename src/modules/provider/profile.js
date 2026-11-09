@@ -117,6 +117,22 @@ export async function getProviderFacts(db, providerId) {
  * provider (CR-009). Must run inside the caller's transaction; the lock lasts until it ends.
  * Returns false when the provider does not exist.
  */
+/** IF-019 (iteration 2): every provider's public facts, for the assistant (COMP-013, read-only). */
+export async function listProviderFacts(db) {
+  const result = await db.query(
+    `SELECT provider_id, provider_type, public_name, contact_phone, contact_email, address
+       FROM provider_profile`,
+  );
+  return result.rows.map((row) => ({
+    id: row.provider_id,
+    type: row.provider_type,
+    name: row.public_name,
+    contactPhone: row.contact_phone ?? null,
+    contactEmail: row.contact_email,
+    address: row.address ?? null,
+  }));
+}
+
 export async function lockProvider(client, providerId) {
   const result = await client.query(
     'SELECT provider_id FROM provider_profile WHERE provider_id = $1 FOR UPDATE',

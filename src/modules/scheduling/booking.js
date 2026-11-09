@@ -202,8 +202,8 @@ export async function listOwnerAppointments(db, { ownerId, now }) {
 
   const appointments = await Promise.all(result.rows.map(async (row) => {
     const [service, pet] = await Promise.all([
-      getServiceFacts(db, row.service_id),
-      getOwnerPet(db, ownerId, row.pet_id),
+      getServiceFacts(db, row.service_id, { includeRemoved: true }), // history (CR-029)
+      getOwnerPet(db, ownerId, row.pet_id, { includeRemoved: true }),
     ]);
     if (!service || !pet) throw new Outcome('NOT_FOUND');
     const provider = await getProviderFacts(db, service.providerId);
@@ -251,8 +251,8 @@ export async function listProviderAppointments(db, { providerId, now }) {
 
   const appointments = await Promise.all(result.rows.map(async (row) => {
     const [service, pet, ownerName] = await Promise.all([
-      getServiceFacts(db, row.service_id),
-      getOwnerPet(db, row.owner_id, row.pet_id),
+      getServiceFacts(db, row.service_id, { includeRemoved: true }), // history (CR-029)
+      getOwnerPet(db, row.owner_id, row.pet_id, { includeRemoved: true }),
       getOwnerName(db, row.owner_id),
     ]);
     if (!service || !pet || !ownerName) throw new Outcome('NOT_FOUND');
