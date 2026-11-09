@@ -5,7 +5,7 @@
 
 ## 1. Document Metadata
 
-- **Version:** 3.0
+- **Version:** 3.1 (3.0 + team decision TD-34 on the deadline and the committed scope)
 - **Stage:** P03 — Planning
 - **Status:** READY_WITH_ASSUMPTIONS
 - **Project:** VetCare (TD-02) — iteration 2 (VetCare v2, CR-027)
@@ -20,7 +20,7 @@
   - P01 `PRODUCT_VISION_VALIDATION.md` v4.0: PASS_WITH_WARNINGS. The iteration 2 addendum has **no P01 validation**; accepted by delegation (TD-33; P02 VAL-R01).
   - P02 `REQUIREMENTS_VALIDATION_V4.md`: PASS_WITH_WARNINGS (v4.1: 0 critical, 0 high, 0 medium, 6 low).
 - **Formal delivery window:** two weeks per the P03 prompt (academic window). Iteration 2 has its own deadline, which is not recorded.
-- **Actual remaining time and capacity:** **UNKNOWN.** The team stated only that "there is not much time and we must be fast" (2026-11-09). No dates, days or hours are recorded (ASSUM-010).
+- **Actual remaining time and capacity:** **deadline 2026-11-10** (team, 2026-11-09, TD-34): what remains of 2026-11-09 plus 2026-11-10, about one working day, for P04 to P10. Hours per person are not recorded.
 - **Generation Date:** 2026-11-09
 - **Previous Version:** `PRIORITIZATION_v2.md` (v2.0, iteration 1)
 
@@ -33,6 +33,7 @@
 | Former conditional stories US-004 to US-007, US-011, US-012, US-014, US-015, US-022, US-023, US-025, US-026 committed; estimates of v2.0 kept. | TD-30; P01-MVP-013 |
 | Ordering stories US-027 to US-033 deferred (priority removed, estimates kept). | TD-29 |
 | New proposed assignments for iteration 2 work. | PRIOR-007 |
+| **v3.1:** deadline 2026-11-10 recorded; option (a) chosen (keep 19 committed, cut order); feasibility re-assessed; ASSUM-010 resolved, ASSUM-013 no longer holds; P03-RISK-009 raised. | TD-34; P03V-001 |
 
 ## 2. Executive Summary
 
@@ -50,14 +51,14 @@
 
 **Cut order if time runs short** (PRIOR-008): US-042, then catalog (US-015, US-014, US-012, US-011), then provider and owner appointment actions (US-026, US-025, US-023, US-022). P0 and P1 are never cut to fit more P2.
 
-**Feasibility: CONDITIONALLY_FEASIBLE.** The only capacity evidence is iteration 1: 44 committed points implemented (logs dated 2026-10-11 and 2026-10-12) and verified in production (2026-10-14). Iteration 2 commits 45 points, without the foundation work of iteration 1 but with a new and uncertain voice capability, and the available time is unknown and described by the team as short.
+**Feasibility (v3.1): NOT_FEASIBLE for the full committed scope; CONDITIONALLY_FEASIBLE for P0.** The deadline is 2026-11-10 (TD-34), about one working day that also holds P04, P05 and P07 to P10. Iteration 1 needed about four days to take 44 points to production. The team chose to keep the 19 stories committed (TD-34, option a) and to rely on the cut order: P0 (16 points) is the realistic target, P1 is at risk and P2 is expected to be cut.
 
 ## 3. Planning Constraints
 
 | Constraint | Value | Classification |
 |---|---|---|
 | Formal delivery window | Two weeks (P03 prompt) | CONFIRMED by the prompt; not used as available time |
-| Time available for iteration 2 | "Not much time; we must be fast" (team, 2026-11-09); no dates or days | UNKNOWN (ASSUM-010) |
+| Time available for iteration 2 | Deadline 2026-11-10; about one working day from 2026-11-09, shared with P04, P05 and P07 to P10 | CONFIRMED (TD-34) |
 | Iteration 1 reference | 15 stories, 44 points committed and delivered; implementation logs 2026-10-11 to 2026-10-12; production verified 2026-10-14; no conditional story reached | CONFIRMED (artifacts); used as reference only, not as velocity (ASSUM-012) |
 | Team | 5 members: David (Backend / Database), Jhonier (Frontend), Casanova (Backend), Fonseca (DevOps), Sebas (Fullstack) | CONFIRMED roles (P00 [TEAM]); availability for iteration 2 ASSUMPTION (ASSUM-011) |
 | Existing foundation | Modular monolith, client, CI and deployment already working and validated (P06.1/P06.2, P08) | CONFIRMED; reduces effort compared with iteration 1 |
@@ -155,7 +156,7 @@ Priority describes value and delivery order within `SPRINT-002`; scope classific
 | Item ID | Decision Needed | Impact | Proposed Resolution |
 |---|---|---|---|
 | PRIOR-005 | Identifier of the iteration 2 sprint. The prompt names the sprint `SPRINT-001`; reusing it would overwrite the record of iteration 1. | Traceability of both iterations. | **DECIDED** by TD-30: `SPRINT-002` / `RELEASE-002`; exactly one sprint is planned for this delivery. |
-| PRIOR-006 | Iteration 2 deadline and days available per member. | Feasibility (§11). | **REQUIRES DECISION** (team): record the deadline; if it is shorter than the iteration 1 sprint, apply the cut order (PRIOR-008) before P06. Does not block P04/P05. |
+| PRIOR-006 | Iteration 2 deadline and committed scope (P03 validation P03V-001). | Feasibility (§11). | **DECIDED** (TD-34, 2026-11-09): deadline 2026-11-10; option (a): keep all 19 stories committed and apply the cut order PRIOR-008 as soon as P2 does not fit. |
 | PRIOR-007 | Approval of the proposed iteration 2 assignments (§7). | Who builds what. | **PROPOSAL**, approved under the standing rule TD-19 unless the team objects. |
 | PRIOR-008 | Cut order if time runs short. | Protects P0/P1. | **PROPOSAL** following the TD-30 order: US-042 → catalog (US-015, US-014, US-012, US-011) → appointments (US-026, US-025, US-023, US-022). Approved under TD-19 unless the team objects. |
 
@@ -235,14 +236,14 @@ Upstream dependencies DEP-001 to DEP-010 and DEP-018 to DEP-022 (P02) remain val
 | DEP-025 | US-035, US-036 | Dependency: one shared voice input, built in US-035 and reused by US-036. | Avoids building voice input twice. | US-035 first (step 1). | PLANNED |
 | DEP-026 | US-041, US-042 | Dependency: one shared speech output, built in US-041 and reused by US-042. | US-042 cannot start before US-041. | US-041 in step 2. | PLANNED |
 | P03-RISK-008 | US-007, US-004 | Risk (carried): US-007 without US-004 leaves an owner who removes all pets unable to book. | Medium. | Deliver US-007 only with US-004 (step 4). | OPEN (mitigated by sequence) |
-| P03-RISK-009 | SPRINT-002 | Risk: capacity. 45 committed points, unknown time described as short, plus P07 to P10 work. | High: P2 may not be finished. | Cut order PRIOR-008; record the deadline (PRIOR-006). | OPEN |
+| P03-RISK-009 | SPRINT-002 | Risk: capacity. 45 committed points in about one working day (TD-34), which also holds P04, P05 and P07 to P10; iteration 1 needed about four days for 44 points (implementation 2026-10-11 to -12, production 2026-10-14). | **High: the full committed scope is very unlikely to be completed; P2 and part of P1 are expected to be cut.** | Accepted by the team (TD-34, option a). Apply PRIOR-008 early: at mid-day of 2026-11-10 at the latest, cut whatever has not started. Keep P0 first. | OPEN (accepted) |
 | P03-RISK-010 | US-035, US-036, US-041 | Risk: new voice capability. Recognition quality with names and accents, behavior on phone Chrome, microphone permission and HTTPS. | Medium-high: estimates of 5, 5 and 3 points are uncertain. | Early spike in step 1 on the deployed site; editable text and typed fallback are part of the requirements (NFR-006). | OPEN |
 | P03-RISK-011 | Voice stories; step 8 | Risk: voice cannot be fully tested automatically. | Medium: evidence would be manual only. | Automate tests on text input (interpretation, retry, assistant rules); record manual voice evidence with values. | OPEN |
 | P03-RISK-012 | US-035, US-036, US-041, US-004 to US-007, US-022, US-023 | Risk: frontend bottleneck on Jhonier. | Medium. | Sebas backs up owner-facing screens; steps 4 to 6 in parallel with steps 1 to 3. | OPEN |
 | P03-RISK-013 | Iteration 1 journeys | Risk: regression of deployed features; CI is not a required check on `main` (P10 EVAL-007). | Medium. | Keep the 318 existing tests green on every merge; ask the repository admin to make CI required. | OPEN |
 | P03-RISK-014 | EPIC-009 | Risk: requirements and addendum accepted by delegation, not reviewed item by item (P02 VAL-R01). | Low: misunderstanding of the voice word lists could surface in the demonstration. | Team skims BR-043, BR-044, BR-053, BR-054 before P07. | OPEN |
 | P03-RISK-007 | All | Risk (carried): upstream drift; P00/P01 not consolidated. | Low. | Consolidate when possible. | OPEN |
-| PRIOR-005 to PRIOR-008 | See §5.5 | Sprint identifier, deadline, assignments, cut order. | See §5.5. | See §5.5. | PRIOR-005 DECIDED; PRIOR-006 REQUIRES DECISION; PRIOR-007, -008 PROPOSAL (TD-19) |
+| PRIOR-005 to PRIOR-008 | See §5.5 | Sprint identifier, deadline, assignments, cut order. | See §5.5. | See §5.5. | PRIOR-005, PRIOR-006 DECIDED; PRIOR-007, -008 PROPOSAL (TD-19) |
 
 ## 9. Requirements-to-Priority Traceability
 
@@ -312,22 +313,24 @@ Every FR (FR-001 to FR-050) and every non-global NFR is accounted for.
 
 | ID | Item | Classification | Impact on Plan | Action Needed |
 |---|---|---|---|---|
-| ASSUM-010 | Time available for iteration 2 is short and not recorded; the plan assumes it is of the same order as the iteration 1 sprint. | UNKNOWN / ASSUMPTION | Feasibility of P2. | PRIOR-006: record the deadline. |
+| ASSUM-010 | Time available for iteration 2. | RESOLVED (TD-34): deadline 2026-11-10, about one working day | Full committed scope unlikely (P03-RISK-009). | None. |
 | ASSUM-011 | All five members work on iteration 2 with the same roles. | ASSUMPTION | Assignments and parallel steps. | Team confirms or reassigns (PRIOR-007). |
 | ASSUM-012 | Iteration 1 (44 points delivered) is a single reference point, not a velocity; the estimates of iteration 2 are relative to the same scale. | ASSUMPTION | Feasibility judgment. | None; re-check after step 1. |
-| ASSUM-013 | P04 and P05 deltas are produced and validated before the sprint, outside its time, as in iteration 1. | ASSUMPTION | If not, sprint time shrinks. | Run P04 and P05 next (DEP-023). |
+| ASSUM-013 | P04 and P05 deltas are produced and validated before the sprint, outside its time, as in iteration 1. | **NO LONGER HOLDS** (TD-34): they fall inside the same day | Less time for implementation. | Run P04 and P05 as short deltas, limited to the P0 screens first. |
 | ASSUM-014 | Browser voice recognition and speech output work on Chrome desktop and phone on the deployed HTTPS domain (P01-ASSUMPTION-027, -029). | ASSUMPTION | If not, the voice stories are blocked. | Verify in step 1 (P03-RISK-010). |
 | — | Estimates of v2.0 for the 12 promoted stories are kept; they were made with the same scale and no new information changes them. US-005 stays 1 although part of it exists. | ASSUMPTION | Low. | None. |
 
 ## 11. Feasibility Assessment
 
-**CONDITIONALLY_FEASIBLE.**
+**v3.1 (TD-34): NOT_FEASIBLE for the full committed scope (45 points); CONDITIONALLY_FEASIBLE for P0 (16 points).**
 
-Evidence for: iteration 1 implemented and deployed 44 committed points in a short sprint; the foundation, CI, deployment and data model already exist; the 12 promoted stories reuse existing modules and their requirements were stable since v3.0; voice uses browser capabilities with no external service to set up.
+Evidence: the deadline is 2026-11-10, about one working day from 2026-11-09, and P04, P05 and P07 to P10 must fit in the same window. Iteration 1 needed about four days (implementation logs 2026-10-11 and -12, production verified 2026-10-14) for 44 points, with P04 and P05 done before. Helping factors remain: the foundation, CI, deployment and data model exist; the promoted stories reuse existing modules; voice needs no external service.
 
-Evidence against: the time for iteration 2 is unknown and described as short; 45 points is slightly above the iteration 1 reference; the voice stories carry technical uncertainty and their acceptance criteria need manual evidence; P07 to P10 must also fit.
+**Team decision (TD-34, option a):** the 19 stories stay committed and the cut order PRIOR-008 is applied as soon as work does not fit. This is the team's accepted risk (P03-RISK-009), not a feasibility claim.
 
-Conditions: P04 and P05 deltas done first (DEP-023); the voice spike in step 1 succeeds early (P03-RISK-010); the cut order (PRIOR-008) is applied as soon as the deadline shows that P2 will not fit. With these conditions, **P0 and P1 (28 points) are likely feasible**; P2 is feasible only if the available time is similar to iteration 1.
+**Realistic outcome:** P0 can be delivered if P04 and P05 are run as short deltas focused on P0 screens, the voice spike (step 1) works early, and P07 to P10 are kept to their minimum. P1 depends on how fast P0 goes; P2 is expected to be cut and reported as deferred.
+
+**Recommended working rules for the day:** P0 first and finished end to end (deployed and evidenced) before P1 starts; pairs on steps 4 to 6 start only once P0 is safe; cut decision at mid-day of 2026-11-10 at the latest.
 
 ## 12. Final Recommendation
 
@@ -338,6 +341,6 @@ Trade-offs: product ordering stays deferred (largest remaining gap, 15 points, b
 ## 13. Status and Next Actions
 
 - **P04 can proceed:** yes. It should design only the delta: microphone control and listening state in the owner search; the assistant screen (conversation, typed and voice input, mute/stop); pet add/edit/remove; cancel and reschedule actions for owners and providers; edit and remove in the provider catalog; and, if time allows, the "Escuchar" control.
-- **Decisions before implementation:** PRIOR-006 (deadline and availability). PRIOR-007 and PRIOR-008 apply unless the team objects.
+- **Decisions before implementation:** none open (PRIOR-006 decided by TD-34). PRIOR-007 and PRIOR-008 apply unless the team objects.
 - **Assumptions to confirm:** ASSUM-010, ASSUM-011, ASSUM-014 (the last one in step 1).
 - **Human review:** the proposed assignments (§7) and the cut order (§5.5); the voice word lists (P03-RISK-014).

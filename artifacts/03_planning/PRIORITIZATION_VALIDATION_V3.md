@@ -10,6 +10,7 @@
 | Plan validated | `PRIORITIZATION_V3.md` v3.0 (READY_WITH_ASSUMPTIONS) |
 | Backlog validated | `product_backlog_priori_v3.json` v3.0 |
 | **Overall decision** | **PASS_WITH_WARNINGS** |
+| Follow-up | P03V-001 decided by the team (TD-34, §18); plan updated to v3.1 |
 | Previous report | `PRIORITIZATION_VALIDATION_V2.md` (iteration 1) |
 
 **Input artifacts reviewed:**
@@ -187,3 +188,13 @@ No critical or high defect: the plan is consistent, traceable, single-sprint, ho
 ## 17. Auditor Integrity Statement
 
 This validation did not modify `PRIORITIZATION_V3.md`, `product_backlog_priori_v3.json` or any upstream artifact. It did not invent requirements, choose between the options of P03V-001, or treat proposals (assignments, cut order) as confirmed decisions. Every finding cites the evidence read from the repository on the validation date. The same AI produced the plan and this report; a human review is recommended.
+
+---
+
+## 18. Follow-up: Decision on P03V-001 (plan v3.1)
+
+On 2026-11-09 the team recorded the deadline, **2026-11-10**, and chose **option (a)**: keep the 19 stories committed and apply the cut order PRIOR-008 (TD-34). The plan was updated to v3.1 (PRIOR-006 DECIDED, ASSUM-010 resolved, ASSUM-013 marked as no longer holding, P03-RISK-009 raised, §11 re-assessed) and the backlog metadata records the deadline and the decision; no story, priority, estimate or assignment changed.
+
+Check of v3.1: the feasibility statement is now **NOT_FEASIBLE for the full committed scope and CONDITIONALLY_FEASIBLE for P0**, which matches the evidence (about one working day for P04 to P10 versus about four days for 44 points in iteration 1). Keeping the stories committed is a documented team decision with an explicit cut order, so it is acceptable, but the validator records that the committed scope exceeds the known capacity and that the sprint is expected to close with P2 (and possibly part of P1) cut. P03V-001 is **closed by decision**; the risk remains open as P03-RISK-009.
+
+The decision stays **PASS_WITH_WARNINGS** (2 medium: P03V-002, P03V-003; 5 low).

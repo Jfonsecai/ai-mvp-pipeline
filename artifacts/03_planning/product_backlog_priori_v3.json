@@ -1,6 +1,6 @@
 {
   "backlog_metadata": {
-    "version": "3.0",
+    "version": "3.1",
     "previous_version": "2.0 (product_backlog_priori_v2.json, iteration 1)",
     "stage": "P03",
     "status": "READY_WITH_ASSUMPTIONS",
@@ -84,7 +84,9 @@
       ],
       "story_points": "Preliminary relative estimates (Fibonacci 1, 2, 3, 5, 8, 13); not hours. Iteration 1 delivered 44 committed points; used as a reference only, not as a velocity.",
       "assigned_developers": "Iteration 2 assignments are PROPOSED from roles and iteration 1 ownership; approved under the standing rule TD-19 unless the team objects (PRIOR-007). See PRIORITIZATION_V3.md §7.",
-      "p02_status_preserved_in": "PRIORITIZATION_V3.md §4 (Definition status column); all items are DEFINED in P02 v4.1"
+      "p02_status_preserved_in": "PRIORITIZATION_V3.md §4 (Definition status column); all items are DEFINED in P02 v4.1",
+      "deadline": "2026-11-10 (TD-34)",
+      "scope_decision": "TD-34 option (a): all 19 stories stay committed; apply cut_order_if_time_is_short as soon as work does not fit (decide by mid-day 2026-11-10)."
     }
   },
   "epics": [
