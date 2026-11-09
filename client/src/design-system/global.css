@@ -236,6 +236,24 @@ body {
 .appointments-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-3); margin-top: var(--spacing-4); }
 .appointments-empty-actions .button-secondary { width: auto; text-decoration: none; }
 .appointment-toast { position: fixed; z-index: 2; top: calc(var(--size-header-height) + var(--spacing-3)); right: var(--spacing-4); max-width: min(100% - var(--spacing-8), var(--size-form-max)); box-shadow: var(--shadow-md); }
+.pets-page { align-items: start; padding-top: var(--spacing-6); }
+.pets-content { width: min(100%, var(--size-content-max)); }
+.pets-heading { display: flex; justify-content: space-between; align-items: start; gap: var(--spacing-4); }
+.pets-heading h1 { margin: 0; font-size: var(--font-size-2xl); line-height: var(--line-height-tight); }
+.pets-heading p { color: var(--color-text-secondary); }
+.pets-add-button { width: auto; margin-top: 0; }
+.pets-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-4); margin: var(--spacing-6) 0 0; padding: 0; list-style: none; }
+.pet-card, .pets-empty, .pet-form { padding: var(--spacing-4); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-lg); background: var(--color-bg-surface); box-shadow: var(--shadow-sm); }
+.pet-card h2, .pets-empty h2, .pet-form h2 { margin: 0 0 var(--spacing-3); font-size: var(--font-size-lg); }
+.pet-details { display: grid; gap: var(--spacing-2); margin: 0; }
+.pet-details dt { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.pet-details dd { margin: 0; font-weight: var(--font-weight-medium); }
+.pet-actions, .pet-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); margin-top: var(--spacing-4); }
+.pet-actions .button-secondary, .pet-form-actions .button-secondary { width: auto; }
+.pet-form { max-width: var(--size-form-max); margin-top: var(--spacing-6); }
+.pet-form .primary-button { width: auto; margin-top: 0; }
+.pets-empty { margin-top: var(--spacing-6); }
+@media (max-width: 767px) { .pets-heading { display: grid; } .pets-add-button { width: 100%; } .pets-list { grid-template-columns: 1fr; } }
 
 @media (min-width: 768px) {
   .app-header { flex-wrap: nowrap; }

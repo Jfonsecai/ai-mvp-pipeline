@@ -7,6 +7,7 @@ import ProviderProfile from './pages/ProviderProfile.jsx';
 import OwnerSignUp from './pages/OwnerSignUp.jsx';
 import OwnerSearch from './pages/OwnerSearch.jsx';
 import OwnerAssistant from './pages/OwnerAssistant.jsx';
+import OwnerPets from './pages/OwnerPets.jsx';
 import OwnerAppointments from './pages/OwnerAppointments.jsx';
 import ProviderPublicProfile from './pages/ProviderPublicProfile.jsx';
 import BookAppointment from './pages/BookAppointment.jsx';
@@ -86,6 +87,7 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
         <NavLink to="/owner/home">Buscar</NavLink>
         <NavLink to="/owner/assistant">Asistente</NavLink>
         <NavLink to="/owner/appointments">Mis citas</NavLink>
+        <NavLink to="/owner/pets">Mis mascotas</NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
         <button ref={buttonRef} className="button-secondary" type="button" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}>Cuenta</button>
@@ -141,6 +143,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerSearch /></RolePage>} />
     <Route path="/owner/assistant" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAssistant /></RolePage>} />
     <Route path="/owner/appointments" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAppointments /></RolePage>} />
+    <Route path="/owner/pets" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerPets /></RolePage>} />
     <Route path="/owner/providers/:providerId" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><ProviderPublicProfile /></RolePage>} />
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />
     <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
