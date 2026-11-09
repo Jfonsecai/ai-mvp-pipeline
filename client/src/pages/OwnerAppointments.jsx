@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
+import ListenButton from '../voice/ListenButton.jsx';
 
 const MSG_NET = 'No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.';
 const dateLabel = new Intl.DateTimeFormat('es-CO', {
@@ -19,8 +20,20 @@ const timeLabel = new Intl.DateTimeFormat('es-CO', {
 const providerTypeLabel = (type) => (type === 'clinic' ? 'Clínica veterinaria' : 'Veterinario independiente');
 const modalityLabel = (modality) => (modality === 'home' ? 'A domicilio' : 'En la clínica');
 
-function AppointmentCard({ appointment, headingRefs }) {
+const appointmentSpeech = (appointment, date, time) => [
+  `Cita ${appointment.status === 'cancelled' ? 'cancelada' : 'programada'}.`,
+  `Fecha: ${date}.`,
+  `Hora: ${time}.`,
+  `Servicio: ${appointment.service.name}.`,
+  `Proveedor: ${appointment.provider.name}.`,
+  `Mascota: ${appointment.pet.name}.`,
+  `Modalidad: ${modalityLabel(appointment.modality)}.`,
+].join(' ');
+
+function AppointmentCard({ appointment, headingRefs, readingId, setReadingId }) {
   const when = `${dateLabel.format(new Date(appointment.startsAt))} · ${timeLabel.format(new Date(appointment.startsAt))} – ${timeLabel.format(new Date(appointment.endsAt))}`;
+  const speechDate = dateLabel.format(new Date(appointment.startsAt));
+  const speechTime = `${timeLabel.format(new Date(appointment.startsAt))} a ${timeLabel.format(new Date(appointment.endsAt))}`;
   const cancelled = appointment.status === 'cancelled';
 
   return <li className="appointment-list-item">
@@ -48,6 +61,12 @@ function AppointmentCard({ appointment, headingRefs }) {
         <div><dt>Mascota</dt><dd>{appointment.pet.name}</dd></div>
         <div><dt>{appointment.modality === 'home' ? 'Domicilio' : 'Lugar'}</dt><dd>{appointment.place.address}</dd></div>
       </dl>
+      <ListenButton
+        text={appointmentSpeech(appointment, speechDate, speechTime)}
+        active={readingId === appointment.id}
+        onStart={() => setReadingId(appointment.id)}
+        onStop={() => setReadingId(null)}
+      />
     </article>
   </li>;
 }
@@ -59,7 +78,9 @@ export default function OwnerAppointments() {
   const [state, setState] = useState('loading');
   const [attempt, setAttempt] = useState(0);
   const [toastVisible, setToastVisible] = useState(false);
+  const [readingId, setReadingId] = useState(null);
   const headingRefs = useRef(new Map());
+
 
   useEffect(() => {
     let active = true;
@@ -110,13 +131,13 @@ export default function OwnerAppointments() {
         <section className="appointments-group" aria-labelledby="upcoming-title">
           <h2 id="upcoming-title">Próximas</h2>
           {upcoming.length
-            ? <ul className="appointment-list">{upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} headingRefs={headingRefs} />)}</ul>
+            ? <ul className="appointment-list">{upcoming.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} headingRefs={headingRefs} readingId={readingId} setReadingId={setReadingId} />)}</ul>
             : <p className="appointments-message">No tienes citas próximas.</p>}
         </section>
         <section className="appointments-group" aria-labelledby="previous-title">
           <h2 id="previous-title">Anteriores</h2>
           {previous.length
-            ? <ul className="appointment-list">{previous.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} headingRefs={headingRefs} />)}</ul>
+            ? <ul className="appointment-list">{previous.map((appointment) => <AppointmentCard key={appointment.id} appointment={appointment} headingRefs={headingRefs} readingId={readingId} setReadingId={setReadingId} />)}</ul>
             : <p className="appointments-message">No tienes citas anteriores.</p>}
         </section>
       </>}

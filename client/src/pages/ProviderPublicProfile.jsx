@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
+import ListenButton from '../voice/ListenButton.jsx';
 
 // SCR-UX-005 "Perfil del proveedor", owner view (FLOW-UX-009; US-018). Booking and ordering actions
 // belong to US-019 and US-027 and are not rendered here.
@@ -17,6 +18,14 @@ const priceLabel = new Intl.NumberFormat('es-CO', { style: 'currency', currency:
 // The phone only holds digits, spaces and "+"; the email is encoded so it cannot add mailto fields.
 const telHref = (phone) => `tel:${phone.replace(/\s+/g, '')}`;
 const mailHref = (email) => `mailto:${email.replace(/[?&#%]/g, encodeURIComponent)}`;
+
+const profileSpeech = (profile) => [
+  `Proveedor ${profile.name}.`,
+  providerTypeLabel(profile.type) + '.',
+  profile.address ? `Dirección: ${profile.address}.` : '',
+  profile.contactPhone ? `Teléfono: ${profile.contactPhone}.` : '',
+  `Tiene ${profile.services.length + profile.products.length} ofertas publicadas.`,
+].filter(Boolean).join(' ');
 
 function OfferingList({ items, kind }) {
   if (!items.length) {
@@ -72,6 +81,7 @@ export default function ProviderPublicProfile() {
       {state === 'ready' && <>
         <h1 id="public-profile-title">{profile.name}</h1>
         <p className="provider-type-badge">{providerTypeLabel(profile.type)}</p>
+        <ListenButton text={profileSpeech(profile)} />
 
         <section className="contact-card" aria-labelledby="contact-title">
           <h2 id="contact-title">Contacto</h2>

@@ -114,7 +114,9 @@ export function setVoiceReplies(on) {
   }
 }
 
-/** Formats prices for speech: "$ 45.000" is read as "45.000 pesos" (P04-ASM-032). */
+/** Formats symbols and prices for Spanish speech without changing the displayed text. */
 export function toSpeech(text) {
-  return text.replace(/\$\s?([\d.]+)/g, '$1 pesos');
+  return text
+    .replace(/#/g, 'numeral')
+    .replace(/\$\s?([\d.]+)/g, '$1 pesos');
 }

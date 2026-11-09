@@ -186,6 +186,7 @@ body {
 .assistant-composer .primary-button { margin-top: 0; }
 .assistant-composer .voice-status { position: absolute; bottom: calc(100% + var(--spacing-1)); left: 0; }
 .voice-heard { margin: var(--spacing-2) 0 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.listen-button { margin-top: var(--spacing-4); }
 .search-controls input { width: 100%; min-height: var(--size-control-height); padding: var(--spacing-3); border: var(--border-width-default) solid var(--color-border-input); border-radius: var(--radius-sm); font: inherit; }
 .search-controls input[aria-invalid="true"] { border-color: var(--color-error); }
 .search-submit { margin-top: 0; }
