@@ -86,12 +86,13 @@ export default function OwnerSearch() {
     try {
       const response = await apiFetch('/api/search/voice', { method: 'POST', body: { transcript, species } });
       if (requestId.current !== currentRequest) return;
-      setSpecies(response.species);
       if (response.outcome === 'empty_query') {
-        setVoiceAlert({ variant: 'info', text: MSG_VOICE_EMPTY }); // AC-120: no search was run
+        // AC-120: no search was run, so the filter and the results on screen stay as they were (F-01).
+        setVoiceAlert({ variant: 'info', text: MSG_VOICE_EMPTY });
         setSearchState(submittedQuery ? 'complete' : 'initial');
         return;
       }
+      setSpecies(response.species);
       setQuery(response.query); // AC-117 / AC-159: the text actually searched, editable
       setSubmittedQuery(response.query);
       setSubmittedSpecies(response.species);
@@ -134,6 +135,7 @@ export default function OwnerSearch() {
     }
     setQueryError('');
     setVoiceAlert(null);
+    setHeard(''); // the heard line describes only a voice search (F-02)
     setQuery(normalized);
     await runSearch(normalized, species);
   }

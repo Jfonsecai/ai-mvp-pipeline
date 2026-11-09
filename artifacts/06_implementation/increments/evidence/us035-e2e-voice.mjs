@@ -35,18 +35,22 @@ results.push(['AC-115/117', await p.inputValue('#offering-query'), await p.isChe
 await p.screenshot({ path: `${out}/us035-voice-search.png`, fullPage: true });
 await say(p, 'alimento para gato adulto');
 results.push(['AC-159', await p.inputValue('#offering-query'), await p.isChecked('input[value="cat"]'), await p.textContent('.search-summary')]);
+const before = await p.isChecked('input[value="cat"]');
+await say(p, 'busco vacunación para mi perro');
 await say(p, 'para mi gato');
 results.push(['AC-120', await p.textContent('.info-alert')]);
+results.push(['F-01 filter unchanged on empty query (still Perro)', await p.isChecked('input[value="dog"]')]);
 await say(p, '', 'no-speech');
 results.push(['AC-121', await p.textContent('.info-alert')]);
 await say(p, '', 'not-allowed');
 results.push(['AC-123', await p.textContent('.warning-alert')]);
 await p.screenshot({ path: `${out}/us035-voice-denied.png`, fullPage: true });
 // AC-118: edit the voice-filled text and search again by typing
-await p.fill('#offering-query', 'baño');
+await p.fill('#offering-query', 'vacunación'); // filter is Perro after F-01
 await p.click('button.search-submit');
 await p.waitForTimeout(600);
 results.push(['AC-118', await p.textContent('.search-summary')]);
+results.push(['F-02 heard line hidden after typed search', await p.locator('.voice-heard').count()]);
 const q = await page(false);
 results.push(['AC-122 no mic without voice support', await q.locator('button[aria-label="Buscar por voz"]').count()]);
 // Assistant hand-off ?q=&species=
