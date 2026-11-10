@@ -17,7 +17,12 @@ const schema = `vetcare_cancel_${randomUUID().replaceAll('-', '').slice(0, 12)}`
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const NOW = new Date('2026-10-12T12:00:00Z');
 const J = { origin: 'https://vetcare.test', 'content-type': 'application/json' };
-const tokens = { owner: 'cancel-test-owner', otherOwner: 'cancel-test-other-owner', provider: 'cancel-test-provider' };
+const tokens = {
+  owner: 'cancel-test-owner',
+  otherOwner: 'cancel-test-other-owner',
+  provider: 'cancel-test-provider',
+  otherProvider: 'cancel-test-other-provider',
+};
 let admin;
 let pool;
 let app;
@@ -25,6 +30,7 @@ let schemaCreated = false;
 let ownerId;
 let otherOwnerId;
 let providerId;
+let otherProviderId;
 let serviceId;
 let petId;
 let appointmentIds;
@@ -92,6 +98,18 @@ before(async () => {
     [providerId, `${randomUUID()}@example.test`],
   );
   await addSession(providerId, tokens.provider);
+  const otherProvider = await admin.query(
+    `INSERT INTO account (account_type, name, email, password_hash)
+     VALUES ('provider', 'Other Independent Vet', $1, 'test-hash') RETURNING id`,
+    [`${randomUUID()}@example.test`],
+  );
+  otherProviderId = otherProvider.rows[0].id;
+  await admin.query(
+    `INSERT INTO provider_profile (provider_id, provider_type, public_name, contact_email)
+     VALUES ($1, 'independent', 'Other Independent Vet', $2)`,
+    [otherProviderId, `${randomUUID()}@example.test`],
+  );
+  await addSession(otherProviderId, tokens.otherProvider);
   const service = await admin.query(
     `INSERT INTO offering (provider_id, provider_type, kind, name, price_cop, species, modality)
      VALUES ($1, 'independent', 'service', 'Consulta general', 50000, 'dog', 'home') RETURNING id`,
@@ -105,6 +123,7 @@ before(async () => {
 
   appointmentIds = {
     future: await addAppointment('2026-10-13T15:00:00Z'),
+    providerFuture: await addAppointment('2026-10-13T16:00:00Z'),
     past: await addAppointment('2026-10-12T11:00:00Z'),
     cancelled: await addAppointment('2026-10-13T17:00:00Z', 'cancelled'),
   };
@@ -132,6 +151,10 @@ after(async () => {
 const headers = (token) => ({ cookie: `vetcare_session=${token}`, ...J });
 const cancel = (token, appointmentId) => app.request(
   `/api/owner/appointments/${appointmentId}/cancel`,
+  { method: 'POST', headers: headers(token) },
+);
+const cancelAsProvider = (token, appointmentId) => app.request(
+  `/api/provider/appointments/${appointmentId}/cancel`,
   { method: 'POST', headers: headers(token) },
 );
 
@@ -178,4 +201,39 @@ test('appointment cancellation is restricted to the signed-in owner', { skip }, 
   const response = await cancel(tokens.otherOwner, appointmentIds.past);
   assert.equal(response.status, 404);
   assert.deepEqual(await response.json(), { code: 'NOT_FOUND' });
+});
+
+test('AC-065: provider cancellation is visible as cancelled to both appointment parties', { skip }, async () => {
+  const response = await cancelAsProvider(tokens.provider, appointmentIds.providerFuture);
+  assert.equal(response.status, 200);
+  const cancelled = await response.json();
+  assert.equal(cancelled.id, appointmentIds.providerFuture);
+  assert.equal(cancelled.status, 'cancelled');
+  assert.deepEqual(Object.keys(cancelled).sort(), [
+    'endsAt', 'id', 'modality', 'ownerName', 'pet', 'service', 'startsAt', 'status', 'upcoming',
+  ]);
+
+  const providerList = await app.request('/api/provider/appointments', { headers: headers(tokens.provider) });
+  const providerAppointment = (await providerList.json()).appointments.find(({ id }) => id === appointmentIds.providerFuture);
+  assert.equal(providerAppointment.status, 'cancelled');
+
+  const ownerList = await app.request('/api/owner/appointments', { headers: headers(tokens.owner) });
+  const ownerAppointment = (await ownerList.json()).appointments.find(({ id }) => id === appointmentIds.providerFuture);
+  assert.equal(ownerAppointment.status, 'cancelled');
+
+  const stored = await admin.query('SELECT status, cancelled_at FROM appointment WHERE id = $1', [appointmentIds.providerFuture]);
+  assert.equal(stored.rows[0].status, 'cancelled');
+  assert.equal(new Date(stored.rows[0].cancelled_at).toISOString(), NOW.toISOString());
+});
+
+test('AC-066 / EDGE-010: providers cannot cancel started, cancelled, or another provider appointment', { skip }, async () => {
+  for (const id of [appointmentIds.past, appointmentIds.cancelled, appointmentIds.providerFuture]) {
+    const response = await cancelAsProvider(tokens.provider, id);
+    assert.equal(response.status, 409);
+    assert.deepEqual(await response.json(), { code: 'APPOINTMENT_NOT_CHANGEABLE' });
+  }
+
+  const anotherProvider = await cancelAsProvider(tokens.otherProvider, appointmentIds.providerFuture);
+  assert.equal(anotherProvider.status, 404);
+  assert.deepEqual(await anotherProvider.json(), { code: 'NOT_FOUND' });
 });

@@ -52,7 +52,7 @@ const headers = (cookie) => ({ cookie: `vetcare_session=${cookie}`, origin: 'htt
 const valid = { serviceId: SERVICE_ID, petId: PROVIDER_ID, startsAt: '2026-10-12T11:00:00-05:00' };
 const post = (request, cookie, body) => request('/api/owner/appointments', { method: 'POST', headers: headers(cookie), body: typeof body === 'string' ? body : JSON.stringify(body) });
 
-test('the three booking operations need a session and the owner role (401 / 404), before anything else', async () => {
+test('owner booking operations need a session and the owner role (401 / 404), before anything else', async () => {
   const { request, db } = await openApp();
   for (const [method, path] of [
     ['GET', '/api/owner/pets'],
@@ -66,6 +66,24 @@ test('the three booking operations need a session and the owner role (401 / 404)
     assert.equal(provider.status, 404, `${method} ${path}`);
     assert.deepEqual(await provider.json(), { code: 'NOT_FOUND' });
   }
+  assert.deepEqual(db.queries, []);
+});
+
+test('US-025: provider cancellation requires a provider session and valid appointment id', async () => {
+  const { request, db } = await openApp();
+  const path = `/api/provider/appointments/${APPOINTMENT_ID}/cancel`;
+  const anonymous = await request(path, { method: 'POST', headers: headers('anonymous') });
+  assert.equal(anonymous.status, 401);
+  const owner = await request(path, { method: 'POST', headers: headers('owner') });
+  assert.equal(owner.status, 404);
+  assert.deepEqual(await owner.json(), { code: 'NOT_FOUND' });
+
+  const invalid = await request('/api/provider/appointments/not-a-uuid/cancel', {
+    method: 'POST',
+    headers: headers('provider'),
+  });
+  assert.equal(invalid.status, 404);
+  assert.deepEqual(await invalid.json(), { code: 'NOT_FOUND' });
   assert.deepEqual(db.queries, []);
 });
 
@@ -216,6 +234,9 @@ test('contract: the operations, parameters and request fields match API_SPEC', (
   const cancel = spec.paths['/api/owner/appointments/{appointmentId}/cancel'];
   assert.ok(cancel.post);
   assert.equal(cancel.post.operationId, 'cancelOwnerAppointment');
+  const providerCancel = spec.paths['/api/provider/appointments/{appointmentId}/cancel'];
+  assert.ok(providerCancel.post);
+  assert.equal(providerCancel.post.operationId, 'cancelProviderAppointment');
   assert.deepEqual(Object.keys(spec.components.schemas.OwnerAppointment.properties).sort(),
     ['endsAt', 'id', 'modality', 'pet', 'place', 'provider', 'service', 'startsAt', 'status', 'upcoming']);
 });

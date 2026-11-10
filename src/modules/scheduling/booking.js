@@ -11,7 +11,7 @@ import { getServiceFacts } from '../catalog/offerings.js';
 import { getOwnerName } from '../identity/accounts.js';
 import { getOwnerPet, listOwnerPets } from '../pets/owner-pet.js';
 import { computeWeekSlots, isSlotOffered } from './slots.js';
-import { cancelOwnerAppointment } from './cancellation.js';
+import { cancelOwnerAppointment, cancelProviderAppointment } from './cancellation.js';
 
 const BOOKING_FIELDS = new Set(['serviceId', 'petId', 'startsAt', 'modality', 'visitAddress']);
 const RESCHEDULE_FIELDS = new Set(['startsAt']);
@@ -503,6 +503,20 @@ export function createBookingRouter({ db, guard, clock }) {
         now: clock.now(),
       }),
     });
+  });
+
+  router.post('/provider/appointments/:appointmentId/cancel', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const providerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await cancelProviderAppointment(db, {
+      providerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      now,
+    });
+    const appointment = (await listProviderAppointments(db, { providerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Cancelled appointment ${id} is missing from the provider's appointment list`);
+    res.json(appointment);
   });
 
   router.post('/owner/appointments', guard({ role: 'owner' }), async (req, res) => {

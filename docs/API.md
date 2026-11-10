@@ -25,7 +25,8 @@ La API HTTP de Express se monta bajo `/api`. Métodos, paths y guards se verific
 | GET | `/api/services/:serviceId/booking-context` | Dueño autenticado. |
 | GET, POST | `/api/owner/appointments` | Dueño autenticado. |
 | GET | `/api/provider/appointments` | Proveedor autenticado. |
+| POST | `/api/provider/appointments/:appointmentId/cancel` | Proveedor autenticado; solo su cita futura programada. Conserva el registro como cancelado y lo devuelve actualizado; el dueño lo ve como cancelado en sus citas. |
 
-No hay endpoints registrados para pedidos, ni para cancelación o reprogramación manual. Cambiar el horario del proveedor puede producir cancelaciones automáticas según la lógica de reservas; véase [limitaciones](KNOWN_LIMITATIONS.md).
+No hay endpoints registrados para pedidos ni para reprogramación manual del proveedor. Cambiar el horario del proveedor puede producir cancelaciones automáticas según la lógica de reservas; véase [limitaciones](KNOWN_LIMITATIONS.md).
 
 Los endpoints de salud no aparecen en el contrato de producto P05; se documentan como comportamiento operativo añadido (P06 IMPLEMENTATION_LOG, DEV-001), no como capacidades MVP. API y página técnica de estado se tratan como comportamiento no especificado en artefactos de producto. Las solicitudes mutantes están sujetas a protección de origen; no inferir que “público” implica ausencia de ese control.
