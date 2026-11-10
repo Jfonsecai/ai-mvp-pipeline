@@ -17,6 +17,7 @@ La API HTTP de Express se monta bajo `/api`. Métodos, paths y guards se verific
 | GET | `/api/provider/offerings` | Proveedor autenticado. |
 | POST | `/api/provider/services` | Proveedor autenticado. |
 | PUT | `/api/provider/services/:offeringId` | Proveedor autenticado; solo sus servicios activos (otro proveedor, un producto o un id inexistente devuelven `NOT_FOUND`). |
+| DELETE | `/api/provider/offerings/:offeringId` | Proveedor autenticado; elimina (de forma lógica) uno de sus servicios activos y cancela sus citas próximas; responde `{ removed: true, cancelledAppointments }`. Otro proveedor, un producto (aún no disponible), un servicio ya eliminado o un id inexistente devuelven `NOT_FOUND`. |
 | POST | `/api/provider/products` | Proveedor autenticado. |
 | GET | `/api/search` | Dueño autenticado. |
 | GET | `/api/providers/:providerId` | Dueño autenticado. |
