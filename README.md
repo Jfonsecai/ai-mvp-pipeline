@@ -44,7 +44,7 @@ Directorios de primer nivel relevantes: `.github/`, `artifacts/`, `client/`, `mi
 
 ## Pruebas
 
-Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `TEST_DATABASE_URL`, y una ejecución con omisiones no es una ejecución completa. Hay además una suite de QA (`artifacts/07_qa/test_suites/`). Con una base desechable configurada, el 2026-10-14 pasaron 175 de 175 pruebas del proyecto y 143 de 143 de la suite de QA; la integración continua de GitHub Actions ejecuta ambas en cada cambio (evidencia en `artifacts/08_deployment/`). Consulte [Testing](docs/TESTING.md).
+Ejecute `npm test`. Las pruebas de base de datos se omiten si no se configura `TEST_DATABASE_URL`, y una ejecución con omisiones no es una ejecución completa. La interfaz también tiene pruebas de navegador con `npm run test:e2e`, Chromium y una base PostgreSQL desechable; consulte [Testing](docs/TESTING.md) para configurarlas. GitHub Actions ejecuta las suites de proyecto, navegador y QA. En la validación local de US-023 del 2026-11-10 pasaron 293/293 pruebas del proyecto y 3/3 flujos de navegador; la evidencia está en `artifacts/06_implementation/increments/US-023_IMPLEMENTATION_VALIDATION_V2.md`.
 
 ## Índice de documentación
 

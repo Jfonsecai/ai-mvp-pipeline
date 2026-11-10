@@ -76,5 +76,11 @@ jobs:
       - name: Tests (project suite)
         run: npm test
 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Tests (browser E2E)
+        run: npm run test:e2e
+
       - name: Tests (P07 QA suite)
         run: node --test "artifacts/07_qa/test_suites/**/*.test.js"

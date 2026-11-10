@@ -98,6 +98,13 @@ function AppointmentCard({ appointment, headingRefs, readingId, setReadingId, on
         onStop={() => setReadingId(null)}
       />
       {appointment.upcoming && !cancelled && <div className="appointment-card-actions">
+        <Link
+          className="link-button"
+          to={`/owner/appointments/${appointment.id}/reschedule`}
+          aria-label={`Reprogramar cita: ${appointment.service.name}`}
+        >
+          Reprogramar
+        </Link>
         <button
           className="link-button danger-link"
           type="button"
@@ -114,6 +121,7 @@ function AppointmentCard({ appointment, headingRefs, readingId, setReadingId, on
 export default function OwnerAppointments() {
   const location = useLocation();
   const justBookedId = location.state?.justBookedId;
+  const justRescheduledId = location.state?.justRescheduledId;
   const [appointments, setAppointments] = useState([]);
   const [state, setState] = useState('loading');
   const [attempt, setAttempt] = useState(0);
@@ -124,6 +132,7 @@ export default function OwnerAppointments() {
   const [cancelDialogError, setCancelDialogError] = useState('');
   const [cancelError, setCancelError] = useState('');
   const [cancelToastVisible, setCancelToastVisible] = useState(false);
+  const [rescheduleToastVisible, setRescheduleToastVisible] = useState(false);
   const headingRefs = useRef(new Map());
   const openerRef = useRef(null);
   const cancelledAppointmentIdRef = useRef(null);
@@ -163,6 +172,19 @@ export default function OwnerAppointments() {
     const timeout = window.setTimeout(() => setCancelToastVisible(false), 5_000);
     return () => window.clearTimeout(timeout);
   }, [cancelToastVisible]);
+
+  useEffect(() => {
+    if (state !== 'ready' || !justRescheduledId || !appointments.some((appointment) => appointment.id === justRescheduledId)) return undefined;
+    setRescheduleToastVisible(true);
+    const frame = window.requestAnimationFrame(() => headingRefs.current.get(justRescheduledId)?.focus());
+    return () => window.cancelAnimationFrame(frame);
+  }, [state, justRescheduledId, appointments]);
+
+  useEffect(() => {
+    if (!rescheduleToastVisible) return undefined;
+    const timeout = window.setTimeout(() => setRescheduleToastVisible(false), 5_000);
+    return () => window.clearTimeout(timeout);
+  }, [rescheduleToastVisible]);
 
   useEffect(() => {
     if (cancelling || !openerRef.current) return;
@@ -243,6 +265,7 @@ export default function OwnerAppointments() {
       {state === 'ready' && appointments.length > 0 && <>
         {toastVisible && justBooked && <div className="appointment-toast success-alert" role="status">Cita agendada: {justBooked.service.name}</div>}
         {cancelToastVisible && <div className="appointment-toast success-alert" role="status">Cita cancelada.</div>}
+        {rescheduleToastVisible && <div className="appointment-toast success-alert" role="status">Cita reprogramada.</div>}
         <section className="appointments-group" aria-labelledby="upcoming-title">
           <h2 id="upcoming-title">Próximas</h2>
           {upcoming.length

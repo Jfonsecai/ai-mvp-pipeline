@@ -9,6 +9,7 @@ import OwnerSearch from './pages/OwnerSearch.jsx';
 import OwnerAssistant from './pages/OwnerAssistant.jsx';
 import OwnerPets from './pages/OwnerPets.jsx';
 import OwnerAppointments from './pages/OwnerAppointments.jsx';
+import RescheduleAppointment from './pages/RescheduleAppointment.jsx';
 import ProviderPublicProfile from './pages/ProviderPublicProfile.jsx';
 import BookAppointment from './pages/BookAppointment.jsx';
 import SignIn from './pages/SignIn.jsx';
@@ -143,6 +144,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerSearch /></RolePage>} />
     <Route path="/owner/assistant" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAssistant /></RolePage>} />
     <Route path="/owner/appointments" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAppointments /></RolePage>} />
+    <Route path="/owner/appointments/:appointmentId/reschedule" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><RescheduleAppointment /></RolePage>} />
     <Route path="/owner/pets" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerPets /></RolePage>} />
     <Route path="/owner/providers/:providerId" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><ProviderPublicProfile /></RolePage>} />
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />
