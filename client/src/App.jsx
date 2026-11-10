@@ -153,6 +153,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
     <Route path="/provider/services/:offeringId/edit" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
     <Route path="/provider/products/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishProduct /></RolePage>} />
+    <Route path="/provider/products/:offeringId/edit" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishProduct /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />
   </Routes>;

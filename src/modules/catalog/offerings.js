@@ -255,6 +255,30 @@ export function createCatalogRouter({ db, guard, clock }) {
     res.json(catalogService(saved));
   });
 
+  // IF-036 updateProduct (US-014): replaces name, price and species of one of the provider's own active
+  // products with the publish validator (BR-006, BR-032). Availability is not part of the body and is
+  // never changed here (API_SPEC_V2). A product of another provider, a service, a removed offering and a
+  // malformed id are all the same NOT_FOUND (AC-036, CR-006). One conditional UPDATE is atomic, so no
+  // transaction or provider lock is needed: no booking-like operation depends on a product's details yet.
+  router.put('/provider/products/:offeringId', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.offeringId)) throw new Outcome('NOT_FOUND');
+    const providerId = req.session.accountId;
+    await providerTypeFor(db, providerId);
+    const validation = validatePublishProduct(req.body);
+    if (validation.fields) throw validationError(validation.fields);
+
+    const { name, priceCop, species } = validation.value;
+    const result = await db.query(
+      `UPDATE offering
+          SET name = $3, price_cop = $4, species = $5
+        WHERE id = $1 AND provider_id = $2 AND kind = 'product' AND removed_at IS NULL
+        RETURNING id, name, price_cop, species, available`,
+      [req.params.offeringId.toLowerCase(), providerId, name, priceCop, species],
+    );
+    if (!result.rows.length) throw new Outcome('NOT_FOUND');
+    res.json(catalogProduct(result.rows[0]));
+  });
+
   // IF-037 removeOffering (US-012, services only in this increment): logical removal plus cancellation
   // of the service's upcoming appointments, answering the RemovalResult of API_SPEC_V2. Products
   // (US-015) are not removable yet and answer NOT_FOUND like any other non-removable id.

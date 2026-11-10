@@ -50,6 +50,9 @@ function OfferingList({ items, kind, onRemove }) {
         <Link className="button-link button-link-secondary result-action" to={`/provider/services/${item.id}/edit`} aria-label={`Editar: ${item.name}`}>Editar</Link>
         <button className="link-button danger-link result-action" type="button" onClick={(event) => onRemove(item, event.currentTarget)} aria-label={`Eliminar: ${item.name}`}>Eliminar</button>
       </div>}
+      {kind === 'product' && <div className="catalog-item-actions">
+        <Link className="button-link button-link-secondary result-action" to={`/provider/products/${item.id}/edit`} aria-label={`Editar: ${item.name}`}>Editar</Link>
+      </div>}
     </li>)}
   </ul>;
 }
