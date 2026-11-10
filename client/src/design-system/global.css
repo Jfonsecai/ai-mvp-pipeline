@@ -151,6 +151,7 @@ body {
 .catalog-card .form-alert { display: grid; gap: var(--spacing-2); }
 .catalog-item-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-4); }
 .danger-link { color: var(--color-error); }
+.catalog-item-actions .link-button { min-height: var(--size-control-height); }
 .danger-button { min-height: var(--size-control-height); padding: var(--spacing-2) var(--spacing-4); border: 0; border-radius: var(--radius-md); background: var(--color-error); color: var(--color-on-primary); font: inherit; font-weight: var(--font-weight-semibold); cursor: pointer; }
 .danger-button:disabled, .confirm-dialog .button-secondary:disabled { opacity: 0.7; cursor: wait; }
 .confirm-dialog { width: min(calc(100% - var(--spacing-8)), var(--size-form-max)); padding: var(--spacing-6); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-lg); background: var(--color-bg-surface); color: var(--color-text-primary); box-shadow: var(--shadow-md); }

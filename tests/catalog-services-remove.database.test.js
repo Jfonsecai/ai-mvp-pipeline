@@ -213,7 +213,7 @@ test('cancelling frees the slot of an independent veterinarian (BR-013): another
   assert.equal(free.status, 201, 'the cancelled appointment no longer holds the slot');
 });
 
-test('ownership (NFR-002, CR-006): another provider, an owner, anonymous, a product, an unknown, a malformed or an already removed id never remove or cancel anything', { skip }, async () => {
+test('ownership (NFR-002, CR-006): another provider, an owner, anonymous, an unknown, a malformed or an already removed id never remove or cancel anything', { skip }, async () => {
   const service = await publish(world.clinic, dogClinic('Solo mía'));
   const product = await (await app.request('/api/provider/products', { method: 'POST', headers: { cookie: world.clinic.cookie, ...J }, body: JSON.stringify({ name: 'Alimento', priceCop: 9000, species: 'dog' }) })).json();
   const id = await bookOk(world.owner, service.id, at(MONDAY, 16));
@@ -223,7 +223,6 @@ test('ownership (NFR-002, CR-006): another provider, an owner, anonymous, a prod
   for (const response of [
     await remove(world.otherClinic, service.id),
     await remove(world.vet, service.id),
-    await remove(world.clinic, product.id),
     await remove(world.clinic, randomUUID()),
     await remove(world.clinic, world.owner.id),
     await remove(world.clinic, world.clinic.id),

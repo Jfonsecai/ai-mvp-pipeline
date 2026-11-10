@@ -13,7 +13,7 @@
 
 ## 1. Document Metadata
 
-- **Version:** 4.1 (4.0 + corrections of the P02 validation findings)
+- **Version:** 4.2 (4.1 + change request CR-P06-001; 4.0 + corrections of the P02 validation findings = 4.1)
 - **Stage:** P02 — Requirements Engineering
 - **Status:** READY_WITH_ASSUMPTIONS
 - **Generated From:** `REQUIREMENTS_V3.md` (REQUIREMENTS v3.0, kept in full), `product_backlog_requirements_v3.json` (P02 backlog v3.0), `PRODUCT_VISION_V4.md` (P01 v4.0, base vision) and `PRODUCT_VISION_V5_ITERATION2.md` (P01 v5.0 iteration 2 addendum, Change Request CR-027, team decisions TD-21 to TD-30).
@@ -968,11 +968,11 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - AC-037:
   - Given a signed-in provider with a published product
   - When they remove it
-  - Then the product no longer appears in their catalog, on their profile or in search results, and it cannot be ordered
+  - Then the product no longer appears in their catalog, on their profile or in search results
 - AC-085:
-  - Given a removed product with orders that were placed before its removal
-  - When the owner or the provider opens their orders
-  - Then those orders keep their current status (P02-ASM-012)
+  - Given a published product with orders that were placed before its removal
+  - When the provider removes the product
+  - Then those orders are not changed and keep their current status (P02-ASM-012)
 
 #### Business Rules
 
@@ -1478,7 +1478,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
   - When they order a product
   - Then the order is placed (pets are required only to book services: P02-ASM-009)
 - AC-089:
-  - Given a product marked as not available
+  - Given a product marked as not available or removed
   - When a pet owner tries to order it
   - Then the order is not allowed
 - AC-110:
@@ -1517,7 +1517,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - AC-072:
   - Given a provider with orders placed for its products
   - When they open their orders
-  - Then they see each order with the product, the quantity, the owner's name, the delivery address and the status
+  - Then they see each order with the product, the quantity, the owner's name, the delivery address and the status, including orders for products that were removed after the order was placed (EDGE-019, P02-ASM-012)
 - AC-073:
   - Given a signed-in provider
   - When they open their orders
@@ -1554,7 +1554,7 @@ Priority is not assigned in P02 (P03 — Planning). The **Traceability** column 
 - AC-090:
   - Given a signed-in pet owner with orders
   - When they open their orders
-  - Then each order shows the product, the quantity, the provider, the delivery address and the status
+  - Then each order shows the product, the quantity, the provider, the delivery address and the status, including orders for products that were removed after the order was placed (EDGE-019, P02-ASM-012)
 - AC-091:
   - Given two different pet owners
   - When one of them opens their orders
@@ -2438,6 +2438,16 @@ v4.0 keeps every v3.0 requirement and adds the iteration 2 voice capabilities (E
 **Still open, with no effect on the requirements:** P01-QUESTION-033 and P01-ASSUMPTION-002 (as in v3.0).
 
 **Baseline:** subject to the P02 validation, v4.0 is the input of P03 for iteration 2. P03 should plan US-035 to US-041 and the 12 promoted stories, keep US-042 conditional and US-027 to US-033 deferred (§2.4, TD-29, TD-30).
+
+### Change Log (v4.1 → v4.2)
+
+| Change | Source |
+|---|---|
+| AC-037 (US-015) no longer ends with "and it cannot be ordered"; AC-085 (US-015) is stated at the data level (the provider removes the product; its earlier orders are not changed). | CR-P06-001 (`artifacts/03_planning/CHANGE_REQUEST_CR-P06-001.md`); P06.4 of US-015, finding F-01 |
+| AC-089 (US-027) covers a product that is not available **or removed** (BR-030). | CR-P06-001 |
+| AC-072 (US-028) and AC-090 (US-029) include the orders of products removed after the order was placed (EDGE-019, P02-ASM-012). | CR-P06-001 |
+
+No ID was created, renamed or deleted; the stories US-027 to US-029 stay DEFERRED (TD-29).
 
 ### Change Log (v4.0 → v4.1)
 

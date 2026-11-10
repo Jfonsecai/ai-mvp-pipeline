@@ -5,7 +5,7 @@ import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse } from 'yaml';
 import { createApp } from '../src/application.js';
-import { createCatalogRouter, removeService } from '../src/modules/catalog/offerings.js';
+import { createCatalogRouter, removeOffering } from '../src/modules/catalog/offerings.js';
 import { cancelUpcomingServiceAppointments } from '../src/modules/scheduling/cancellation.js';
 import { API_SPEC_PATH, fakeSessionDb, fixedClock, read, startApp, testConfig } from './helpers.js';
 
@@ -42,10 +42,10 @@ function makeDb({ upcoming = 2 } = {}) {
       state.log.push('lock');
       return { rows: params[0] === CLINIC_ID || params[0] === OTHER_CLINIC_ID ? [{ provider_id: params[0] }] : [] };
     }
-    if (/^SELECT id FROM offering WHERE id = \$1 AND provider_id = \$2 AND kind = 'service' AND removed_at IS NULL FOR UPDATE$/.test(sql)) {
+    if (/^SELECT id, kind FROM offering WHERE id = \$1 AND provider_id = \$2 AND removed_at IS NULL FOR UPDATE$/.test(sql)) {
       state.log.push('select-service');
       const row = offerings.get(params[0]);
-      return { rows: row && row.provider_id === params[1] && row.kind === 'service' && !row.removed_at ? [{ id: row.id }] : [] };
+      return { rows: row && row.provider_id === params[1] && !row.removed_at ? [{ id: row.id, kind: row.kind }] : [] };
     }
     if (/^UPDATE offering SET removed_at = \$2 WHERE id = \$1$/.test(sql)) {
       state.log.push('mark-removed');
@@ -116,9 +116,9 @@ test('the id is lower-cased and the provider of the session, never the request, 
   assert.equal(db.state.cancellations[0][0], OWN_SERVICE);
 });
 
-test('AC-032 ownership: another provider\'s service, a product, an unknown or an already removed service are one NOT_FOUND and nothing is written', async () => {
+test('AC-032 ownership: another provider\'s service, an unknown or an already removed service are one NOT_FOUND and nothing is written', async () => {
   const { request, db } = await openApp();
-  for (const id of [OTHER_SERVICE, OWN_PRODUCT, 'ffffffff-ffff-4fff-8fff-ffffffffffff']) {
+  for (const id of [OTHER_SERVICE, 'ffffffff-ffff-4fff-8fff-ffffffffffff']) {
     const response = await del(request, 'clinic', id);
     assert.equal(response.status, 404, id);
     assert.deepEqual(await response.json(), { code: 'NOT_FOUND' });
@@ -127,10 +127,10 @@ test('AC-032 ownership: another provider\'s service, a product, an unknown or an
   const again = await del(request, 'clinic', OWN_SERVICE);
   assert.equal(again.status, 404, 'removing twice is NOT_FOUND, never a second cancellation');
   assert.equal(db.offerings.get(OTHER_SERVICE).removed_at, null);
-  assert.equal(db.offerings.get(OWN_PRODUCT).removed_at, null, 'products are US-015, not removable here');
+  assert.equal(db.offerings.get(OWN_PRODUCT).removed_at, null, 'a service removal never touches the provider\'s product');
   assert.equal(db.state.log.filter((entry) => entry === 'mark-removed').length, 1);
   assert.equal(db.state.log.filter((entry) => entry === 'cancel').length, 1);
-  assert.equal(db.state.log.filter((entry) => entry === 'ROLLBACK').length, 4, 'every refusal rolls its transaction back');
+  assert.equal(db.state.log.filter((entry) => entry === 'ROLLBACK').length, 3, 'every refusal rolls its transaction back');
 });
 
 test('role and session: anonymous 401, owner 404; malformed ids 404 without any query', async () => {
@@ -168,7 +168,7 @@ test('a failure while cancelling rolls the whole removal back (no half-removed s
     };
     return client;
   };
-  await assert.rejects(removeService(db, { providerId: CLINIC_ID, serviceId: OWN_SERVICE, now: NOW }), /boom/);
+  await assert.rejects(removeOffering(db, { providerId: CLINIC_ID, offeringId: OWN_SERVICE, now: NOW }), /boom/);
   assert.equal(db.state.log.at(-1), 'ROLLBACK');
   assert.equal(db.state.log.includes('COMMIT'), false);
 });

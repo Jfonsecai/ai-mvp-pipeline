@@ -1,12 +1,13 @@
 {
   "backlog_metadata": {
-    "version": "3.1",
+    "version": "3.2",
     "previous_version": "2.0 (product_backlog_priori_v2.json, iteration 1)",
     "stage": "P03",
     "status": "READY_WITH_ASSUMPTIONS",
-    "source": "artifacts/02_requirements/product_backlog_requirements_v4.json v4.1 (P02)",
+    "source": "artifacts/02_requirements/product_backlog_requirements_v4.json v4.2 (P02)",
     "source_version": "P02 v4.1 + CR-027 + team decisions TD-21 to TD-33 (2026-11-09)",
     "generated": "2026-11-09",
+    "revision_note": "v3.2 applies CR-P06-001 (artifacts/03_planning/CHANGE_REQUEST_CR-P06-001.md, 2026-11-10): the order-related clauses of AC-037 and AC-085 (US-015) move to AC-089, AC-072 and AC-090 (US-027, US-028, US-029, still DEFERRED).",
     "item_status_values": [
       "DONE",
       "PLANNED",
@@ -1294,13 +1295,13 @@
           "id": "AC-037",
           "given": "a signed-in provider with a published product",
           "when": "they remove it",
-          "then": "the product no longer appears in their catalog, on their profile or in search results, and it cannot be ordered"
+          "then": "the product no longer appears in their catalog, on their profile or in search results"
         },
         {
           "id": "AC-085",
-          "given": "a removed product with orders that were placed before its removal",
-          "when": "the owner or the provider opens their orders",
-          "then": "those orders keep their current status (P02-ASM-012)"
+          "given": "a published product with orders that were placed before its removal",
+          "when": "the provider removes the product",
+          "then": "those orders are not changed and keep their current status (P02-ASM-012)"
         }
       ],
       "business_rule_ids": [
@@ -2148,7 +2149,7 @@
         },
         {
           "id": "AC-089",
-          "given": "a product marked as not available",
+          "given": "a product marked as not available or removed",
           "when": "a pet owner tries to order it",
           "then": "the order is not allowed"
         },
@@ -2218,7 +2219,7 @@
           "id": "AC-072",
           "given": "a provider with orders placed for its products",
           "when": "they open their orders",
-          "then": "they see each order with the product, the quantity, the owner's name, the delivery address and the status"
+          "then": "they see each order with the product, the quantity, the owner's name, the delivery address and the status, including orders for products that were removed after the order was placed (EDGE-019, P02-ASM-012)"
         },
         {
           "id": "AC-073",
@@ -2275,7 +2276,7 @@
           "id": "AC-090",
           "given": "a signed-in pet owner with orders",
           "when": "they open their orders",
-          "then": "each order shows the product, the quantity, the provider, the delivery address and the status"
+          "then": "each order shows the product, the quantity, the provider, the delivery address and the status, including orders for products that were removed after the order was placed (EDGE-019, P02-ASM-012)"
         },
         {
           "id": "AC-091",

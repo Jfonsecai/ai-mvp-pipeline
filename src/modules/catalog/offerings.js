@@ -182,23 +182,27 @@ export async function listProvidersWithHomeService(db) {
 }
 
 /**
- * IF-037 removeOffering for a service (US-012): in one transaction, under the provider lock (IF-024),
- * marks the provider's own active service as removed and cancels its upcoming appointments (IF-044).
- * A service of another provider, a product (US-015 is a separate story), an already removed
- * service and an unknown id are all NOT_FOUND (CR-006). `db` is a pool.
+ * IF-037 removeOffering (US-012 services, US-015 products): in one transaction, under the provider lock
+ * (IF-024), marks the provider's own active offering as removed. For a service it also cancels the upcoming
+ * appointments (IF-044); for a product `cancelledAppointments` is 0 and nothing else is touched: orders
+ * already placed keep their status (AC-085, EDGE-019, P02-ASM-012), which is why removal is logical
+ * (`removed_at`) and the row stays referenced by `product_order` (ADR-020). Another provider's offering,
+ * an unknown id and an already removed offering are all NOT_FOUND (CR-006). `db` is a pool.
  */
-export async function removeService(db, { providerId, serviceId, now }) {
+export async function removeOffering(db, { providerId, offeringId, now }) {
   return withTransaction(db, async (client) => {
     if (!(await lockProvider(client, providerId))) throw new Outcome('NOT_FOUND');
-    const service = await client.query(
-      `SELECT id FROM offering
-        WHERE id = $1 AND provider_id = $2 AND kind = 'service' AND removed_at IS NULL
+    const offering = await client.query(
+      `SELECT id, kind FROM offering
+        WHERE id = $1 AND provider_id = $2 AND removed_at IS NULL
           FOR UPDATE`,
-      [serviceId, providerId],
+      [offeringId, providerId],
     );
-    if (!service.rows.length) throw new Outcome('NOT_FOUND');
-    await client.query('UPDATE offering SET removed_at = $2 WHERE id = $1', [serviceId, now]);
-    const cancelledAppointments = await cancelUpcomingServiceAppointments(client, { serviceId, now });
+    if (!offering.rows.length) throw new Outcome('NOT_FOUND');
+    await client.query('UPDATE offering SET removed_at = $2 WHERE id = $1', [offeringId, now]);
+    const cancelledAppointments = offering.rows[0].kind === 'service'
+      ? await cancelUpcomingServiceAppointments(client, { serviceId: offeringId, now })
+      : 0;
     return { removed: true, cancelledAppointments };
   });
 }
@@ -279,14 +283,13 @@ export function createCatalogRouter({ db, guard, clock }) {
     res.json(catalogProduct(result.rows[0]));
   });
 
-  // IF-037 removeOffering (US-012, services only in this increment): logical removal plus cancellation
-  // of the service's upcoming appointments, answering the RemovalResult of API_SPEC_V2. Products
-  // (US-015) are not removable yet and answer NOT_FOUND like any other non-removable id.
+  // IF-037 removeOffering (US-012 services, US-015 products): logical removal; a removed service's upcoming
+  // appointments are cancelled. Answers the RemovalResult of API_SPEC_V2.
   router.delete('/provider/offerings/:offeringId', guard({ role: 'provider' }), async (req, res) => {
     if (!isUuid(req.params.offeringId)) throw new Outcome('NOT_FOUND');
-    res.json(await removeService(db, {
+    res.json(await removeOffering(db, {
       providerId: req.session.accountId,
-      serviceId: req.params.offeringId.toLowerCase(),
+      offeringId: req.params.offeringId.toLowerCase(),
       now: clock.now(),
     }));
   });
