@@ -210,7 +210,7 @@ test('AC-065: provider cancellation is visible as cancelled to both appointment 
   assert.equal(cancelled.id, appointmentIds.providerFuture);
   assert.equal(cancelled.status, 'cancelled');
   assert.deepEqual(Object.keys(cancelled).sort(), [
-    'endsAt', 'id', 'modality', 'ownerName', 'pet', 'service', 'startsAt', 'status', 'upcoming',
+    'endsAt', 'id', 'modality', 'ownerName', 'pet', 'service', 'startsAt', 'status', 'upcoming', 'visitAddress',
   ]);
 
   const providerList = await app.request('/api/provider/appointments', { headers: headers(tokens.provider) });
