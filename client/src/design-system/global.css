@@ -230,6 +230,7 @@ body {
 .appointment-card { height: 100%; padding: var(--spacing-4); border: var(--border-width-default) solid var(--color-border-subtle); border-radius: var(--radius-lg); background: var(--color-bg-surface); box-shadow: var(--shadow-sm); }
 .appointment-card h3 { margin: 0 0 var(--spacing-3); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
 .appointment-card-cancelled h3 { color: var(--color-text-secondary); }
+.appointment-card-actions { display: flex; margin-top: var(--spacing-4); }
 .appointment-badges { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin-bottom: var(--spacing-3); }
 .appointment-badge { display: inline-flex; align-items: center; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--radius-full); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
 .appointment-badge-success { background: var(--color-badge-success-bg); color: var(--color-badge-success-text); }

@@ -11,6 +11,7 @@ import { getServiceFacts } from '../catalog/offerings.js';
 import { getOwnerName } from '../identity/accounts.js';
 import { getOwnerPet, listOwnerPets } from '../pets/owner-pet.js';
 import { computeWeekSlots, isSlotOffered } from './slots.js';
+import { cancelOwnerAppointment } from './cancellation.js';
 
 const BOOKING_FIELDS = new Set(['serviceId', 'petId', 'startsAt', 'modality', 'visitAddress']);
 // ISO 8601 with an offset. Ranges are checked here and the date part with isLocalDate, because
@@ -312,6 +313,20 @@ export function createBookingRouter({ db, guard, clock }) {
         now: clock.now(),
       }),
     });
+  });
+
+  router.post('/owner/appointments/:appointmentId/cancel', guard({ role: 'owner' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const ownerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await cancelOwnerAppointment(db, {
+      ownerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      now,
+    });
+    const appointment = (await listOwnerAppointments(db, { ownerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Cancelled appointment ${id} is missing from the owner's appointment list`);
+    res.json(appointment);
   });
 
   router.get('/provider/appointments', guard({ role: 'provider' }), async (req, res) => {

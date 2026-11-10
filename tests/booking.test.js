@@ -11,6 +11,7 @@ import { API_SPEC_PATH, fakeSessionDb, fixedClock, read, startApp, testConfig } 
 const OWNER_ID = '33333333-3333-4333-8333-333333333333';
 const PROVIDER_ID = '11111111-1111-4111-8111-111111111111';
 const SERVICE_ID = '22222222-2222-4222-8222-222222222222';
+const APPOINTMENT_ID = '44444444-4444-4444-8444-444444444444';
 const session = (accountId, accountType) => ({
   account_id: accountId,
   account_type: accountType,
@@ -53,13 +54,29 @@ const post = (request, cookie, body) => request('/api/owner/appointments', { met
 
 test('the three booking operations need a session and the owner role (401 / 404), before anything else', async () => {
   const { request, db } = await openApp();
-  for (const [method, path] of [['GET', '/api/owner/pets'], ['GET', `/api/services/${SERVICE_ID}/booking-context`], ['POST', '/api/owner/appointments']]) {
+  for (const [method, path] of [
+    ['GET', '/api/owner/pets'],
+    ['GET', `/api/services/${SERVICE_ID}/booking-context`],
+    ['POST', '/api/owner/appointments'],
+    ['POST', `/api/owner/appointments/${APPOINTMENT_ID}/cancel`],
+  ]) {
     const anonymous = await request(path, { method, headers: { origin: 'https://vetcare.test', 'content-type': 'application/json' }, ...(method === 'POST' ? { body: JSON.stringify(valid) } : {}) });
     assert.equal(anonymous.status, 401, `${method} ${path}`);
     const provider = await request(path, { method, headers: headers('provider'), ...(method === 'POST' ? { body: JSON.stringify(valid) } : {}) });
     assert.equal(provider.status, 404, `${method} ${path}`);
     assert.deepEqual(await provider.json(), { code: 'NOT_FOUND' });
   }
+  assert.deepEqual(db.queries, []);
+});
+
+test('US-022: invalid appointment ids are NOT_FOUND before a business query', async () => {
+  const { request, db } = await openApp();
+  const response = await request('/api/owner/appointments/not-a-uuid/cancel', {
+    method: 'POST',
+    headers: headers('owner'),
+  });
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { code: 'NOT_FOUND' });
   assert.deepEqual(db.queries, []);
 });
 
@@ -134,4 +151,9 @@ test('contract: the operations, parameters and request fields match API_SPEC', (
     ['endsAt', 'id', 'modality', 'pet', 'place', 'provider', 'service', 'startsAt', 'status', 'upcoming']);
   assert.deepEqual(Object.keys(spec.components.schemas.BookingContext.properties).sort(),
     ['days', 'eligiblePetIds', 'now', 'ownerHasPets', 'providerHasHours', 'service', 'weekStart']);
+  const cancel = spec.paths['/api/owner/appointments/{appointmentId}/cancel'];
+  assert.ok(cancel.post);
+  assert.equal(cancel.post.operationId, 'cancelOwnerAppointment');
+  assert.deepEqual(Object.keys(spec.components.schemas.OwnerAppointment.properties).sort(),
+    ['endsAt', 'id', 'modality', 'pet', 'place', 'provider', 'service', 'startsAt', 'status', 'upcoming']);
 });
