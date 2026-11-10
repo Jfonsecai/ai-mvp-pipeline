@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
-// SCR-UX-013 "Publicar producto" (FLOW-UX-007; US-013). There is no stock field: every new
-// product is published as available (AC-111, BR-031, TD-13).
+// SCR-UX-013 "Publicar producto" (FLOW-UX-007; US-013) and its edit mode "Editar producto" (US-014): the same
+// form, pre-filled, saved with PUT (IF-036). There is no stock field: every new product is published as
+// available (AC-111, BR-031, TD-13) and editing never changes availability.
 const MAX_PRICE_COP = 2_147_483_647;
 const MSG_REQ = 'Este campo es obligatorio.';
 const MSG_PRICE = 'Escribe un precio en pesos, solo números, mayor que 0.';
@@ -35,10 +36,33 @@ function serverErrors(fields) {
 
 export default function PublishProduct() {
   const navigate = useNavigate();
+  const { offeringId } = useParams();
+  const editing = Boolean(offeringId);
+  const [notFound, setNotFound] = useState(false);
   const [values, setValues] = useState({ name: '', priceCop: '', species: '' });
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(editing);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    if (!editing) return undefined;
+    let active = true;
+    setLoading(true);
+    setLoadFailed(false);
+    apiFetch('/api/provider/offerings')
+      .then((catalog) => {
+        if (!active) return;
+        const product = catalog.products.find((item) => item.id === offeringId);
+        if (!product) setNotFound(true);
+        else setValues({ name: product.name, priceCop: String(product.priceCop), species: product.species });
+      })
+      .catch(() => { if (active) setLoadFailed(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [attempt, editing, offeringId]);
 
   function update(field, value) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -59,27 +83,39 @@ export default function PublishProduct() {
     setSaving(true);
     const payload = { name: values.name.trim(), priceCop: Number(values.priceCop), species: values.species };
     try {
-      await apiFetch('/api/provider/products', { method: 'POST', body: payload });
-      navigate('/provider/catalog', { replace: true, state: { notice: 'Producto publicado.' } });
+      if (editing) await apiFetch(`/api/provider/products/${encodeURIComponent(offeringId)}`, { method: 'PUT', body: payload });
+      else await apiFetch('/api/provider/products', { method: 'POST', body: payload });
+      navigate('/provider/catalog', { replace: true, state: { notice: editing ? 'Cambios guardados.' : 'Producto publicado.' } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_FAILED') {
         const fieldErrors = serverErrors(error.fields);
         setErrors(fieldErrors);
         setAlert(MSG_FORM);
+      } else if (editing && error instanceof ApiError && error.code === 'NOT_FOUND') {
+        setNotFound(true);
       } else {
-        setAlert('No pudimos publicar el producto. Revisa tu conexión e inténtalo de nuevo.');
+        setAlert(editing
+          ? 'No pudimos guardar los cambios. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No pudimos publicar el producto. Revisa tu conexión e inténtalo de nuevo.');
       }
     } finally {
       setSaving(false);
     }
   }
 
+  if (notFound) return <Navigate to="/not-found" replace />;
+
   return (
     <main className="page-shell">
       <section className="form-card" aria-labelledby="publish-product-title">
         <Link className="back-link" to="/provider/catalog">Volver al catálogo</Link>
-        <h1 id="publish-product-title">Publicar producto</h1>
-        <form onSubmit={submit} noValidate>
+        <h1 id="publish-product-title">{editing ? 'Editar producto' : 'Publicar producto'}</h1>
+        {loading && <p role="status">Cargando datos del producto…</p>}
+        {loadFailed && <div className="form-alert" role="alert">
+          No pudimos cargar el producto. Revisa tu conexión e inténtalo de nuevo.
+          <button className="link-button" type="button" onClick={() => setAttempt((value) => value + 1)}>Reintentar</button>
+        </div>}
+        {!loading && !loadFailed && <form onSubmit={submit} noValidate>
           {alert && <div className="form-alert" role="alert">{alert}</div>}
           <div className="form-section-title">Datos del producto</div>
 
@@ -99,8 +135,8 @@ export default function PublishProduct() {
           </fieldset>
           {errors.species && <span id="product-species-error" className="field-error">{errors.species}</span>}
 
-          <button className="primary-button" type="submit" disabled={saving}>{saving ? 'Publicando producto…' : 'Publicar producto'}</button>
-        </form>
+          <button className="primary-button" type="submit" disabled={saving}>{saving ? (editing ? 'Guardando…' : 'Publicando producto…') : (editing ? 'Guardar cambios' : 'Publicar producto')}</button>
+        </form>}
       </section>
     </main>
   );

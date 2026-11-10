@@ -6,7 +6,10 @@ import ProviderSignUp from './pages/ProviderSignUp.jsx';
 import ProviderProfile from './pages/ProviderProfile.jsx';
 import OwnerSignUp from './pages/OwnerSignUp.jsx';
 import OwnerSearch from './pages/OwnerSearch.jsx';
+import OwnerAssistant from './pages/OwnerAssistant.jsx';
+import OwnerPets from './pages/OwnerPets.jsx';
 import OwnerAppointments from './pages/OwnerAppointments.jsx';
+import RescheduleAppointment from './pages/RescheduleAppointment.jsx';
 import ProviderPublicProfile from './pages/ProviderPublicProfile.jsx';
 import BookAppointment from './pages/BookAppointment.jsx';
 import SignIn from './pages/SignIn.jsx';
@@ -83,7 +86,9 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
       </nav>}
       {accountType === 'owner' && <nav className="owner-navigation" aria-label="Menú principal">
         <NavLink to="/owner/home">Buscar</NavLink>
+        <NavLink to="/owner/assistant">Asistente</NavLink>
         <NavLink to="/owner/appointments">Mis citas</NavLink>
+        <NavLink to="/owner/pets">Mis mascotas</NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
         <button ref={buttonRef} className="button-secondary" type="button" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}>Cuenta</button>
@@ -137,15 +142,21 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/sign-up" element={<GuestOnly session={session}><OwnerSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/provider/sign-up" element={<GuestOnly session={session}><ProviderSignUp onAuthenticated={setSession} /></GuestOnly>} />
     <Route path="/owner/home" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerSearch /></RolePage>} />
+    <Route path="/owner/assistant" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAssistant /></RolePage>} />
     <Route path="/owner/appointments" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerAppointments /></RolePage>} />
+    <Route path="/owner/appointments/:appointmentId/reschedule" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><RescheduleAppointment /></RolePage>} />
+    <Route path="/owner/pets" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><OwnerPets /></RolePage>} />
     <Route path="/owner/providers/:providerId" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><ProviderPublicProfile /></RolePage>} />
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />
     <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
     <Route path="/provider/appointments" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderAppointments /></RolePage>} />
+    <Route path="/provider/appointments/:appointmentId/reschedule" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><RescheduleAppointment role="provider" /></RolePage>} />
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
     <Route path="/provider/catalog" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderCatalog /></RolePage>} />
     <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
+    <Route path="/provider/services/:offeringId/edit" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />
     <Route path="/provider/products/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishProduct /></RolePage>} />
+    <Route path="/provider/products/:offeringId/edit" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishProduct /></RolePage>} />
     <Route path="/not-found" element={<NotFound session={session} />} />
     <Route path="*" element={session.state === 'active' ? <NotFound session={session} /> : <Navigate to="/sign-in" replace />} />
   </Routes>;

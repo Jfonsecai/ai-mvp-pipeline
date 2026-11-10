@@ -39,11 +39,18 @@ after(async () => {
   await admin.end();
 });
 
-test('migrate: applies the initial schema once and is idempotent', { skip }, async () => {
-  assert.deepEqual(await migrationStatus(admin, migrationsDir), [{ name: '001_initial_schema.sql', state: 'pending' }]);
-  assert.deepEqual(await migrate(admin, migrationsDir), ['001_initial_schema.sql']);
+const MIGRATIONS = ['001_initial_schema.sql', '002_iteration2_removal.sql'];
+
+test('migrate: applies every migration once and is idempotent', { skip }, async () => {
+  assert.deepEqual(await migrationStatus(admin, migrationsDir), MIGRATIONS.map((name) => ({ name, state: 'pending' })));
+  assert.deepEqual(await migrate(admin, migrationsDir), MIGRATIONS);
   assert.deepEqual(await migrate(admin, migrationsDir), [], 'second run applies nothing');
-  assert.deepEqual(await migrationStatus(admin, migrationsDir), [{ name: '001_initial_schema.sql', state: 'applied' }]);
+  assert.deepEqual(await migrationStatus(admin, migrationsDir), MIGRATIONS.map((name) => ({ name, state: 'applied' })));
+  const { rows: removable } = await admin.query(
+    `SELECT table_name FROM information_schema.columns WHERE table_schema = $1 AND column_name = 'removed_at' ORDER BY 1`,
+    [schema],
+  );
+  assert.deepEqual(removable.map((r) => r.table_name), ['offering', 'pet'], 'iteration 2 logical removal (ADR-020)');
 
   const { rows } = await admin.query(
     `SELECT table_name FROM information_schema.tables WHERE table_schema = $1 AND table_type = 'BASE TABLE' ORDER BY 1`,

@@ -14,6 +14,7 @@ import { createSearchRouter } from './search/offerings.js';
 import { createPublicProviderProfileRouter } from './search/provider-profile.js';
 import { createPetsRouter } from './pets/owner-pet.js';
 import { createBookingRouter } from './scheduling/booking.js';
+import { createAssistantRouter } from './assistant/assistant.js';
 
 export const modules = [
   { createRouter: createIdentityRouter },
@@ -24,4 +25,5 @@ export const modules = [
   { createRouter: createPublicProviderProfileRouter },
   { createRouter: createPetsRouter },
   { createRouter: createBookingRouter },
+  { createRouter: createAssistantRouter },
 ];

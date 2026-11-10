@@ -1,5 +1,5 @@
 // P07.1 — Contract tests: every response the implemented endpoints produce is validated against
-// the approved OpenAPI document (artifacts/05_architecture/API_SPEC_V1.yaml), and error responses
+// the approved OpenAPI document (artifacts/05_architecture/API_SPEC_V2.yaml), and error responses
 // are checked against the outcome catalogue (CTR-001) and its HTTP statuses.
 //
 // The validator (support/schema-validator.js) is deliberately strict: additionalProperties:false
@@ -37,7 +37,7 @@ function conforms(label, method, specPath, response, expectedStatus) {
   assert.deepEqual(validate(schema, response.body), [], `${label}: ${JSON.stringify(response.body)}`);
 }
 
-describe('success responses conform to API_SPEC_V1.yaml', { skip: SKIP }, () => {
+describe('success responses conform to API_SPEC_V2.yaml', { skip: SKIP }, () => {
   test('TEST-CT-001 US-001/US-002/US-003: sign-up, sign-in and session responses', async () => {
     const owner = await h.request('POST', '/api/auth/sign-up/owner', {
       body: { name: 'C', email: `ct-${Date.now()}@example.test`, password: 'contract-pass-1', pet: { name: 'P', species: 'cat', breed: 'B', ageYears: 1, weightKg: 4.5, heightCm: 30 } },
@@ -192,7 +192,7 @@ describe('error responses follow CTR-001 and the documented statuses', { skip: S
   });
 });
 
-describe('API_SPEC_V1.yaml consistency with the running application', { skip: SKIP }, () => {
+describe('API_SPEC_V2.yaml consistency with the running application', { skip: SKIP }, () => {
   test('TEST-CT-020: every path the application serves is documented, and no implemented route is missing from the specification', async () => {
     const { modules } = await import('../../../../src/modules/index.js');
     assert.ok(modules.length > 0);
@@ -206,7 +206,7 @@ describe('API_SPEC_V1.yaml consistency with the running application', { skip: SK
       ['get', '/api/services/{serviceId}/booking-context'], ['post', '/api/owner/appointments'],
       ['get', '/api/owner/appointments'], ['get', '/api/provider/appointments'],
     ];
-    for (const [method, path] of implemented) assert.ok(spec.paths[path]?.[method], `${method.toUpperCase()} ${path} is in API_SPEC_V1.yaml`);
+    for (const [method, path] of implemented) assert.ok(spec.paths[path]?.[method], `${method.toUpperCase()} ${path} is in API_SPEC_V2.yaml`);
   });
 
   test('TEST-CT-021 NFR / CR-005: API responses are never cacheable and carry no technology banner', async () => {

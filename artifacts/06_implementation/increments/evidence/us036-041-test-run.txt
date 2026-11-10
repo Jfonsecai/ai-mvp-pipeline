@@ -1,0 +1,30 @@
+# npm test (2026-11-09, local PostgreSQL 16)
+# tests 205
+# pass 205
+# fail 0
+# skipped 0
+# QA suite
+# tests 143
+# pass 143
+# fail 0
+# skipped 0
+# Assistant tests
+ok 1 - AC-130 / AC-131 / AC-160: providers, clinics, home visits (clinic with a "both" service included)
+ok 2 - AC-132 / AC-133 / EDGE-045: hours, contact, provider without hours
+ok 3 - AC-136 / AC-137 / AC-139: offerings with species filter, more than 5 → search link
+ok 4 - AC-141 / AC-143 / AC-144: only the owner's upcoming scheduled appointments
+ok 5 - AC-129 / AC-145 / AC-146: action, help, fallback; nothing is written (BR-045)
+ok 6 - AC-128 / BR-041: providers cannot use the assistant; validation errors
+ok 7 - UX example questions reach the intended answer kind (SCR-UX-018)
+ok 8 - BR-052: provider names matched by tokens; several matches; unknown provider
+ok 9 - AC-129 / BR-045: action requests are refused, with the right link
+ok 10 - AC-146 / AC-147: unrecognized and medical questions fall back
+ok 11 - offering subject keeps the words of the offering, accents included
+ok 12 - AC-130 / BR-047: providers list text, rows by name, at most 5, total
+ok 13 - AC-132 / AC-133 / EDGE-045: hours, contact without address, no hours
+ok 14 - AC-136 to AC-140: offerings rows (name, species, price, provider), order by price, link when more than 5
+ok 15 - AC-141 / AC-142: next appointments, one and none
+ok 16 - question validation: required, type, 200 characters, viaVoice boolean
+# tests 16
+# pass 16
+# fail 0

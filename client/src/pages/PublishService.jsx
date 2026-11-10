@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
 const MAX_PRICE_COP = 2_147_483_647;
@@ -31,8 +31,13 @@ function serverErrors(fields) {
   return errors;
 }
 
+// SCR-UX-012 "Publicar servicio" (US-010) and its edit mode "Editar servicio" (US-011): the same form,
+// pre-filled, saved with PUT (IF-036).
 export default function PublishService() {
   const navigate = useNavigate();
+  const { offeringId } = useParams();
+  const editing = Boolean(offeringId);
+  const [notFound, setNotFound] = useState(false);
   const [providerType, setProviderType] = useState('');
   const [values, setValues] = useState({ name: '', priceCop: '', species: '', modality: '' });
   const [errors, setErrors] = useState({});
@@ -46,12 +51,22 @@ export default function PublishService() {
     let active = true;
     setLoading(true);
     setLoadFailed(false);
-    apiFetch('/api/provider/profile')
-      .then((profile) => { if (active) setProviderType(profile.providerType); })
+    Promise.all([apiFetch('/api/provider/profile'), editing ? apiFetch('/api/provider/offerings') : null])
+      .then(([profile, catalog]) => {
+        if (!active) return;
+        setProviderType(profile.providerType);
+        if (!editing) return;
+        const service = catalog.services.find((item) => item.id === offeringId);
+        if (!service) {
+          setNotFound(true);
+          return;
+        }
+        setValues({ name: service.name, priceCop: String(service.priceCop), species: service.species, modality: service.modality });
+      })
       .catch(() => { if (active) setLoadFailed(true); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [attempt]);
+  }, [attempt, editing, offeringId]);
 
   function update(field, value) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -77,26 +92,33 @@ export default function PublishService() {
       ...(providerType === 'clinic' ? { modality: values.modality } : {}),
     };
     try {
-      await apiFetch('/api/provider/services', { method: 'POST', body: payload });
-      navigate('/provider/catalog', { replace: true, state: { notice: 'Servicio publicado.' } });
+      if (editing) await apiFetch(`/api/provider/services/${encodeURIComponent(offeringId)}`, { method: 'PUT', body: payload });
+      else await apiFetch('/api/provider/services', { method: 'POST', body: payload });
+      navigate('/provider/catalog', { replace: true, state: { notice: editing ? 'Cambios guardados.' : 'Servicio publicado.' } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'VALIDATION_FAILED') {
         const fieldErrors = serverErrors(error.fields);
         setErrors(fieldErrors);
         setAlert(Object.keys(fieldErrors).length ? 'Revisa los campos marcados para continuar.' : 'Revisa los datos ingresados.');
+      } else if (editing && error instanceof ApiError && error.code === 'NOT_FOUND') {
+        setNotFound(true);
       } else {
-        setAlert('No pudimos publicar el servicio. Revisa tu conexión e inténtalo de nuevo.');
+        setAlert(editing
+          ? 'No pudimos guardar los cambios. Revisa tu conexión e inténtalo de nuevo.'
+          : 'No pudimos publicar el servicio. Revisa tu conexión e inténtalo de nuevo.');
       }
     } finally {
       setSaving(false);
     }
   }
 
+  if (notFound) return <Navigate to="/not-found" replace />;
+
   return (
     <main className="page-shell">
       <section className="form-card" aria-labelledby="publish-service-title">
         <Link className="back-link" to="/provider/catalog">Volver al catálogo</Link>
-        <h1 id="publish-service-title">Publicar servicio</h1>
+        <h1 id="publish-service-title">{editing ? 'Editar servicio' : 'Publicar servicio'}</h1>
         {loading && <p role="status">Cargando datos del proveedor…</p>}
         {loadFailed && <div className="form-alert" role="alert">
           No pudimos cargar tus datos. Revisa tu conexión e inténtalo de nuevo.
@@ -132,7 +154,7 @@ export default function PublishService() {
             : <p className="info-alert" role="status">Ofreces este servicio a domicilio.</p>}
           {errors.modality && <span id="service-modality-error" className="field-error">{errors.modality}</span>}
 
-          <button className="primary-button" type="submit" disabled={saving}>{saving ? 'Publicando servicio…' : 'Publicar servicio'}</button>
+          <button className="primary-button" type="submit" disabled={saving}>{saving ? (editing ? 'Guardando…' : 'Publicando servicio…') : (editing ? 'Guardar cambios' : 'Publicar servicio')}</button>
         </form>}
       </section>
     </main>

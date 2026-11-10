@@ -11,8 +11,10 @@ import { getServiceFacts } from '../catalog/offerings.js';
 import { getOwnerName } from '../identity/accounts.js';
 import { getOwnerPet, listOwnerPets } from '../pets/owner-pet.js';
 import { computeWeekSlots, isSlotOffered } from './slots.js';
+import { cancelOwnerAppointment, cancelProviderAppointment } from './cancellation.js';
 
 const BOOKING_FIELDS = new Set(['serviceId', 'petId', 'startsAt', 'modality', 'visitAddress']);
+const RESCHEDULE_FIELDS = new Set(['startsAt']);
 // ISO 8601 with an offset. Ranges are checked here and the date part with isLocalDate, because
 // Date silently rolls 2026-02-30 over to 2 March.
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]([01]\d|2[0-3]):[0-5]\d)$/;
@@ -87,6 +89,33 @@ export function validateBookingRequest(input) {
   };
 }
 
+/** Request shape of IF-040 (CTR-007 RescheduleRequest). */
+export function validateRescheduleRequest(input) {
+  const fields = [];
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return { fields: [{ field: 'form', reason: 'REQUIRED' }] };
+  }
+  for (const key of Object.keys(input)) {
+    if (!RESCHEDULE_FIELDS.has(key)) fields.push({ field: key, reason: 'NOT_ALLOWED' });
+  }
+
+  const rawStart = input.startsAt;
+  let startsAt;
+  if (rawStart === undefined || rawStart === null || rawStart === '') {
+    fields.push({ field: 'startsAt', reason: 'REQUIRED' });
+  } else if (
+    typeof rawStart !== 'string' || !ISO_DATE_TIME.test(rawStart) || !isLocalDate(rawStart.slice(0, 10))
+    || Number.isNaN(new Date(rawStart).getTime())
+  ) {
+    fields.push({ field: 'startsAt', reason: 'INVALID_FORMAT' });
+  } else if (new Date(rawStart).getTime() % HOUR_MS !== 0) {
+    fields.push({ field: 'startsAt', reason: 'NOT_ON_THE_HOUR' });
+  } else startsAt = new Date(rawStart);
+
+  if (fields.length) return { fields };
+  return { value: { startsAt } };
+}
+
 /**
  * Resolves the selected appointment modality and enforces the service's offering rules (BR-007).
  */
@@ -111,6 +140,136 @@ async function listScheduledStarts(db, providerId, from, to) {
     [providerId, from, to],
   );
   return new Set(result.rows.map((row) => new Date(row.starts_at).getTime()));
+}
+
+async function getReschedulableAppointment(db, { accountId, accountType, appointmentId, now }) {
+  const accountColumn = accountType === 'provider' ? 'provider_id' : 'owner_id';
+  const result = await db.query(
+    `SELECT id, provider_id, service_id, starts_at, status
+       FROM appointment
+      WHERE id = $1 AND ${accountColumn} = $2`,
+    [appointmentId, accountId],
+  );
+  const appointment = result.rows[0];
+  if (!appointment) throw new Outcome('NOT_FOUND');
+  if (appointment.status !== 'scheduled' || new Date(appointment.starts_at) <= now) {
+    throw new Outcome('APPOINTMENT_NOT_CHANGEABLE');
+  }
+  return appointment;
+}
+
+/** IF-039: offered slots for an existing appointment, excluding its current slot. */
+async function getRescheduleContext(db, { accountId, accountType, appointmentId, weekStart, now }) {
+  const appointment = await getReschedulableAppointment(db, { accountId, accountType, appointmentId, now });
+  const service = await getServiceFacts(db, appointment.service_id);
+  if (!service) throw new Outcome('NOT_FOUND');
+
+  const week = weekStart ?? mondayOf(bogotaParts(now).date);
+  const hours = await listWorkingHours(db, service.providerId);
+  const bookedStarts = service.providerType === 'independent'
+    ? await listScheduledStarts(db, service.providerId, bogotaInstant(week, 0), bogotaInstant(addDays(week, 7), 0))
+    : new Set();
+  const currentStart = new Date(appointment.starts_at).getTime();
+  bookedStarts.delete(currentStart);
+
+  return {
+    now: toBogotaIso(now),
+    weekStart: week,
+    appointmentId: appointment.id,
+    currentStartsAt: toBogotaIso(new Date(appointment.starts_at)),
+    providerHasHours: hours.length > 0,
+    days: computeWeekSlots({
+      weekStart: week,
+      now,
+      hours,
+      providerType: service.providerType,
+      bookedStarts,
+    }).map((day) => ({
+      ...day,
+      slots: day.slots.filter((slot) => new Date(slot).getTime() !== currentStart),
+    })),
+  };
+}
+
+/** IF-039: offered slots for the owner's existing appointment. */
+export function getOwnerRescheduleContext(db, { ownerId, appointmentId, weekStart, now }) {
+  return getRescheduleContext(db, { accountId: ownerId, accountType: 'owner', appointmentId, weekStart, now });
+}
+
+/** IF-039: offered slots for the provider's existing appointment. */
+export function getProviderRescheduleContext(db, { providerId, appointmentId, weekStart, now }) {
+  return getRescheduleContext(db, { accountId: providerId, accountType: 'provider', appointmentId, weekStart, now });
+}
+
+/**
+ * IF-040: move an appointment under the same provider lock and slot rules as booking.
+ * The initial account-scoped read identifies the lock to acquire; mutable facts are re-read in
+ * the transaction before the conditional update.
+ */
+async function rescheduleAppointment(pool, { accountId, accountType, appointmentId, startsAt, now }) {
+  const accountColumn = accountType === 'provider' ? 'provider_id' : 'owner_id';
+  const target = new Date(startsAt);
+  const initial = await pool.query(
+    `SELECT provider_id FROM appointment WHERE id = $1 AND ${accountColumn} = $2`,
+    [appointmentId, accountId],
+  );
+  const providerId = initial.rows[0]?.provider_id;
+  if (!providerId) throw new Outcome('NOT_FOUND');
+
+  return withTransaction(pool, async (client) => {
+    if (!(await lockProvider(client, providerId))) throw new Outcome('NOT_FOUND');
+    const result = await client.query(
+      `SELECT service_id, starts_at, status
+         FROM appointment
+        WHERE id = $1 AND ${accountColumn} = $2 AND provider_id = $3
+        FOR UPDATE`,
+      [appointmentId, accountId, providerId],
+    );
+    const appointment = result.rows[0];
+    if (!appointment) throw new Outcome('NOT_FOUND');
+    if (appointment.status !== 'scheduled' || new Date(appointment.starts_at) <= now) {
+      throw new Outcome('APPOINTMENT_NOT_CHANGEABLE');
+    }
+    if (new Date(appointment.starts_at).getTime() === target.getTime()) {
+      throw new Outcome('SLOT_UNAVAILABLE');
+    }
+
+    const service = await getServiceFacts(client, appointment.service_id);
+    if (!service) throw new Outcome('NOT_FOUND');
+    const hours = await listWorkingHours(client, providerId);
+    const bookedStarts = service.providerType === 'independent'
+      ? await listScheduledStarts(client, providerId, target, new Date(target.getTime() + HOUR_MS))
+      : new Set();
+    if (!isSlotOffered({ startsAt: target, now, hours, providerType: service.providerType, bookedStarts })) {
+      throw new Outcome('SLOT_UNAVAILABLE');
+    }
+
+    try {
+      const updated = await client.query(
+        `UPDATE appointment
+            SET starts_at = $4
+          WHERE id = $1 AND ${accountColumn} = $2 AND provider_id = $3
+            AND status = 'scheduled' AND starts_at > $5
+          RETURNING id`,
+        [appointmentId, accountId, providerId, target, now],
+      );
+      if (!updated.rowCount) throw new Outcome('APPOINTMENT_NOT_CHANGEABLE');
+      return { id: updated.rows[0].id };
+    } catch (error) {
+      if (error?.code === '23505' && error?.constraint === 'appointment_independent_slot_uq') {
+        throw new Outcome('SLOT_UNAVAILABLE');
+      }
+      throw error;
+    }
+  });
+}
+
+export function rescheduleOwnerAppointment(pool, { ownerId, appointmentId, startsAt, now }) {
+  return rescheduleAppointment(pool, { accountId: ownerId, accountType: 'owner', appointmentId, startsAt, now });
+}
+
+export function rescheduleProviderAppointment(pool, { providerId, appointmentId, startsAt, now }) {
+  return rescheduleAppointment(pool, { accountId: providerId, accountType: 'provider', appointmentId, startsAt, now });
 }
 
 /** IF-010: everything SCR-UX-006 needs for one service and one week. */
@@ -161,6 +320,17 @@ export async function getBookingContext(db, { ownerId, serviceId, weekStart, now
 export async function bookSlot(pool, { ownerId, service, petId, startsAt, modality, visitAddress, now }) {
   return withTransaction(pool, async (client) => {
     if (!(await lockProvider(client, service.providerId))) throw new Outcome('NOT_FOUND');
+    // Iteration 2 (CR-029): the service (removal takes the same provider lock) and the pet (removal
+    // takes FOR UPDATE) must still be active when the appointment is inserted.
+    const current = await getServiceFacts(client, service.id);
+    if (!current) throw new Outcome('NOT_FOUND');
+    // US-011: the provider may have edited the service (same lock) after the owner chose it. If the
+    // species or the offered modality changed, the checks already made on the old facts no longer hold
+    // (BR-024, BR-007); the owner reloads the booking screen and sees the current service.
+    if (current.species !== service.species || current.modality !== service.modality) {
+      throw new Outcome('SLOT_UNAVAILABLE');
+    }
+    if (!(await getOwnerPet(client, ownerId, petId, { lock: true }))) throw new Outcome('NOT_FOUND');
     const hours = await listWorkingHours(client, service.providerId);
     const bookedStarts = service.providerType === 'independent'
       ? await listScheduledStarts(client, service.providerId, startsAt, new Date(startsAt.getTime() + HOUR_MS))
@@ -198,8 +368,8 @@ export async function listOwnerAppointments(db, { ownerId, now }) {
 
   const appointments = await Promise.all(result.rows.map(async (row) => {
     const [service, pet] = await Promise.all([
-      getServiceFacts(db, row.service_id),
-      getOwnerPet(db, ownerId, row.pet_id),
+      getServiceFacts(db, row.service_id, { includeRemoved: true }), // history (CR-029)
+      getOwnerPet(db, ownerId, row.pet_id, { includeRemoved: true }),
     ]);
     if (!service || !pet) throw new Outcome('NOT_FOUND');
     const provider = await getProviderFacts(db, service.providerId);
@@ -247,8 +417,8 @@ export async function listProviderAppointments(db, { providerId, now }) {
 
   const appointments = await Promise.all(result.rows.map(async (row) => {
     const [service, pet, ownerName] = await Promise.all([
-      getServiceFacts(db, row.service_id),
-      getOwnerPet(db, row.owner_id, row.pet_id),
+      getServiceFacts(db, row.service_id, { includeRemoved: true }), // history (CR-029)
+      getOwnerPet(db, row.owner_id, row.pet_id, { includeRemoved: true }),
       getOwnerName(db, row.owner_id),
     ]);
     if (!service || !pet || !ownerName) throw new Outcome('NOT_FOUND');
@@ -303,6 +473,78 @@ export function createBookingRouter({ db, guard, clock }) {
     });
   });
 
+  router.post('/owner/appointments/:appointmentId/cancel', guard({ role: 'owner' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const ownerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await cancelOwnerAppointment(db, {
+      ownerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      now,
+    });
+    const appointment = (await listOwnerAppointments(db, { ownerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Cancelled appointment ${id} is missing from the owner's appointment list`);
+    res.json(appointment);
+  });
+
+  router.get('/owner/appointments/:appointmentId/reschedule-context', guard({ role: 'owner' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const week = validateWeekStart(req.query.weekStart);
+    if (week.fields) throw validationFailed(week.fields);
+    res.json(await getOwnerRescheduleContext(db, {
+      ownerId: req.session.accountId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      weekStart: week.value,
+      now: clock.now(),
+    }));
+  });
+
+  router.post('/owner/appointments/:appointmentId/reschedule', guard({ role: 'owner' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const validation = validateRescheduleRequest(req.body);
+    if (validation.fields) throw validationFailed(validation.fields);
+    const ownerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await rescheduleOwnerAppointment(db, {
+      ownerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      startsAt: validation.value.startsAt,
+      now,
+    });
+    const appointment = (await listOwnerAppointments(db, { ownerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Rescheduled appointment ${id} is missing from the owner's appointment list`);
+    res.json(appointment);
+  });
+
+  router.get('/provider/appointments/:appointmentId/reschedule-context', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const week = validateWeekStart(req.query.weekStart);
+    if (week.fields) throw validationFailed(week.fields);
+    res.json(await getProviderRescheduleContext(db, {
+      providerId: req.session.accountId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      weekStart: week.value,
+      now: clock.now(),
+    }));
+  });
+
+  router.post('/provider/appointments/:appointmentId/reschedule', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const validation = validateRescheduleRequest(req.body);
+    if (validation.fields) throw validationFailed(validation.fields);
+    const providerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await rescheduleProviderAppointment(db, {
+      providerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      startsAt: validation.value.startsAt,
+      now,
+    });
+    const appointment = (await listProviderAppointments(db, { providerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Rescheduled appointment ${id} is missing from the provider's appointment list`);
+    res.json(appointment);
+  });
+
   router.get('/provider/appointments', guard({ role: 'provider' }), async (req, res) => {
     res.json({
       appointments: await listProviderAppointments(db, {
@@ -310,6 +552,20 @@ export function createBookingRouter({ db, guard, clock }) {
         now: clock.now(),
       }),
     });
+  });
+
+  router.post('/provider/appointments/:appointmentId/cancel', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.appointmentId)) throw new Outcome('NOT_FOUND');
+    const providerId = req.session.accountId;
+    const now = clock.now();
+    const { id } = await cancelProviderAppointment(db, {
+      providerId,
+      appointmentId: req.params.appointmentId.toLowerCase(),
+      now,
+    });
+    const appointment = (await listProviderAppointments(db, { providerId, now })).find((item) => item.id === id);
+    if (!appointment) throw new Error(`Cancelled appointment ${id} is missing from the provider's appointment list`);
+    res.json(appointment);
   });
 
   router.post('/owner/appointments', guard({ role: 'owner' }), async (req, res) => {
