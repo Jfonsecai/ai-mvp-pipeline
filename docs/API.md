@@ -16,6 +16,7 @@ La API HTTP de Express se monta bajo `/api`. Métodos, paths y guards se verific
 | GET, PUT | `/api/provider/working-hours` | Proveedor autenticado. |
 | GET | `/api/provider/offerings` | Proveedor autenticado. |
 | POST | `/api/provider/services` | Proveedor autenticado. |
+| PUT | `/api/provider/services/:offeringId` | Proveedor autenticado; solo sus servicios activos (otro proveedor, un producto o un id inexistente devuelven `NOT_FOUND`). |
 | POST | `/api/provider/products` | Proveedor autenticado. |
 | GET | `/api/search` | Dueño autenticado. |
 | GET | `/api/providers/:providerId` | Dueño autenticado. |

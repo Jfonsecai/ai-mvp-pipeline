@@ -255,6 +255,19 @@ body {
 .pets-empty { margin-top: var(--spacing-6); }
 @media (max-width: 767px) { .pets-heading { display: grid; } .pets-add-button { width: 100%; } .pets-list { grid-template-columns: 1fr; } }
 
+/* COMP-UX-011: below breakpoint-md the account navigation is a fixed bottom tab bar and the page gets the same
+   bottom padding; the header keeps only the wordmark and the account menu, so it cannot overflow a phone.
+   From breakpoint-md the tabs are links in the header (rules below). */
+@media (max-width: 767px) {
+  .app-header { padding: 0 var(--spacing-4); }
+  .wordmark { font-size: var(--font-size-lg); }
+  .provider-navigation, .owner-navigation { position: fixed; z-index: 3; left: 0; right: 0; bottom: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); align-items: stretch; gap: 0; height: var(--size-bottom-nav-height); border-top: var(--border-width-default) solid var(--color-border-subtle); background: var(--color-bg-surface); }
+  .provider-navigation a, .owner-navigation a { display: flex; align-items: center; justify-content: center; min-width: 0; padding: 0 var(--spacing-1); border-top: var(--border-width-strong) solid transparent; font-size: var(--font-size-sm); line-height: var(--line-height-tight); text-align: center; overflow-wrap: anywhere; }
+  .provider-navigation a[aria-current="page"], .owner-navigation a[aria-current="page"] { border-top-color: var(--color-primary); }
+  body:has(.provider-navigation, .owner-navigation) { padding-bottom: var(--size-bottom-nav-height); }
+  .assistant-composer { bottom: var(--size-bottom-nav-height); }
+}
+
 @media (min-width: 768px) {
   .app-header { flex-wrap: nowrap; }
   .provider-navigation { order: 0; width: auto; padding: 0; }

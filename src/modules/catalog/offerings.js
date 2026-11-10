@@ -1,6 +1,9 @@
 // COMP-007 Catalog — IF-006 service publication (US-010), product publication (US-013) and provider catalog.
 import { Router } from 'express';
 import { Outcome } from '../../shared/outcomes.js';
+import { isUuid } from '../../shared/ids.js';
+import { withTransaction } from '../../shared/transaction.js';
+import { lockProvider } from '../provider/profile.js';
 
 const SERVICE_FIELDS = new Set(['name', 'priceCop', 'species', 'modality']);
 const PRODUCT_FIELDS = new Set(['name', 'priceCop', 'species']);
@@ -199,6 +202,34 @@ export function createCatalogRouter({ db, guard }) {
       [providerId, providerType, name, priceCop, species, modality],
     );
     res.status(201).json(catalogService(result.rows[0]));
+  });
+
+  // IF-036 updateService (US-011): replaces the details of one of the provider's own active services
+  // with the same validation as publishing (BR-006, BR-007). A service of another provider, a product,
+  // a removed offering and a malformed id are all the same NOT_FOUND (AC-031, CR-006). The provider
+  // lock (IF-024) serializes the change with bookings, removals and hours saves. Appointments that
+  // are already booked are never touched (P04-ASM-036).
+  router.put('/provider/services/:offeringId', guard({ role: 'provider' }), async (req, res) => {
+    if (!isUuid(req.params.offeringId)) throw new Outcome('NOT_FOUND');
+    const providerId = req.session.accountId;
+    const providerType = await providerTypeFor(db, providerId);
+    const validation = validatePublishService(req.body, providerType);
+    if (validation.fields) throw validationError(validation.fields);
+
+    const { name, priceCop, species, modality } = validation.value;
+    const saved = await withTransaction(db, async (client) => {
+      if (!(await lockProvider(client, providerId))) throw new Outcome('NOT_FOUND');
+      const result = await client.query(
+        `UPDATE offering
+            SET name = $3, price_cop = $4, species = $5, modality = $6
+          WHERE id = $1 AND provider_id = $2 AND kind = 'service' AND removed_at IS NULL
+          RETURNING id, name, price_cop, species, modality`,
+        [req.params.offeringId.toLowerCase(), providerId, name, priceCop, species, modality],
+      );
+      return result.rows[0];
+    });
+    if (!saved) throw new Outcome('NOT_FOUND');
+    res.json(catalogService(saved));
   });
 
   router.post('/provider/products', guard({ role: 'provider' }), async (req, res) => {

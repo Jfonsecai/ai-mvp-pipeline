@@ -27,6 +27,7 @@ function OfferingList({ items, kind }) {
         <div><dt>Precio</dt><dd>{priceLabel.format(item.priceCop)}</dd></div>
         {kind === 'service' && <div><dt>Modalidad</dt><dd>{modalityLabel(item.modality)}</dd></div>}
       </dl>
+      {kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/provider/services/${item.id}/edit`} aria-label={`Editar: ${item.name}`}>Editar</Link>}
     </li>)}
   </ul>;
 }

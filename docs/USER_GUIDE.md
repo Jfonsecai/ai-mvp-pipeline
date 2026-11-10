@@ -15,7 +15,7 @@ La interfaz implementada usa etiquetas en español. Las rutas fueron contrastada
 
 1. Regístrese en `/provider/sign-up` e inicie sesión en `/sign-in`.
 2. Edite datos públicos en `/provider/profile` y disponibilidad en `/provider/working-hours`.
-3. Publique servicios o productos desde `/provider/services/new` o `/provider/products/new`.
+3. Publique servicios o productos desde `/provider/services/new` o `/provider/products/new`. Para cambiar un servicio ya publicado, use «Editar» en su tarjeta del catálogo (`/provider/services/:id/edit`).
 4. Consulte ofertas en `/provider/catalog` y citas en `/provider/appointments`.
 
 La ruta `/estado-tecnico` muestra verificaciones técnicas y no es parte del recorrido de usuario definido en UX (P06 DEV-003). No se incluyen flujos de compra de productos. La gestión de mascotas después del registro, edición/eliminación de ofertas, cancelación manual y reprogramación no están disponibles.

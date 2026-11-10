@@ -163,7 +163,14 @@ export async function bookSlot(pool, { ownerId, service, petId, startsAt, modali
     if (!(await lockProvider(client, service.providerId))) throw new Outcome('NOT_FOUND');
     // Iteration 2 (CR-029): the service (removal takes the same provider lock) and the pet (removal
     // takes FOR UPDATE) must still be active when the appointment is inserted.
-    if (!(await getServiceFacts(client, service.id))) throw new Outcome('NOT_FOUND');
+    const current = await getServiceFacts(client, service.id);
+    if (!current) throw new Outcome('NOT_FOUND');
+    // US-011: the provider may have edited the service (same lock) after the owner chose it. If the
+    // species or the offered modality changed, the checks already made on the old facts no longer hold
+    // (BR-024, BR-007); the owner reloads the booking screen and sees the current service.
+    if (current.species !== service.species || current.modality !== service.modality) {
+      throw new Outcome('SLOT_UNAVAILABLE');
+    }
     if (!(await getOwnerPet(client, ownerId, petId, { lock: true }))) throw new Outcome('NOT_FOUND');
     const hours = await listWorkingHours(client, service.providerId);
     const bookedStarts = service.providerType === 'independent'
