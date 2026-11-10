@@ -139,8 +139,16 @@ const getContext = (token, id, query = '?weekStart=2026-10-12') => app.request(
   `/api/owner/appointments/${id}/reschedule-context${query}`,
   { headers: headers(token) },
 );
+const getProviderContext = (token, id, query = '?weekStart=2026-10-12') => app.request(
+  `/api/provider/appointments/${id}/reschedule-context${query}`,
+  { headers: headers(token) },
+);
 const reschedule = (token, id, startsAt) => app.request(
   `/api/owner/appointments/${id}/reschedule`,
+  { method: 'POST', headers: headers(token), body: JSON.stringify({ startsAt }) },
+);
+const rescheduleAsProvider = (token, id, startsAt) => app.request(
+  `/api/provider/appointments/${id}/reschedule`,
   { method: 'POST', headers: headers(token), body: JSON.stringify({ startsAt }) },
 );
 
@@ -183,6 +191,28 @@ test('AC-060 / AC-061: owner moves appointment and both appointment views show t
     updatedContext.days.find(({ date }) => date === '2026-10-13').slots,
     ['2026-10-13T09:00:00-05:00'],
   );
+
+  const providerContext = await getProviderContext(tokens.provider, appointments.moving);
+  assert.equal(providerContext.status, 200);
+  const providerSlots = await providerContext.json();
+  assert.equal(providerSlots.appointmentId, appointments.moving);
+  assert.equal(providerSlots.currentStartsAt, '2026-10-13T11:00:00-05:00');
+  assert.deepEqual(providerSlots.days.find(({ date }) => date === '2026-10-13').slots, ['2026-10-13T09:00:00-05:00']);
+
+  const providerSavedResponse = await rescheduleAsProvider(tokens.provider, appointments.moving, '2026-10-13T09:00:00-05:00');
+  assert.equal(providerSavedResponse.status, 200);
+  const providerSaved = await providerSavedResponse.json();
+  assert.equal(providerSaved.id, appointments.moving);
+  assert.equal(providerSaved.startsAt, '2026-10-13T09:00:00-05:00');
+  assert.equal(providerSaved.status, 'scheduled');
+
+  const providerListAfter = await app.request('/api/provider/appointments', { headers: headers(tokens.provider) });
+  assert.equal((await providerListAfter.json()).appointments.find(({ id }) => id === appointments.moving).startsAt, '2026-10-13T09:00:00-05:00');
+  const ownerListAfter = await app.request('/api/owner/appointments', { headers: headers(tokens.owner) });
+  assert.equal((await ownerListAfter.json()).appointments.find(({ id }) => id === appointments.moving).startsAt, '2026-10-13T09:00:00-05:00');
+
+  const storedAfterProviderMove = await admin.query('SELECT starts_at FROM appointment WHERE id = $1', [appointments.moving]);
+  assert.equal(new Date(storedAfterProviderMove.rows[0].starts_at).toISOString(), '2026-10-13T14:00:00.000Z');
 });
 
 test('EDGE-009 / EDGE-010: unavailable target slots and started or cancelled appointments are refused', { skip }, async () => {
@@ -211,4 +241,19 @@ test('owner can only retrieve or reschedule their own appointment', { skip }, as
   const changed = await reschedule(tokens.otherOwner, appointments.moving, '2026-10-13T11:00:00-05:00');
   assert.equal(changed.status, 404);
   assert.deepEqual(await changed.json(), { code: 'NOT_FOUND' });
+});
+
+test('US-026 / EDGE-010: provider cannot reschedule an appointment that has started or was cancelled', { skip }, async () => {
+  for (const id of [appointments.past, appointments.cancelled]) {
+    const context = await getProviderContext(tokens.provider, id);
+    assert.equal(context.status, 409);
+    assert.deepEqual(await context.json(), { code: 'APPOINTMENT_NOT_CHANGEABLE' });
+    const changed = await rescheduleAsProvider(tokens.provider, id, '2026-10-13T11:00:00-05:00');
+    assert.equal(changed.status, 409);
+    assert.deepEqual(await changed.json(), { code: 'APPOINTMENT_NOT_CHANGEABLE' });
+  }
+
+  const owner = await getProviderContext(tokens.owner, appointments.moving);
+  assert.equal(owner.status, 404);
+  assert.deepEqual(await owner.json(), { code: 'NOT_FOUND' });
 });
