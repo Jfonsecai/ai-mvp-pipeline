@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
 const MSG_NET = 'No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.';
@@ -77,6 +77,13 @@ function AppointmentCard({ appointment, headingRefs, onCancel }) {
         {appointment.modality === 'home' && <div><dt>Dirección</dt><dd>{appointment.visitAddress}</dd></div>}
       </dl>
       {appointment.upcoming && appointment.status === 'scheduled' && <div className="appointment-card-actions">
+        <Link
+          className="link-button"
+          to={`/provider/appointments/${appointment.id}/reschedule`}
+          aria-label={`Reprogramar cita: ${appointment.service.name}`}
+        >
+          Reprogramar
+        </Link>
         <button
           className="link-button danger-link"
           type="button"
@@ -91,6 +98,8 @@ function AppointmentCard({ appointment, headingRefs, onCancel }) {
 }
 
 export default function ProviderAppointments() {
+  const location = useLocation();
+  const justRescheduledId = location.state?.justRescheduledId;
   const [appointments, setAppointments] = useState([]);
   const [state, setState] = useState('loading');
   const [attempt, setAttempt] = useState(0);
@@ -99,10 +108,12 @@ export default function ProviderAppointments() {
   const [cancelDialogError, setCancelDialogError] = useState('');
   const [cancelError, setCancelError] = useState('');
   const [cancelToastVisible, setCancelToastVisible] = useState(false);
+  const [rescheduleToastVisible, setRescheduleToastVisible] = useState(false);
   const headingRefs = useRef(new Map());
   const openerRef = useRef(null);
   const cancelledAppointmentIdRef = useRef(null);
   const pageHeadingRef = useRef(null);
+  const rescheduleToastShownRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -118,6 +129,17 @@ export default function ProviderAppointments() {
       });
     return () => { active = false; };
   }, [attempt]);
+
+  useEffect(() => {
+    if (
+      rescheduleToastShownRef.current || state !== 'ready' || !justRescheduledId
+      || !appointments.some((appointment) => appointment.id === justRescheduledId)
+    ) return undefined;
+    rescheduleToastShownRef.current = true;
+    setRescheduleToastVisible(true);
+    const timeout = window.setTimeout(() => setRescheduleToastVisible(false), 5_000);
+    return () => window.clearTimeout(timeout);
+  }, [state, justRescheduledId, appointments]);
 
   useEffect(() => {
     if (!cancelToastVisible) return undefined;
@@ -199,6 +221,7 @@ export default function ProviderAppointments() {
       </section>}
       {state === 'ready' && appointments.length > 0 && <>
         {cancelToastVisible && <div className="appointment-toast success-alert" role="status">Cita cancelada. El dueño la verá como cancelada.</div>}
+        {rescheduleToastVisible && <div className="appointment-toast success-alert" role="status">Cita reprogramada.</div>}
         <section className="appointments-group" aria-labelledby="provider-upcoming-title">
           <h2 id="provider-upcoming-title">Próximas</h2>
           {upcoming.length

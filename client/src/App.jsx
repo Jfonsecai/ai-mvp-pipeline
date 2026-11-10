@@ -150,6 +150,7 @@ function RoutedApp({ session, setSession, onSignedOut }) {
     <Route path="/owner/services/:serviceId/book" element={<RolePage session={session} role="owner" onSignedOut={onSignedOut}><BookAppointment /></RolePage>} />
     <Route path="/provider/profile" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderProfile /></RolePage>} />
     <Route path="/provider/appointments" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderAppointments /></RolePage>} />
+    <Route path="/provider/appointments/:appointmentId/reschedule" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><RescheduleAppointment role="provider" /></RolePage>} />
     <Route path="/provider/working-hours" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderWorkingHours /></RolePage>} />
     <Route path="/provider/catalog" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><ProviderCatalog /></RolePage>} />
     <Route path="/provider/services/new" element={<RolePage session={session} role="provider" onSignedOut={onSignedOut}><PublishService /></RolePage>} />

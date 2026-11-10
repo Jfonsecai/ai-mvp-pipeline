@@ -121,6 +121,43 @@ test('US-023: rescheduling endpoints need a session and the owner role', async (
   assert.deepEqual(db.queries, []);
 });
 
+test('US-026: provider rescheduling endpoints need a provider session and validate the appointment id and week', async () => {
+  const { request, db } = await openApp();
+  for (const [method, suffix] of [
+    ['GET', 'reschedule-context'],
+    ['POST', 'reschedule'],
+  ]) {
+    const path = `/api/provider/appointments/${APPOINTMENT_ID}/${suffix}`;
+    const anonymous = await request(path, {
+      method,
+      headers: { origin: 'https://vetcare.test', 'content-type': 'application/json' },
+      ...(method === 'POST' ? { body: JSON.stringify({ startsAt: '2026-10-13T11:00:00-05:00' }) } : {}),
+    });
+    assert.equal(anonymous.status, 401, `${method} ${path}`);
+
+    const owner = await request(path, {
+      method,
+      headers: headers('owner'),
+      ...(method === 'POST' ? { body: JSON.stringify({ startsAt: '2026-10-13T11:00:00-05:00' }) } : {}),
+    });
+    assert.equal(owner.status, 404, `${method} ${path}`);
+    assert.deepEqual(await owner.json(), { code: 'NOT_FOUND' });
+  }
+
+  const invalidId = await request('/api/provider/appointments/not-a-uuid/reschedule-context', {
+    headers: headers('provider'),
+  });
+  assert.equal(invalidId.status, 404);
+  assert.deepEqual(await invalidId.json(), { code: 'NOT_FOUND' });
+
+  const invalidWeek = await request(`/api/provider/appointments/${APPOINTMENT_ID}/reschedule-context?weekStart=2026-10-14`, {
+    headers: headers('provider'),
+  });
+  assert.equal(invalidWeek.status, 422);
+  assert.deepEqual((await invalidWeek.json()).fields, [{ field: 'weekStart', reason: 'NOT_ALLOWED' }]);
+  assert.deepEqual(db.queries, []);
+});
+
 test('US-023: invalid appointment ids and malformed weekStart are rejected before business queries', async () => {
   const { request, db } = await openApp();
   for (const method of ['GET', 'POST']) {
@@ -237,6 +274,10 @@ test('contract: the operations, parameters and request fields match API_SPEC', (
   const providerCancel = spec.paths['/api/provider/appointments/{appointmentId}/cancel'];
   assert.ok(providerCancel.post);
   assert.equal(providerCancel.post.operationId, 'cancelProviderAppointment');
+  assert.ok(spec.paths['/api/provider/appointments/{appointmentId}/reschedule-context'].get);
+  const providerReschedule = spec.paths['/api/provider/appointments/{appointmentId}/reschedule'].post;
+  assert.ok(providerReschedule);
+  assert.equal(providerReschedule.operationId, 'rescheduleProviderAppointment');
   assert.deepEqual(Object.keys(spec.components.schemas.OwnerAppointment.properties).sort(),
     ['endsAt', 'id', 'modality', 'pet', 'place', 'provider', 'service', 'startsAt', 'status', 'upcoming']);
 });
