@@ -18,6 +18,7 @@ const VOICE_ERRORS = {
   unavailable: 'El reconocimiento de voz no está disponible en este navegador. Prueba en Google Chrome o escribe tu pregunta.',
   no_speech: 'No te escuchamos. Intenta de nuevo o escribe tu pregunta.',
 };
+
 const LINKS = {
   search: { to: '/owner/home', label: 'Ir a Buscar' },
   owner_appointments: { to: '/owner/appointments', label: 'Ir a Mis citas' },
@@ -38,13 +39,25 @@ function AssistantMessage({ message, reading }) {
   const { answer } = message;
   return <li className="chat-message chat-assistant">
     <span className="visually-hidden">Asistente: </span>
-    <p>{answer.text}</p>
-    {answer.items.length > 0 && <ul className="chat-items">
-      {answer.items.map((item, index) => <li key={index}><Link to={itemPath(item.target)}>{item.label}</Link></li>)}
-    </ul>}
-    {answer.searchLink && <Link className="chat-link" to={`/owner/home?q=${encodeURIComponent(answer.searchLink.q)}&species=${answer.searchLink.species}`}>Ver todos en Buscar</Link>}
-    {answer.linkTo && LINKS[answer.linkTo] && <Link className="chat-link" to={LINKS[answer.linkTo].to}>{LINKS[answer.linkTo].label}</Link>}
-    {reading && <p className="chat-reading" aria-hidden="true">🔊 Leyendo…</p>}
+    <div className={`assistant-message-content${message.revealing ? ' assistant-message-cascade' : ''}`}>
+      <p>{answer.text}</p>
+      {answer.items.length > 0 && <ul className="chat-items">
+        {answer.items.map((item, index) => {
+          const [title, ...details] = item.label.split(' — ');
+          const isProvider = item.target?.screen === 'provider_profile';
+          return <li key={index}>
+            <Link className="chat-item-link" to={itemPath(item.target)}>
+              <span className="chat-item-icon" aria-hidden="true">{isProvider ? '✚' : '📋'}</span>
+              <span className="chat-item-copy"><strong>{title}</strong>{details.length > 0 && <small>{details.join(' · ')}</small>}</span>
+              <span className="chat-item-arrow" aria-hidden="true">→</span>
+            </Link>
+          </li>;
+        })}
+      </ul>}
+      {answer.searchLink && <Link className="chat-link" to={`/owner/home?q=${encodeURIComponent(answer.searchLink.q)}&species=${answer.searchLink.species}`}>Ver todos en Buscar</Link>}
+      {answer.linkTo && LINKS[answer.linkTo] && <Link className="chat-link" to={LINKS[answer.linkTo].to}>{LINKS[answer.linkTo].label}</Link>}
+      {reading && <p className="chat-reading" aria-hidden="true">🔊 Leyendo…</p>}
+    </div>
   </li>;
 }
 
@@ -56,6 +69,7 @@ export default function OwnerAssistant() {
   const [voiceAlert, setVoiceAlert] = useState('');
   const [voiceOn, setVoiceOn] = useState(getVoiceReplies);
   const [readingId, setReadingId] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const nextId = useRef(1);
   const endRef = useRef(null);
   const greetingAttempted = useRef(false);
@@ -63,13 +77,21 @@ export default function OwnerAssistant() {
 
   // Leaving the screen stops any reading (AC-127, UX_SPEC_V3 §5 COMP-UX-026).
   useEffect(() => () => stopSpeaking(), []);
-  useEffect(() => { endRef.current?.scrollIntoView?.({ block: 'end' }); }, [messages, loading]);
+  useEffect(() => { endRef.current?.scrollIntoView?.({ block: 'end', behavior: 'smooth' }); }, [messages, loading]);
   useEffect(() => {
     if (!canSpeak) return undefined;
     const timeout = window.setTimeout(() => {
       if (greetingAttempted.current) return;
       greetingAttempted.current = true;
-      speak(SPOKEN_GREETING);
+      setReadingId(0);
+      speak(SPOKEN_GREETING, {
+        onStart: () => setIsSpeaking(true),
+        onPause: () => setIsSpeaking(false),
+        onEnd: () => {
+          setIsSpeaking(false);
+          setReadingId((current) => (current === 0 ? null : current));
+        },
+      });
     }, 0);
     return () => {
       window.clearTimeout(timeout);
@@ -80,7 +102,15 @@ export default function OwnerAssistant() {
   function read(message) {
     if (!canSpeak || !voiceOn) return;
     setReadingId(message.id);
-    speak(spokenText(message.answer), { onEnd: () => setReadingId((current) => (current === message.id ? null : current)) });
+    const spoken = spokenText(message.answer);
+    speak(spoken, {
+      onStart: () => setIsSpeaking(true),
+      onPause: () => setIsSpeaking(false),
+      onEnd: () => {
+        setIsSpeaking(false);
+        setReadingId((current) => (current === message.id ? null : current));
+      },
+    });
   }
 
   async function ask(question, viaVoice = false) {
@@ -88,6 +118,7 @@ export default function OwnerAssistant() {
     if (!clean || loading) return;
     stopSpeaking(); // a new question stops the current reading (AC-153)
     setReadingId(null);
+    setIsSpeaking(false);
     setVoiceAlert('');
     setError(null);
     setMessages((list) => [...list, { id: nextId.current++, role: 'owner', text: clean, viaVoice }]);
@@ -95,7 +126,8 @@ export default function OwnerAssistant() {
     setLoading(true);
     try {
       const answer = await apiFetch('/api/assistant/messages', { method: 'POST', body: { text: clean, viaVoice } });
-      const message = { id: nextId.current++, role: 'assistant', answer };
+      await new Promise((resolve) => window.setTimeout(resolve, 500));
+      const message = { id: nextId.current++, role: 'assistant', answer, revealing: true };
       setMessages((list) => [...list, message]);
       read(message); // AC-149
     } catch {
@@ -119,6 +151,7 @@ export default function OwnerAssistant() {
     if (!next) {
       stopSpeaking();
       setReadingId(null);
+      setIsSpeaking(false);
     }
   }
 
@@ -134,11 +167,26 @@ export default function OwnerAssistant() {
           <h1 id="assistant-title">Asistente</h1>
           <p className="search-subtitle">Pregúntame por veterinarias, servicios, precios, horarios o tus citas.</p>
         </div>
+        {readingId !== null && <div className="assistant-speaking" role="status" aria-live="polite">
+          <span className={`assistant-speaking-orb${isSpeaking ? ' assistant-speaking-orb-active' : ''}`} aria-hidden="true"><span /></span>
+          <span className="visually-hidden">VetCare está hablando</span>
+        </div>}
         {canSpeak && <div className="voice-reply-controls">
           <button type="button" className="button-secondary" aria-pressed={voiceOn} onClick={toggleVoice}>
-            <span aria-hidden="true">{voiceOn ? '🔊 ' : '🔇 '}</span>{voiceOn ? 'Voz activada' : 'Voz desactivada'}
+            <span aria-hidden="true">{voiceOn ? '🔊' : '🔇'}</span>
+            <span className="voice-control-label">{voiceOn ? 'Voz activada' : 'Voz desactivada'}</span>
           </button>
-          {readingId !== null && <button type="button" className="button-secondary" onClick={() => { stopSpeaking(); setReadingId(null); }}>Detener lectura</button>}
+          <button
+            type="button"
+            className="button-secondary assistant-stop-button"
+            aria-label="Detener lectura"
+            title="Detener lectura"
+            disabled={readingId === null}
+            onClick={() => { stopSpeaking(); setReadingId(null); setIsSpeaking(false); }}
+          >
+            <span aria-hidden="true">■</span>
+            <span className="voice-control-label">Detener lectura</span>
+          </button>
         </div>}
       </div>
 
@@ -150,7 +198,7 @@ export default function OwnerAssistant() {
               {message.viaVoice && <p className="chat-meta">Por voz</p>}
             </li>
           : <AssistantMessage key={message.id} message={message} reading={readingId === message.id} />))}
-        {loading && <li className="chat-message chat-assistant" role="status">Cargando…</li>}
+        {loading && <li className="chat-message chat-assistant assistant-typing" role="status"><span className="assistant-typing-dots" aria-hidden="true"><i /><i /><i /></span>Preparando una respuesta…</li>}
       </ol>
       {error && <div className="form-alert" role="alert">
         {MSG_NET}{' '}

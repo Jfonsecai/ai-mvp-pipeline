@@ -110,9 +110,19 @@ export default function SignIn({ expired = false, unavailable = false, onAuthent
 
       <button className="primary-button" type="submit" disabled={submitting}>{submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}</button>
     </form>
-    <p className="signin-prompt">¿No tienes cuenta?</p>
-    <Link to="/owner/sign-up">Crear cuenta de dueño de mascota</Link><br />
-    <Link to="/provider/sign-up">Crear cuenta de proveedor</Link>
+    <p className="signin-prompt">¿Primera vez en VetCare? Elige el tipo de cuenta que quieres crear:</p>
+    <nav className="signup-options" aria-label="Crear una cuenta">
+      <Link className="signup-option" to="/owner/sign-up">
+        <span className="signup-option-icon" aria-hidden="true">🐾</span>
+        <span className="signup-option-copy"><strong>Soy dueño de mascota</strong><small>Encuentra servicios y organiza el cuidado de tu mascota.</small></span>
+        <span className="signup-option-arrow" aria-hidden="true">→</span>
+      </Link>
+      <Link className="signup-option" to="/provider/sign-up">
+        <span className="signup-option-icon signup-provider-icon" aria-hidden="true">✚</span>
+        <span className="signup-option-copy"><strong>Soy proveedor veterinario</strong><small>Publica tus servicios y gestiona las citas de tus clientes.</small></span>
+        <span className="signup-option-arrow" aria-hidden="true">→</span>
+      </Link>
+    </nav>
     {demoMode && <aside className="demo-access" aria-label="Acceso de demostración">
       <p>¿Solo quieres explorar la app?</p>
       <small>Usa una cuenta de prueba; no necesitas registrarte.</small>

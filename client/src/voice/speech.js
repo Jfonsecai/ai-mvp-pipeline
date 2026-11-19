@@ -80,25 +80,71 @@ function pickVoice() {
     ?? null; // P05-ASM-021: any Spanish voice, else the browser default
 }
 
-/** Speaks `text` (cancelling any current reading). Calls `onEnd` when it finishes or is stopped. */
-export function speak(text, { onEnd, onError } = {}) {
+let speechRun = 0;
+let punctuationTimer;
+
+function punctuationPause(segment) {
+  const ending = segment.trim().slice(-1);
+  if (ending === ',') return 170;
+  if (ending === ';' || ending === ':') return 250;
+  if ('.?!…。'.includes(ending)) return 360;
+  return 0;
+}
+
+/** Speaks text and exposes the natural punctuation gaps to screens with voice feedback. */
+export function speak(text, { onStart, onPause, onEnd, onError } = {}) {
   if (!synthesisSupported() || !text) return;
+  const run = ++speechRun;
+  window.clearTimeout(punctuationTimer);
   window.speechSynthesis.cancel();
-  const utterance = new window.SpeechSynthesisUtterance(text);
-  utterance.lang = LANG;
-  const voice = pickVoice();
-  if (voice) utterance.voice = voice;
-  utterance.onend = () => onEnd?.();
-  utterance.onerror = (event) => { onError?.(event); onEnd?.(); };
-  try {
-    window.speechSynthesis.speak(utterance);
-  } catch (error) {
-    onError?.(error);
+  const segments = onPause
+    ? (text.match(/[^,.;:!?]+[,.;:!?]?/g) ?? [text]).map((part) => part.trim()).filter(Boolean)
+    : [text];
+  let index = 0;
+  let finished = false;
+
+  const finish = (error) => {
+    if (run !== speechRun || finished) return;
+    finished = true;
+    window.clearTimeout(punctuationTimer);
+    if (error) onError?.(error);
     onEnd?.();
-  }
+  };
+
+  const playNext = () => {
+    if (run !== speechRun || finished) return;
+    if (index >= segments.length) {
+      finish();
+      return;
+    }
+    const segment = segments[index++];
+    const utterance = new window.SpeechSynthesisUtterance(segment);
+    utterance.lang = LANG;
+    const voice = pickVoice();
+    if (voice) utterance.voice = voice;
+    utterance.onstart = () => { if (run === speechRun) onStart?.(); };
+    utterance.onend = () => {
+      if (run !== speechRun) return;
+      const pause = punctuationPause(segment);
+      if (index < segments.length && pause) {
+        onPause?.();
+        punctuationTimer = window.setTimeout(playNext, pause);
+      } else playNext();
+    };
+    utterance.onerror = (event) => finish(event);
+    try {
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      finish(error);
+    }
+  };
+
+  playNext();
 }
 
 export function stopSpeaking() {
+  speechRun += 1;
+  window.clearTimeout(punctuationTimer);
   if (synthesisSupported()) window.speechSynthesis.cancel();
 }
 

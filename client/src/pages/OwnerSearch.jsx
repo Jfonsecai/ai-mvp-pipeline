@@ -73,7 +73,6 @@ export default function OwnerSearch() {
   useEffect(() => {
     const q = searchParams.get('q')?.trim();
     if (!q) {
-      setQuery('consulta');
       void runSearch('consulta', 'all');
       return;
     }
@@ -178,6 +177,7 @@ export default function OwnerSearch() {
             id="offering-query"
             type="search"
             value={query}
+            placeholder="Escribe por ejemplo: consulta..."
             maxLength={120}
             required
             autoComplete="off"

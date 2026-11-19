@@ -42,7 +42,7 @@ function ConfirmCancelDialog({ appointment, busy, error, onConfirm, onCancel }) 
   }, []);
 
   return <dialog
-    className="confirm-dialog"
+    className="confirm-dialog appointment-confirm-dialog"
     ref={dialogRef}
     aria-labelledby="cancel-title"
     aria-describedby="cancel-text"
@@ -51,8 +51,18 @@ function ConfirmCancelDialog({ appointment, busy, error, onConfirm, onCancel }) 
       if (!busy) onCancel();
     }}
   >
-    <h2 id="cancel-title">¿Cancelar esta cita?</h2>
-    <p id="cancel-text"><strong>{appointment.service.name} · {dateTime}.</strong> La cita quedará cancelada y no se podrá reactivar.</p>
+    <div className="appointment-confirm-heading">
+      <span className="appointment-confirm-icon" aria-hidden="true">🐾</span>
+      <div>
+        <span className="appointment-confirm-eyebrow">GESTIÓN DE CITA</span>
+        <h2 id="cancel-title">¿Cancelar esta cita?</h2>
+      </div>
+    </div>
+    <div className="appointment-confirm-summary">
+      <strong>{appointment.service.name}</strong>
+      <span>{dateTime}</span>
+    </div>
+    <p id="cancel-text">La cita se marcará como cancelada y no se podrá reactivar.</p>
     {error && <div className="form-alert" role="alert">{error}</div>}
     <div className="confirm-actions">
       <button className="button-secondary" type="button" onClick={onCancel} disabled={busy}>No, volver</button>

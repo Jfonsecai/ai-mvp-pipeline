@@ -43,6 +43,7 @@ export default function BookAppointment() {
   const [visitAddress, setVisitAddress] = useState('');
   const [day, setDay] = useState('');
   const [slot, setSlot] = useState('');
+  const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState('');
   const [saving, setSaving] = useState(false);
@@ -66,6 +67,11 @@ export default function BookAppointment() {
   useEffect(() => {
     let active = true;
     setState('loading');
+    setStep(1);
+    setErrors({});
+    setAlert('');
+    setPetId('');
+    setSlot('');
     Promise.all([apiFetch('/api/owner/pets'), loadContext()])
       .then(([petList, value]) => {
         if (!active || !value) return;
@@ -150,6 +156,22 @@ export default function BookAppointment() {
     }
   }
 
+  function continueBooking() {
+    const nextErrors = {};
+    if (step === 1 && !petId) nextErrors.pet = 'Elige una mascota.';
+    if (step === 2) {
+      if (service.modality === 'both' && !modality) nextErrors.modality = 'Elige dónde será la cita.';
+      if (modality === 'home' && !visitAddress.trim()) nextErrors.visitAddress = MSG_REQUIRED;
+    }
+    setErrors((current) => ({ ...current, ...nextErrors }));
+    if (Object.keys(nextErrors).length) {
+      setAlert(MSG_FORM);
+      return;
+    }
+    setAlert('');
+    setStep((current) => Math.min(3, current + 1));
+  }
+
   if (state === 'not-found') return <Navigate to="/not-found" replace />;
 
   const service = context?.service;
@@ -183,8 +205,14 @@ export default function BookAppointment() {
 
         {noPets && <div className="info-alert" role="status">Para agendar necesitas tener al menos una mascota registrada.</div>}
 
-        {!noPets && <form onSubmit={submit} noValidate>
-          <fieldset className="booking-section" aria-describedby={errors.pet ? 'booking-pet-error' : undefined}>
+        {!noPets && <form className="booking-form" onSubmit={submit} noValidate>
+          <ol className="booking-progress" aria-label="Pasos para agendar">
+            {['Mascota', 'Lugar', 'Horario'].map((label, index) => <li key={label} className={step === index + 1 ? 'booking-progress-current' : step > index + 1 ? 'booking-progress-done' : ''} aria-current={step === index + 1 ? 'step' : undefined}>
+              <span>{step > index + 1 ? '✓' : index + 1}</span><small>{label}</small>
+            </li>)}
+          </ol>
+
+          {step === 1 && <fieldset className="booking-section" aria-describedby={errors.pet ? 'booking-pet-error' : undefined}>
             <legend>1. ¿Para qué mascota?</legend>
             {noEligible && <div className="warning-alert" role="status">
               Ninguna de tus mascotas puede recibir este servicio. Este servicio es solo para {onlySpecies}.
@@ -208,10 +236,10 @@ export default function BookAppointment() {
               </label>;
             })}
             {errors.pet && <span id="booking-pet-error" className="field-error">{errors.pet}</span>}
-          </fieldset>
+          </fieldset>}
 
           {!noEligible && <>
-            <fieldset className="booking-section">
+            {step === 2 && <fieldset className="booking-section">
               <legend>2. ¿Dónde será la cita?</legend>
               {service.modality === 'both'
                 ? <div className="modality-options" role="radiogroup" aria-label="Modalidad de la cita"
@@ -242,9 +270,9 @@ export default function BookAppointment() {
                 {errors.visitAddress && <span className="field-error" id="visit-address-error">{errors.visitAddress}</span>}
               </>}
               {modality === 'clinic' && service.provider.address && <p className="field-help">Lugar: {service.provider.address}</p>}
-            </fieldset>
+            </fieldset>}
 
-            <fieldset className="booking-section" aria-describedby={errors.slot ? 'booking-slot-error' : undefined}>
+            {step === 3 && <fieldset className="booking-section" aria-describedby={errors.slot ? 'booking-slot-error' : undefined}>
               <legend>3. ¿Cuándo?</legend>
               {!context.providerHasHours
                 ? <div className="info-alert" role="status">Este proveedor aún no ha definido su horario de atención, por eso no es posible agendar.</div>
@@ -278,12 +306,14 @@ export default function BookAppointment() {
                   <p className="field-help">Cada cita dura 1 hora. Hora de Bogotá.</p>
                 </>}
               {errors.slot && <span id="booking-slot-error" className="field-error">{errors.slot}</span>}
-            </fieldset>
+            </fieldset>}
 
-            {context.providerHasHours && <>
-              <button className="primary-button" type="submit" disabled={saving}>{saving ? 'Agendando…' : 'Agendar cita'}</button>
-              <p className="field-help">La cita queda agendada de inmediato.</p>
-            </>}
+            <div className="booking-step-actions">
+              {step > 1 && <button className="button-secondary" type="button" onClick={() => { setAlert(''); setStep((current) => current - 1); }}>Volver</button>}
+              {step < 3 && <button className="primary-button" type="button" onClick={continueBooking} disabled={noEligible}>Continuar</button>}
+              {step === 3 && context.providerHasHours && <button className="primary-button" type="submit" disabled={saving}>{saving ? 'Agendando…' : 'Confirmar cita'}</button>}
+            </div>
+            {step === 3 && context.providerHasHours && <p className="field-help booking-submit-help">Al confirmar, la cita queda agendada de inmediato.</p>}
           </>}
         </form>}
       </>}

@@ -61,7 +61,7 @@ function searchResult(row) {
  * (BR-042: voice adds no other matching). `q` is already validated and trimmed; `species` is a
  * SpeciesFilter. Removed offerings are excluded (CR-029).
  */
-export async function searchOfferings(db, { q, species = 'all' }) {
+export async function searchOfferings(db, { q, species = 'all', includeProviderNames = false }) {
   // Text and species both apply (AC-086); "all" adds no condition (AC-043).
   const params = [escapeLikePattern(q)];
   let speciesCondition = '';
@@ -70,13 +70,19 @@ export async function searchOfferings(db, { q, species = 'all' }) {
     speciesCondition = ' AND o.species = $2';
   }
 
+  const providerNameCondition = includeProviderNames
+    ? ` OR translate(lower(p.public_name), '${ACCENT_FROM}', '${ACCENT_TO}')
+              LIKE '%' || translate(lower($1), '${ACCENT_FROM}', '${ACCENT_TO}') || '%' ESCAPE E'\\\\'`
+    : '';
+
   const result = await db.query(
       `SELECT o.id, o.kind, o.name, o.price_cop, o.species, o.modality, o.available,
               p.provider_id, p.public_name, p.provider_type
          FROM offering o
          JOIN provider_profile p ON p.provider_id = o.provider_id
-        WHERE translate(lower(o.name), '${ACCENT_FROM}', '${ACCENT_TO}')
-              LIKE '%' || translate(lower($1), '${ACCENT_FROM}', '${ACCENT_TO}') || '%' ESCAPE E'\\\\'
+        WHERE (translate(lower(o.name), '${ACCENT_FROM}', '${ACCENT_TO}')
+               LIKE '%' || translate(lower($1), '${ACCENT_FROM}', '${ACCENT_TO}') || '%' ESCAPE E'\\\\'
+               ${providerNameCondition})
           AND o.removed_at IS NULL${speciesCondition}`,
     params,
   );
@@ -91,7 +97,7 @@ export function createSearchRouter({ db, guard }) {
     const speciesFilter = validateSpeciesFilter(req.query.species);
     const fields = [...(validation.fields ?? []), ...(speciesFilter.fields ?? [])];
     if (fields.length) throw new Outcome('VALIDATION_FAILED', { fields });
-    res.json({ results: await searchOfferings(db, { q: validation.value, species: speciesFilter.value }) });
+    res.json({ results: await searchOfferings(db, { q: validation.value, species: speciesFilter.value, includeProviderNames: true }) });
   });
 
   // IF-041 (US-035): the browser sends only the recognized text; it is not stored or logged (CR-027).

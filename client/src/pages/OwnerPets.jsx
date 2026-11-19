@@ -26,10 +26,12 @@ function PetForm({ initial, submitLabel, onSubmit, onCancel, error, fieldErrors 
   return <form className="pet-form" onSubmit={submit} noValidate>
     <h2 id="pet-form-title">{submitLabel === 'Agregar mascota' ? 'Nueva mascota' : 'Editar mascota'}</h2>
     {error && <div className="form-alert" role="alert">{error}</div>}
-    <label className="field-label" htmlFor="pet-name">Nombre</label>
-    <input id="pet-name" value={values.name} maxLength={80} required aria-invalid={Boolean(fieldErrors.name)} onChange={(event) => update('name', event.target.value)} />
-    {fieldErrors.name && <span className="field-error">{fieldErrors.name}</span>}
-    <fieldset className="provider-type-group">
+    <div className="pet-form-field">
+      <label className="field-label" htmlFor="pet-name">Nombre</label>
+      <input id="pet-name" value={values.name} maxLength={80} required aria-invalid={Boolean(fieldErrors.name)} onChange={(event) => update('name', event.target.value)} />
+      {fieldErrors.name && <span className="field-error">{fieldErrors.name}</span>}
+    </div>
+    <fieldset className="provider-type-group pet-form-species">
       <legend>Especie</legend>
       {['dog', 'cat'].map((species) => <label className="choice-card" key={species}>
         <input type="radio" name="pet-species" value={species} checked={values.species === species} required onChange={() => update('species', species)} />
@@ -37,18 +39,26 @@ function PetForm({ initial, submitLabel, onSubmit, onCancel, error, fieldErrors 
       </label>)}
     </fieldset>
       {fieldErrors.species && <span className="field-error">{fieldErrors.species}</span>}
-    <label className="field-label" htmlFor="pet-breed">Raza</label>
-    <input id="pet-breed" value={values.breed} maxLength={80} required aria-invalid={Boolean(fieldErrors.breed)} onChange={(event) => update('breed', event.target.value)} />
-    {fieldErrors.breed && <span className="field-error">{fieldErrors.breed}</span>}
-    <label className="field-label" htmlFor="pet-age">Edad en años</label>
-    <input id="pet-age" type="number" min="0" step="1" value={values.ageYears} required aria-invalid={Boolean(fieldErrors.ageYears)} onChange={(event) => update('ageYears', event.target.value)} />
-    {fieldErrors.ageYears && <span className="field-error">{fieldErrors.ageYears}</span>}
-    <label className="field-label" htmlFor="pet-weight">Peso en kg (opcional)</label>
-    <input id="pet-weight" type="number" min="0.1" max="999.9" step="0.1" value={values.weightKg} aria-invalid={Boolean(fieldErrors.weightKg)} onChange={(event) => update('weightKg', event.target.value)} />
-    {fieldErrors.weightKg && <span className="field-error">{fieldErrors.weightKg}</span>}
-    <label className="field-label" htmlFor="pet-height">Altura en cm (opcional)</label>
-    <input id="pet-height" type="number" min="1" max="32767" step="1" value={values.heightCm} aria-invalid={Boolean(fieldErrors.heightCm)} onChange={(event) => update('heightCm', event.target.value)} />
-    {fieldErrors.heightCm && <span className="field-error">{fieldErrors.heightCm}</span>}
+    <div className="pet-form-field">
+      <label className="field-label" htmlFor="pet-breed">Raza</label>
+      <input id="pet-breed" value={values.breed} maxLength={80} required aria-invalid={Boolean(fieldErrors.breed)} onChange={(event) => update('breed', event.target.value)} />
+      {fieldErrors.breed && <span className="field-error">{fieldErrors.breed}</span>}
+    </div>
+    <div className="pet-form-field">
+      <label className="field-label" htmlFor="pet-age">Edad en años</label>
+      <input id="pet-age" type="number" min="0" step="1" value={values.ageYears} required aria-invalid={Boolean(fieldErrors.ageYears)} onChange={(event) => update('ageYears', event.target.value)} />
+      {fieldErrors.ageYears && <span className="field-error">{fieldErrors.ageYears}</span>}
+    </div>
+    <div className="pet-form-field">
+      <label className="field-label" htmlFor="pet-weight">Peso en kg (opcional)</label>
+      <input id="pet-weight" type="number" min="0.1" max="999.9" step="0.1" value={values.weightKg} aria-invalid={Boolean(fieldErrors.weightKg)} onChange={(event) => update('weightKg', event.target.value)} />
+      {fieldErrors.weightKg && <span className="field-error">{fieldErrors.weightKg}</span>}
+    </div>
+    <div className="pet-form-field">
+      <label className="field-label" htmlFor="pet-height">Altura en cm (opcional)</label>
+      <input id="pet-height" type="number" min="1" max="32767" step="1" value={values.heightCm} aria-invalid={Boolean(fieldErrors.heightCm)} onChange={(event) => update('heightCm', event.target.value)} />
+      {fieldErrors.heightCm && <span className="field-error">{fieldErrors.heightCm}</span>}
+    </div>
     <div className="pet-form-actions">
       <button className="primary-button" type="submit">{submitLabel}</button>
       {onCancel && <button className="button-secondary" type="button" onClick={onCancel}>Cancelar</button>}
