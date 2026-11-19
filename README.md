@@ -30,6 +30,8 @@ Node.js 22 o posterior, npm y PostgreSQL para las funciones que leen o escriben 
 
 Instale dependencias con `npm ci`, cree `.env` a partir de `.env.example` y configure `APP_ORIGIN`. En terminales separadas ejecute `npm run dev:api` y `npm run dev:client`; luego abra `http://localhost:5173`. Se ejecutaron `npm ci`, `npm run build`, `npm run dev:api` y `npm run dev:client` el 2026-10-14 (evidencia en `artifacts/08_deployment/evidence/p08_rerun_ci_local.txt`): la API responde `/api/health` y Vite sirve el cliente y reenvía `/api`. Las rutas que usan datos requieren una base PostgreSQL propia.
 
+Para explorar el frontend sin registrar una cuenta ni usar la base de datos de producción, levanta el [entorno local de demostración con Docker Compose](docs/DEMO_DATA.md). Crea su propia base local con cuentas ficticias precargadas.
+
 ## Configuración
 
 La configuración detallada y variables de aplicación, base de datos y verificación de despliegue están en [SETUP](docs/SETUP.md). No copie valores reales o credenciales a la documentación.

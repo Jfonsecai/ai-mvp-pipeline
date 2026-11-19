@@ -81,7 +81,7 @@ function pickVoice() {
 }
 
 /** Speaks `text` (cancelling any current reading). Calls `onEnd` when it finishes or is stopped. */
-export function speak(text, { onEnd } = {}) {
+export function speak(text, { onEnd, onError } = {}) {
   if (!synthesisSupported() || !text) return;
   window.speechSynthesis.cancel();
   const utterance = new window.SpeechSynthesisUtterance(text);
@@ -89,8 +89,13 @@ export function speak(text, { onEnd } = {}) {
   const voice = pickVoice();
   if (voice) utterance.voice = voice;
   utterance.onend = () => onEnd?.();
-  utterance.onerror = () => onEnd?.();
-  window.speechSynthesis.speak(utterance);
+  utterance.onerror = (event) => { onError?.(event); onEnd?.(); };
+  try {
+    window.speechSynthesis.speak(utterance);
+  } catch (error) {
+    onError?.(error);
+    onEnd?.();
+  }
 }
 
 export function stopSpeaking() {

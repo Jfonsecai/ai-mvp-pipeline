@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
 import VoiceInputButton from '../voice/VoiceInputButton.jsx';
+import { offeringPhoto } from '../design-system/demo-images.js';
 
 // UX_SPEC_V3 §8 voice messages (US-035).
 const MSG_VOICE_NOHEAR = 'No te escuchamos. Intenta de nuevo o escribe tu búsqueda.';
@@ -31,19 +32,22 @@ const priceLabel = new Intl.NumberFormat('es-CO', {
 });
 
 function SearchResult({ result }) {
+  const image = offeringPhoto(result.id);
   return <li className="search-result">
-    <h2>{result.name}</h2>
-    <dl className="search-result-details">
-      <div><dt>Tipo</dt><dd>{kindLabel(result.kind)}</dd></div>
-      <div><dt>Especie</dt><dd>{speciesLabel(result.species)}</dd></div>
-      <div><dt>Precio</dt><dd>{priceLabel.format(result.priceCop)}</dd></div>
-      <div><dt>Proveedor</dt><dd><Link to={`/owner/providers/${result.provider.id}`}>{result.provider.name}</Link></dd></div>
-      <div><dt>Ofrecido por</dt><dd>{providerTypeLabel(result.provider.type)}</dd></div>
-      {result.kind === 'service'
-        ? <div><dt>Modalidad</dt><dd>{modalityLabel(result.modality)}</dd></div>
-        : <div><dt>Disponibilidad</dt><dd>{result.available ? 'Disponible' : 'No disponible'}</dd></div>}
-    </dl>
-    {result.kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/owner/services/${result.id}/book`} aria-label={`Agendar cita: ${result.name}`}>Agendar cita</Link>}
+    <div className="search-result-photo">
+      <img src={image} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
+      <span className={`search-kind-badge${result.kind === 'product' ? ' search-kind-product' : ''}`}>{kindLabel(result.kind)}</span>
+    </div>
+    <div className="search-result-content">
+      <p className="search-provider-type">{providerTypeLabel(result.provider.type)}</p>
+      <h2>{result.name}</h2>
+      <Link className="search-provider-link" to={`/owner/providers/${result.provider.id}`}>{result.provider.name}</Link>
+      <div className="search-card-meta"><span>{speciesLabel(result.species)}</span><span>{result.kind === 'service' ? modalityLabel(result.modality) : result.available ? 'Disponible' : 'No disponible'}</span></div>
+      <div className="search-card-actions">
+        <strong>{priceLabel.format(result.priceCop)}</strong>
+        {result.kind === 'service' && <Link className="button-link result-action" to={`/owner/services/${result.id}/book`} aria-label={`Agendar cita: ${result.name}`}>Agendar cita</Link>}
+      </div>
+    </div>
   </li>;
 }
 
@@ -65,9 +69,14 @@ export default function OwnerSearch() {
   useEffect(() => () => { requestId.current += 1; }, []);
 
   // "Ver todos en Buscar" from the assistant (AC-139, ARCHITECTURE_V4 §10): ?q=&species= are read once.
+  // When arriving at the home route directly, preload real API offers for the landing section.
   useEffect(() => {
     const q = searchParams.get('q')?.trim();
-    if (!q) return;
+    if (!q) {
+      setQuery('consulta');
+      void runSearch('consulta', 'all');
+      return;
+    }
     const requested = searchParams.get('species');
     const speciesValue = ['dog', 'cat'].includes(requested) ? requested : 'all';
     setQuery(q);
@@ -158,8 +167,10 @@ export default function OwnerSearch() {
         <div className="success-alert" role="status">Tu cuenta ya está creada y tu primera mascota está registrada.</div>
         {locationState?.pet?.name && <p>{locationState.pet.name} ya forma parte de tu cuenta.</p>}
       </>}
-      <h1 id="search-title">Buscar</h1>
-      <p className="search-subtitle">Servicios y productos de veterinarias y veterinarios en Bogotá.</p>
+      <header className="search-hero">
+        <h1 id="search-title">Encuentra el cuidado ideal para tu mascota.</h1>
+        <p>Compara servicios veterinarios en Bogotá y reserva en clínica o a domicilio.</p>
+      </header>
       <form className="search-form" onSubmit={submit}>
         <label className="field-label" htmlFor="offering-query">Servicio o producto</label>
         <div className="search-controls">

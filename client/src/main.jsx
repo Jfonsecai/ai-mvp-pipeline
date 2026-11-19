@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './design-system/tokens.css';
 import './design-system/global.css';
+import './design-system/identity.css';
 import App from './App.jsx';
 
 // Deep links (reloading /ruta) rely on the vercel.json rewrite to index.html (P05-ASM-012).

@@ -2,25 +2,37 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 
-const genericFailure = 'No pudimos iniciar sesión. Revisa el correo, la contraseña y el tipo de cuenta.';
+const genericFailure = 'No pudimos iniciar sesión. Revisa el correo y la contraseña.';
+const demoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
 export default function SignIn({ expired = false, unavailable = false, onAuthenticated }) {
   const navigate = useNavigate();
-  const [values, setValues] = useState({ accountType: '', email: '', password: '' });
+  const [values, setValues] = useState({ email: '', password: '' });
+  const [demoAccountType, setDemoAccountType] = useState(null);
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState(expired ? 'Tu sesión terminó. Inicia sesión de nuevo.' : unavailable ? 'No pudimos comprobar tu sesión. Revisa tu conexión e inténtalo de nuevo.' : '');
   const [submitting, setSubmitting] = useState(false);
 
   function update(field, value) {
     setValues((current) => ({ ...current, [field]: value }));
+    if (field === 'email' || field === 'password') setDemoAccountType(null);
     setErrors((current) => ({ ...current, [field]: undefined }));
+    setAlert('');
+  }
+
+  function useDemo(accountType) {
+    setValues({
+      email: accountType === 'owner' ? 'demo.dueno@vetcare.local' : 'demo.clinica@vetcare.local',
+      password: 'VetCareDemo2026!',
+    });
+    setDemoAccountType(accountType);
+    setErrors({});
     setAlert('');
   }
 
   async function submit(event) {
     event.preventDefault();
     const nextErrors = {};
-    if (!values.accountType) nextErrors.accountType = 'Elige cómo quieres entrar.';
     if (!values.email.trim()) nextErrors.email = 'Este campo es obligatorio.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) nextErrors.email = 'Escribe un correo válido.';
     if (!values.password) nextErrors.password = 'Este campo es obligatorio.';
@@ -33,7 +45,27 @@ export default function SignIn({ expired = false, unavailable = false, onAuthent
     setSubmitting(true);
     setAlert('');
     try {
-      const session = await apiFetch('/api/auth/sign-in', { method: 'POST', body: { ...values, email: values.email.trim() } });
+      const accountTypes = demoAccountType
+        ? [demoAccountType, demoAccountType === 'owner' ? 'provider' : 'owner']
+        : ['owner', 'provider'];
+      let session;
+      let credentialsError;
+      for (const accountType of accountTypes) {
+        try {
+          session = await apiFetch('/api/auth/sign-in', {
+            method: 'POST',
+            body: { ...values, email: values.email.trim(), accountType },
+          });
+          break;
+        } catch (error) {
+          if (error instanceof ApiError && error.code === 'INVALID_CREDENTIALS') {
+            credentialsError = error;
+            continue;
+          }
+          throw error;
+        }
+      }
+      if (!session) throw credentialsError ?? new ApiError('INVALID_CREDENTIALS', 401);
       onAuthenticated({ state: 'active', ...session });
       navigate(session.accountType === 'owner' ? '/owner/home' : '/provider/appointments', { replace: true });
     } catch (error) {
@@ -52,19 +84,24 @@ export default function SignIn({ expired = false, unavailable = false, onAuthent
     }
   }
 
-  return <main className="page-shell"><section className="form-card" aria-labelledby="signin-title">
-    <h1 id="signin-title">Iniciar sesión</h1>
+  return <main className="auth-page">
+    <section className="auth-story" aria-label="Bienvenido a VetCare">
+      <Link className="auth-brand" to="/" aria-label="VetCare, inicio">
+        <span className="auth-brand-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="10" cy="12" r="4"/><circle cx="18" cy="7" r="4"/><circle cx="27" cy="8" r="4"/><circle cx="34" cy="14" r="4"/><path d="M8 26c0-6 5-10 12-10s12 4 12 10c0 5-4 8-9 6l-3-1-3 1c-5 2-9-1-9-6Z"/><path d="M20 27s-4-2.3-4-4.7a2.3 2.3 0 0 1 4-1.5 2.3 2.3 0 0 1 4 1.5c0 2.4-4 4.7-4 4.7Z" fill="#087f8c"/></svg></span>
+        <span>Vet<span>Care</span></span>
+      </Link>
+      <p className="auth-eyebrow">Bienvenido de nuevo</p>
+      <h1>Cuidado veterinario, más cerca de ti.</h1>
+      <p className="auth-description">Encuentra servicios para tu mascota o administra tu práctica desde un solo lugar.</p>
+      <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080" alt="Perro y gato descansando juntos" />
+    </section>
+    <section className="form-card auth-card" aria-labelledby="signin-title">
+    <p className="auth-card-eyebrow">VETCARE</p>
+    <h2 id="signin-title">Iniciar sesión</h2>
     <form onSubmit={submit} noValidate>
       {alert && <div className={expired ? 'success-alert' : 'form-alert'} role={expired ? 'status' : 'alert'}>{alert}</div>}
-      <fieldset className="provider-type-group" aria-describedby={errors.accountType ? 'signin-type-error' : undefined}>
-        <legend>¿Cómo quieres entrar?</legend>
-        <label className="choice-card"><input type="radio" name="accountType" value="owner" autoFocus checked={values.accountType === 'owner'} onChange={() => update('accountType', 'owner')} /><span>Dueño de mascota</span></label>
-        <label className="choice-card"><input type="radio" name="accountType" value="provider" checked={values.accountType === 'provider'} onChange={() => update('accountType', 'provider')} /><span>Proveedor</span></label>
-      </fieldset>
-      {errors.accountType && <span id="signin-type-error" className="field-error">{errors.accountType}</span>}
-
       <label className="field-label" htmlFor="signin-email">Correo electrónico</label>
-      <input id="signin-email" name="email" type="email" autoComplete="username" maxLength={254} value={values.email} onChange={(event) => update('email', event.target.value)} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'signin-email-error' : undefined} />
+      <input id="signin-email" name="email" type="email" autoComplete="username" autoFocus maxLength={254} value={values.email} onChange={(event) => update('email', event.target.value)} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'signin-email-error' : undefined} />
       {errors.email && <span id="signin-email-error" className="field-error">{errors.email}</span>}
 
       <label className="field-label" htmlFor="signin-password">Contraseña</label>
@@ -76,5 +113,15 @@ export default function SignIn({ expired = false, unavailable = false, onAuthent
     <p className="signin-prompt">¿No tienes cuenta?</p>
     <Link to="/owner/sign-up">Crear cuenta de dueño de mascota</Link><br />
     <Link to="/provider/sign-up">Crear cuenta de proveedor</Link>
-  </section></main>;
+    {demoMode && <aside className="demo-access" aria-label="Acceso de demostración">
+      <p>¿Solo quieres explorar la app?</p>
+      <small>Usa una cuenta de prueba; no necesitas registrarte.</small>
+      <div className="demo-access-actions">
+        <button type="button" onClick={() => useDemo('owner')}>Entrar como dueño</button>
+        <button type="button" onClick={() => useDemo('provider')}>Entrar como proveedor</button>
+      </div>
+      <small>Contraseña: VetCareDemo2026!</small>
+    </aside>}
+    </section>
+  </main>;
 }

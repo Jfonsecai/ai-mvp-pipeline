@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+node_modules
+client/node_modules
+client/Identidad visual VetCare/node_modules
+client/Identidad visual VetCare
+.git
+public
+test-results
+playwright-report

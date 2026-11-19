@@ -14,7 +14,7 @@ export default defineConfig({
     strictPort: true, // APP_ORIGIN in .env.example assumes http://localhost:5173
     proxy: {
       // Same-origin in production; in development the Vite server forwards /api to the Express dev server.
-      '/api': 'http://localhost:3000',
+      '/api': process.env.API_PROXY_TARGET || 'http://localhost:3000',
     },
   },
 });

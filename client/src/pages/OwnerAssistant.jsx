@@ -9,7 +9,8 @@ import VoiceInputButton from '../voice/VoiceInputButton.jsx';
 import { getVoiceReplies, setVoiceReplies, speak, stopSpeaking, synthesisSupported, toSpeech } from '../voice/speech.js';
 
 const MAX_QUESTION = 200;
-const GREETING = 'Hola, soy el asistente de VetCare. Puedes preguntarme, por ejemplo: «¿Qué veterinarias hay?», «¿Quién ofrece vacunación para gatos?», «¿Cuánto cuesta una consulta?», «¿Cuál es el horario de [veterinaria]?» o «¿Cuándo es mi próxima cita?».';
+const GREETING = 'Hola, ¿en qué puedo ayudarte? Puedes preguntarme por veterinarias, servicios, precios, horarios o tus citas.';
+const SPOKEN_GREETING = 'Hola, ¿en qué puedo ayudarte?';
 const MSG_NET = 'No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.';
 const VOICE_ERRORS = {
   not_allowed: 'No tenemos permiso para usar el micrófono. Puedes escribir, o permitir el micrófono en la configuración del navegador.',
@@ -57,11 +58,24 @@ export default function OwnerAssistant() {
   const [readingId, setReadingId] = useState(null);
   const nextId = useRef(1);
   const endRef = useRef(null);
+  const greetingAttempted = useRef(false);
   const canSpeak = synthesisSupported();
 
   // Leaving the screen stops any reading (AC-127, UX_SPEC_V3 §5 COMP-UX-026).
   useEffect(() => () => stopSpeaking(), []);
   useEffect(() => { endRef.current?.scrollIntoView?.({ block: 'end' }); }, [messages, loading]);
+  useEffect(() => {
+    if (!canSpeak) return undefined;
+    const timeout = window.setTimeout(() => {
+      if (greetingAttempted.current) return;
+      greetingAttempted.current = true;
+      speak(SPOKEN_GREETING);
+    }, 0);
+    return () => {
+      window.clearTimeout(timeout);
+      if (greetingAttempted.current) stopSpeaking();
+    };
+  }, [canSpeak]);
 
   function read(message) {
     if (!canSpeak || !voiceOn) return;

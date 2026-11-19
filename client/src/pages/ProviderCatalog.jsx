@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
+import { offeringPhoto } from '../design-system/demo-images.js';
 
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
 const modalityLabel = (modality) => ({
@@ -44,16 +45,21 @@ function OfferingList({ items, kind, onRemove }) {
   }
   return <ul className="catalog-list">
     {items.map((item) => <li className="catalog-item" key={item.id}>
-      <h3>{item.name}</h3>
-      <dl className="catalog-details">
-        <div><dt>Tipo</dt><dd>{kind === 'service' ? 'Servicio' : 'Producto'}</dd></div>
-        <div><dt>Especie</dt><dd>{speciesLabel(item.species)}</dd></div>
-        <div><dt>Precio</dt><dd>{priceLabel.format(item.priceCop)}</dd></div>
-        {kind === 'service' && <div><dt>Modalidad</dt><dd>{modalityLabel(item.modality)}</dd></div>}
-      </dl>
-      <div className="catalog-item-actions">
-        <Link className="button-link button-link-secondary result-action" to={`/provider/${kind === 'service' ? 'services' : 'products'}/${item.id}/edit`} aria-label={`Editar: ${item.name}`}>Editar</Link>
-        <button className="link-button danger-link result-action" type="button" onClick={(event) => onRemove({ ...item, kind }, event.currentTarget)} aria-label={`Eliminar: ${item.name}`}>Eliminar</button>
+      <img className="offering-photo" src={offeringPhoto(item.id)} alt="" loading="lazy" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
+      <div className="catalog-item-content">
+        <span className={`offering-kind-tag offering-kind-${kind}`}>{kind === 'service' ? 'Servicio' : 'Producto'}</span>
+        <h3>{item.name}</h3>
+        <p className="catalog-price">{priceLabel.format(item.priceCop)}</p>
+        <dl className="catalog-details">
+          <div><dt>Para</dt><dd>{speciesLabel(item.species)}</dd></div>
+          {kind === 'service'
+            ? <div><dt>Atención</dt><dd>{modalityLabel(item.modality)}</dd></div>
+            : <div><dt>Disponibilidad</dt><dd>{item.available ? 'Disponible' : 'Agotado'}</dd></div>}
+        </dl>
+        <div className="catalog-item-actions">
+          <Link className="button-link button-link-secondary result-action" to={`/provider/${kind === 'service' ? 'services' : 'products'}/${item.id}/edit`} aria-label={`Editar: ${item.name}`}>Editar</Link>
+          <button className="link-button danger-link result-action" type="button" onClick={(event) => onRemove({ ...item, kind }, event.currentTarget)} aria-label={`Eliminar: ${item.name}`}>Eliminar</button>
+        </div>
       </div>
     </li>)}
   </ul>;
