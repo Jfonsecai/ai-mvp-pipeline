@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 
-const appOrigin = 'http://127.0.0.1:5173';
+const appPort = process.env.VETCARE_E2E_WEB_PORT || '5173';
+const appOrigin = `http://127.0.0.1:${appPort}`;
 const apiPort = process.env.VETCARE_E2E_API_PORT || '3000';
 const apiOrigin = `http://127.0.0.1:${apiPort}`;
 const testSchema = `vetcare_e2e_${randomUUID().replaceAll('-', '').slice(0, 12)}`;
@@ -36,7 +37,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'npm run dev --workspace client -- --host 127.0.0.1',
+      command: `npm run dev --workspace client -- --host 127.0.0.1 --port ${appPort}`,
       url: appOrigin,
       timeout: 30_000,
       reuseExistingServer: false,

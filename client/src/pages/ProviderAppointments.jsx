@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { apiFetch } from '../api/client.js';
 import { appointmentPhoto } from '../design-system/demo-images.js';
 

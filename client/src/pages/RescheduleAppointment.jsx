@@ -206,7 +206,7 @@ export default function RescheduleAppointment({ role = 'owner' }) {
               </fieldset>}
               <p className="field-help">Se mantienen la mascota, el servicio, la modalidad y el lugar de la cita. Hora de Bogotá.</p>
             </fieldset>
-            <div className="pet-form-actions">
+            <div className="reschedule-actions">
               <button className="primary-button" type="submit" disabled={saving || !slot}>
                 {saving ? 'Reprogramando…' : 'Confirmar nuevo horario'}
               </button>

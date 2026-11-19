@@ -15,9 +15,14 @@ const modalityLabel = (modality) => ({
 })[modality];
 const priceLabel = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
 
-// The phone only holds digits, spaces and "+"; the email is encoded so it cannot add mailto fields.
-const telHref = (phone) => `tel:${phone.replace(/\s+/g, '')}`;
-const mailHref = (email) => `mailto:${email.replace(/[?&#%]/g, encodeURIComponent)}`;
+// Provider phone numbers are saved with digits, spaces and an optional leading "+".
+const whatsappHref = (phone) => {
+  const digits = phone.replace(/\D/g, '');
+  const internationalNumber = digits.startsWith('57') ? digits : digits.length === 10 ? `57${digits}` : digits;
+  return `https://wa.me/${internationalNumber}`;
+};
+const gmailHref = (email) => `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
+const mapsHref = (address) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
 const profileSpeech = (profile) => [
   `Proveedor ${profile.name}.`,
@@ -32,16 +37,23 @@ function OfferingList({ items, kind }) {
     return <p className="catalog-empty">Este proveedor aún no ha publicado {kind === 'service' ? 'servicios' : 'productos'}.</p>;
   }
   return <ul className="catalog-list">
-    {items.map((item) => <li className="catalog-item" key={item.id}>
-      <h3>{item.name}</h3>
-      <dl className="catalog-details">
-        <div><dt>Tipo</dt><dd>{kind === 'service' ? 'Servicio' : 'Producto'}</dd></div>
-        <div><dt>Especie</dt><dd>{speciesLabel(item.species)}</dd></div>
-        <div><dt>Precio</dt><dd>{priceLabel.format(item.priceCop)}</dd></div>
-        {kind === 'service' && <div><dt>Modalidad</dt><dd>{modalityLabel(item.modality)}</dd></div>}
-        {kind === 'product' && item.available === false && <div><dt>Disponibilidad</dt><dd>No disponible</dd></div>}
-      </dl>
-      {kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/owner/services/${item.id}/book`} aria-label={`Agendar cita: ${item.name}`}>Agendar cita</Link>}
+    {items.map((item) => <li className={`catalog-item provider-offering-card provider-offering-${kind}`} key={item.id}>
+      <div className="catalog-item-content provider-offering-content">
+        <div className="provider-offering-heading">
+          <span className="provider-offering-icon" aria-hidden="true">{kind === 'service' ? '✚' : '♡'}</span>
+          <span className="provider-offering-kind">{kind === 'service' ? 'Servicio veterinario' : 'Producto para mascotas'}</span>
+        </div>
+        <h3>{item.name}</h3>
+        <dl className="catalog-details">
+          <div><dt>Especie</dt><dd>{speciesLabel(item.species)}</dd></div>
+          {kind === 'service' && <div><dt>Modalidad</dt><dd>{modalityLabel(item.modality)}</dd></div>}
+          {kind === 'product' && <div><dt>Disponibilidad</dt><dd>{item.available === false ? 'No disponible' : 'Disponible'}</dd></div>}
+        </dl>
+        <div className="provider-offering-footer">
+          <div><span>Precio</span><strong>{priceLabel.format(item.priceCop)}</strong></div>
+          {kind === 'service' && <Link className="button-link button-link-secondary result-action" to={`/owner/services/${item.id}/book`} aria-label={`Agendar cita: ${item.name}`}>Agendar cita <span aria-hidden="true">→</span></Link>}
+        </div>
+      </div>
     </li>)}
   </ul>;
 }
@@ -86,9 +98,9 @@ export default function ProviderPublicProfile() {
         <section className="contact-card" aria-labelledby="contact-title">
           <h2 id="contact-title">Contacto</h2>
           <dl className="catalog-details">
-            {profile.address && <div><dt>Dirección</dt><dd>{profile.address}</dd></div>}
-            {profile.contactPhone && <div><dt>Teléfono</dt><dd><a href={telHref(profile.contactPhone)}>{profile.contactPhone}</a></dd></div>}
-            <div><dt>Correo</dt><dd><a href={mailHref(profile.contactEmail)}>{profile.contactEmail}</a></dd></div>
+            {profile.address && <div><dt>Dirección</dt><dd><a href={mapsHref(profile.address)} target="_blank" rel="noopener noreferrer" aria-label={`Buscar ${profile.address} en Google Maps`}>{profile.address} <span aria-hidden="true">↗</span></a></dd></div>}
+            {profile.contactPhone && <div><dt>WhatsApp</dt><dd><a href={whatsappHref(profile.contactPhone)} target="_blank" rel="noopener noreferrer" aria-label={`Contactar a ${profile.name} por WhatsApp`}>{profile.contactPhone} <span aria-hidden="true">↗</span></a></dd></div>}
+            <div><dt>Gmail</dt><dd><a href={gmailHref(profile.contactEmail)} target="_blank" rel="noopener noreferrer" aria-label={`Escribir a ${profile.name} por Gmail`}>{profile.contactEmail} <span aria-hidden="true">↗</span></a></dd></div>
           </dl>
         </section>
 

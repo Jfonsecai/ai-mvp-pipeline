@@ -4,7 +4,7 @@
 
 VetCare es un marketplace web para conectar a dueños de mascotas con clínicas veterinarias y veterinarios independientes. Desde la aplicación se pueden descubrir servicios por especie, consultar perfiles, reservar citas presenciales o a domicilio y administrar las citas. Los proveedores pueden mantener su perfil y horario, publicar servicios y productos y consultar las citas reservadas. La interfaz está en español y presenta precios en pesos colombianos (COP).
 
-Este documento describe las pantallas y rutas implementadas en el cliente actual. No todas las capacidades previstas para el producto están disponibles: los pedidos de productos, pagos, notificaciones, calificaciones y administración no tienen un flujo de interfaz implementado. La gestión de mascotas permite consultar el registro creado durante el alta, pero no agregar, editar ni eliminar mascotas desde la aplicación.
+Este documento describe las pantallas y rutas implementadas en el cliente actual. Los pedidos de productos, pagos, notificaciones, calificaciones y administración no tienen un flujo implementado. Las mascotas se pueden consultar, agregar, editar y eliminar desde la aplicación.
 
 ## Tecnologías y estructura
 
@@ -39,12 +39,12 @@ Todas requieren sesión de dueño.
 | Ruta | Vista | Uso e interacción |
 |---|---|---|
 | `/owner/home` | Buscar (`OwnerSearch`) | Al entrar muestra resultados reales de servicios para iniciar la exploración; permite buscar servicios o productos por texto y especie, con opción de búsqueda por voz. Se pueden abrir perfiles de proveedor o continuar a reservar un servicio. |
-| `/owner/assistant` | Asistente (`OwnerAssistant`) | Escribir una consulta sobre el uso de VetCare y enviar para recibir una respuesta del asistente. Está orientado a resolver preguntas del usuario; no sustituye una consulta veterinaria. |
-| `/owner/providers/:providerId` | Perfil público (`ProviderPublicProfile`) | Revisar la información pública del proveedor y sus servicios/productos publicados. Desde un servicio disponible se continúa a agendar. |
+| `/owner/assistant` | Asistente (`OwnerAssistant`) | Consultar proveedores, servicios, precios, horarios y citas por texto o voz. Las respuestas se muestran como conversación; si el navegador admite síntesis de voz, se leen en voz alta. No sustituye una consulta veterinaria. |
+| `/owner/providers/:providerId` | Perfil público (`ProviderPublicProfile`) | Revisar información, servicios y productos publicados. El perfil ofrece enlaces de contacto a WhatsApp, Gmail y Google Maps cuando hay datos disponibles. Desde un servicio se continúa a agendar. |
 | `/owner/services/:serviceId/book` | Agendar cita (`BookAppointment`) | Revisar servicio, proveedor, especie, precio y modalidad; seleccionar una mascota compatible, el lugar cuando hay más de una modalidad, fecha y horario. Para atención a domicilio se indica dirección. Al confirmar se crea la cita y se vuelve a «Mis citas». Si el horario dejó de estar disponible, se informa y se recargan opciones. |
-| `/owner/appointments` | Mis citas (`OwnerAppointments`) | Consultar citas del dueño y su estado. Las citas que admiten cambio ofrecen acceso a reprogramación; los mensajes de retorno confirman reserva o reprogramación. |
+| `/owner/appointments` | Mis citas (`OwnerAppointments`) | Consultar, cancelar o reprogramar citas elegibles. Las acciones de cancelación requieren confirmación; mensajes de retorno notifican los cambios. |
 | `/owner/appointments/:appointmentId/reschedule` | Reprogramar cita (`RescheduleAppointment`) | Ver el contexto de la cita, recorrer semanas, seleccionar un día y una hora disponibles y confirmar. Se conservan mascota, servicio, modalidad y lugar; si la cita ya no admite cambios se presenta el aviso correspondiente. |
-| `/owner/pets` | Mis mascotas (`OwnerPets`) | Consultar las mascotas asociadas a la cuenta. El flujo actual no presenta acciones para añadir, editar ni eliminar registros. |
+| `/owner/pets` | Mis mascotas (`OwnerPets`) | Consultar, agregar, editar y eliminar las mascotas asociadas a la cuenta. Agregar y editar se realizan en un modal; eliminar requiere confirmación. |
 
 ### Recorrido habitual del dueño
 
@@ -59,8 +59,8 @@ Todas requieren sesión de proveedor.
 
 | Ruta | Vista | Uso e interacción |
 |---|---|---|
-| `/provider/appointments` | Citas (`ProviderAppointments`) | Consultar las citas asociadas al proveedor y sus datos relevantes. |
-| `/provider/catalog` | Catálogo (`ProviderCatalog`) | Consultar servicios y productos publicados. Permite iniciar la publicación, editar una oferta o eliminarla con confirmación desde las acciones de su tarjeta. Eliminar un servicio también puede cancelar citas futuras afectadas; las citas siguen visibles con estado cancelado. |
+| `/provider/appointments` | Citas (`ProviderAppointments`) | Consultar citas recibidas y cancelar o reprogramar las citas futuras elegibles. |
+| `/provider/catalog` | Catálogo (`ProviderCatalog`) | Consultar servicios y productos publicados, iniciar publicaciones, editar ofertas o eliminarlas con confirmación. Eliminar un servicio puede cancelar citas futuras afectadas; estas siguen visibles con estado cancelado. |
 | `/provider/services/new` | Publicar servicio (`PublishService`) | Completar nombre, precio COP, especie y modalidad según el tipo de proveedor, y publicar. |
 | `/provider/services/:offeringId/edit` | Editar servicio (`PublishService`) | Cargar la oferta existente, ajustar sus datos y guardar cambios. La oferta actualizada se refleja en catálogo, perfil público y búsqueda. |
 | `/provider/products/new` | Publicar producto (`PublishProduct`) | Completar los datos requeridos del producto y publicarlo en el catálogo. La interfaz de publicación no implica un flujo de compra. |
@@ -73,7 +73,7 @@ Todas requieren sesión de proveedor.
 1. Crear una cuenta de proveedor e iniciar sesión.
 2. Completar el perfil público y configurar el horario de atención.
 3. Publicar servicios o productos desde el catálogo y editar o retirar ofertas cuando sea necesario.
-4. Consultar las citas recibidas en «Citas».
+4. Consultar, cancelar o reprogramar las citas recibidas en «Citas», cuando su estado y horario lo permiten.
 
 ## Estados y comportamiento de formularios
 
@@ -84,11 +84,11 @@ Las horas mostradas para reservas se expresan en hora de Bogotá. Las etiquetas,
 ## Alcance y límites visibles
 
 - Se pueden reservar citas de servicios veterinarios en clínica o a domicilio, de acuerdo con la modalidad ofrecida.
-- Se pueden reprogramar citas elegibles desde la cuenta del dueño.
-- Los proveedores pueden publicar, editar y eliminar ofertas; catálogo de productos no incluye compra ni pedidos desde la interfaz.
-- Las mascotas se registran inicialmente durante el alta del dueño y se pueden consultar, pero no se gestionan posteriormente desde la interfaz.
+- Dueños y proveedores pueden cancelar o reprogramar sus citas futuras elegibles desde sus respectivas cuentas.
+- Los proveedores pueden publicar, editar y eliminar ofertas; el catálogo de productos no incluye compra ni pedidos.
+- Las mascotas se registran durante el alta del dueño y luego se pueden agregar, editar y eliminar.
 - El diagnóstico `/estado-tecnico` comprueba infraestructura y no forma parte de la navegación de producto.
-- Pagos, notificaciones, reseñas/calificaciones, seguimiento en tiempo real y panel administrativo no están disponibles como flujos del frontend.
+- Pagos, pedidos de productos, notificaciones, reseñas/calificaciones, seguimiento en tiempo real y panel administrativo no están disponibles como flujos del frontend.
 
 ## Archivos de referencia
 
