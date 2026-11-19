@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 
 const appOrigin = 'http://127.0.0.1:5173';
+const apiPort = process.env.VETCARE_E2E_API_PORT || '3000';
+const apiOrigin = `http://127.0.0.1:${apiPort}`;
 const testSchema = `vetcare_e2e_${randomUUID().replaceAll('-', '').slice(0, 12)}`;
 process.env.VETCARE_E2E_SCHEMA = testSchema;
 
@@ -23,13 +25,13 @@ export default defineConfig({
   webServer: [
     {
       command: 'node tests/e2e/start-api.js',
-      url: 'http://127.0.0.1:3000/api/health',
+      url: `${apiOrigin}/api/health`,
       timeout: 30_000,
       reuseExistingServer: false,
       env: {
         APP_ORIGIN: appOrigin,
         NODE_ENV: 'test',
-        PORT: '3000',
+        PORT: apiPort,
         VETCARE_E2E_SCHEMA: testSchema,
       },
     },
@@ -38,6 +40,9 @@ export default defineConfig({
       url: appOrigin,
       timeout: 30_000,
       reuseExistingServer: false,
+      env: {
+        API_PROXY_TARGET: apiOrigin,
+      },
     },
   ],
 });

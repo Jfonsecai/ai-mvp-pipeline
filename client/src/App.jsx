@@ -16,10 +16,15 @@ import SignIn from './pages/SignIn.jsx';
 import ProviderWorkingHours from './pages/ProviderWorkingHours.jsx';
 import ProviderCatalog from './pages/ProviderCatalog.jsx';
 import ProviderAppointments from './pages/ProviderAppointments.jsx';
+import AboutUs from './pages/AboutUs.jsx';
 import PublishService from './pages/PublishService.jsx';
 import PublishProduct from './pages/PublishProduct.jsx';
 
 const homePath = (type) => type === 'owner' ? '/owner/home' : '/provider/appointments';
+
+function PawMark({ className = '' }) {
+  return <span className={`brand-paw ${className}`} aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="10" cy="12" r="4"/><circle cx="18" cy="7" r="4"/><circle cx="27" cy="8" r="4"/><circle cx="34" cy="14" r="4"/><path d="M8 26c0-6 5-10 12-10s12 4 12 10c0 5-4 8-9 6l-3-1-3 1c-5 2-9-1-9-6Z"/><path className="paw-heart" d="M20 27s-4-2.3-4-4.7a2.3 2.3 0 0 1 4-1.5 2.3 2.3 0 0 1 4 1.5c0 2.4-4 4.7-4 4.7Z"/></svg></span>;
+}
 
 function SessionHome({ session }) {
   return session.state === 'active' ? <Navigate to={homePath(session.accountType)} replace /> : <Navigate to="/sign-in" replace />;
@@ -75,31 +80,46 @@ function SignedInScreen({ accountType, children, onSignedOut }) {
     apiFetch('/api/auth/sign-out', { method: 'POST' }).catch(() => {});
   };
 
-  return <>
+  const iconFor = (label) => {
+    const common = { width: 19, height: 19, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
+    if (label === 'Buscar') return <svg {...common}><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>;
+    if (label === 'Asistente') return <svg {...common}><path d="M12 3a8 8 0 0 0-4.6 14.5L7 21l4-2a9 9 0 0 0 1 .1 8 8 0 1 0 0-16Z"/><path d="M9 12h.01M12 12h.01M15 12h.01"/></svg>;
+    if (label === 'Mis citas' || label === 'Citas') return <svg {...common}><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 17h3"/></svg>;
+    if (label === 'Mis mascotas') return <svg {...common}><path d="M12 20c-4.5 0-8-2.4-8-5.5S7.6 9 12 9s8 2.4 8 5.5S16.5 20 12 20Z"/><circle cx="5" cy="7" r="1.6"/><circle cx="9" cy="4.5" r="1.6"/><circle cx="15" cy="4.5" r="1.6"/><circle cx="19" cy="7" r="1.6"/></svg>;
+    if (label === 'Catálogo') return <svg {...common}><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z"/><path d="M4 6h16M8 10h7M8 14h8"/></svg>;
+    if (label === 'Horario') return <svg {...common}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>;
+    return <svg {...common}><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0M19 4l1 1 2-2"/></svg>;
+  };
+
+  return <div className="app-layout">
     <header className="app-header">
-      <Link className="wordmark" to="/">VetCare</Link>
+      <Link className="wordmark" to="/" aria-label="VetCare, inicio"><PawMark /><span>Vet<span className="wordmark-accent">Care</span></span></Link>
       {accountType === 'provider' && <nav className="provider-navigation" aria-label="Menú principal">
-        <NavLink to="/provider/appointments">Citas</NavLink>
-        <NavLink to="/provider/catalog">Catálogo</NavLink>
-        <NavLink to="/provider/working-hours">Horario</NavLink>
-        <NavLink to="/provider/profile">Perfil</NavLink>
+        <NavLink to="/provider/appointments">{iconFor('Citas')}<span>Citas</span></NavLink>
+        <NavLink to="/provider/catalog">{iconFor('Catálogo')}<span>Catálogo</span></NavLink>
+        <NavLink to="/provider/working-hours">{iconFor('Horario')}<span>Horario</span></NavLink>
+        <NavLink to="/provider/profile">{iconFor('Perfil')}<span>Perfil</span></NavLink>
       </nav>}
       {accountType === 'owner' && <nav className="owner-navigation" aria-label="Menú principal">
-        <NavLink to="/owner/home">Buscar</NavLink>
-        <NavLink to="/owner/assistant">Asistente</NavLink>
-        <NavLink to="/owner/appointments">Mis citas</NavLink>
-        <NavLink to="/owner/pets">Mis mascotas</NavLink>
+        <NavLink to="/owner/home">{iconFor('Buscar')}<span>Buscar</span></NavLink>
+        <NavLink to="/owner/assistant">{iconFor('Asistente')}<span>Asistente</span></NavLink>
+        <NavLink to="/owner/appointments">{iconFor('Mis citas')}<span>Mis citas</span></NavLink>
+        <NavLink to="/owner/pets">{iconFor('Mis mascotas')}<span>Mis mascotas</span></NavLink>
       </nav>}
       <div className="account-menu" data-account-menu>
-        <button ref={buttonRef} className="button-secondary" type="button" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}>Cuenta</button>
+        <button ref={buttonRef} className="button-secondary" type="button" aria-label="Cuenta" aria-expanded={menuOpen} aria-controls="account-menu-panel" onClick={() => setMenuOpen((open) => !open)}><span className="account-menu-label">Cuenta</span><PawMark className="account-brand-mark" /></button>
         {menuOpen && <div id="account-menu-panel" ref={menuRef} className="account-menu-panel" tabIndex={-1}>
           <p>{accountType === 'owner' ? 'Dueño de mascota' : 'Proveedor'}</p>
+          <Link className="account-menu-action account-menu-link" to="/about" onClick={() => setMenuOpen(false)}>Acerca de nosotros</Link>
           <button className="account-menu-action" type="button" onClick={signOut}>Cerrar sesión</button>
         </div>}
       </div>
     </header>
-    {children}
-  </>;
+    <div className="app-main">
+      {children}
+      <footer className="app-footer"><span>© VetCare · Bogotá, Colombia</span><span>Horarios en hora de Bogotá · Precios en COP</span></footer>
+    </div>
+  </div>;
 }
 
 function NotFound({ session }) {
@@ -135,6 +155,9 @@ function RoutedApp({ session, setSession, onSignedOut }) {
 
   return <Routes>
     <Route path="/estado-tecnico" element={<TechnicalStatus />} />
+    <Route path="/about" element={session.state === 'active'
+      ? <SignedInScreen accountType={session.accountType} onSignedOut={onSignedOut}><AboutUs accountType={session.accountType} /></SignedInScreen>
+      : <Navigate to="/sign-in" replace />} />
     <Route path="/" element={<SessionHome session={session} />} />
     <Route path="/sign-in" element={session.state === 'active'
       ? <Navigate to={homePath(session.accountType)} replace />

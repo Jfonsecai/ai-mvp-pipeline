@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ApiError, apiFetch } from '../api/client.js';
+import { workingHoursPhoto } from '../design-system/demo-images.js';
 
 const DAYS = [
   { weekday: 1, name: 'Lunes' },
@@ -128,6 +129,10 @@ export default function ProviderWorkingHours() {
       <section className="working-hours-card" aria-labelledby="working-hours-title">
         <h1 id="working-hours-title">Horario de atención</h1>
         <p className="working-hours-subtitle">Los dueños solo podrán agendar en estos días y horas. Cada cita dura 1 hora.</p>
+        <div className="working-hours-intro">
+          <img src={workingHoursPhoto} alt="Veterinaria atendiendo a un perro" />
+          <div><strong>Tu tiempo, organizado</strong><span>Define cuándo puedes recibir a tus pacientes.</span></div>
+        </div>
         {loading && <p role="status">Cargando horario…</p>}
         {!loading && noHours && <div className="info-alert" role="status">Aún no has definido tu horario. Mientras no lo hagas, los dueños no podrán agendar citas contigo.</div>}
         {alert && <div className="form-alert" role="alert">{alert}</div>}
@@ -141,6 +146,7 @@ export default function ProviderWorkingHours() {
               const endError = fieldErrors[`${day.weekday}.endHour`];
               return <fieldset className="working-day-row" key={day.weekday}>
                 <legend>{name}</legend>
+                <span className="working-day-number" aria-hidden="true">{String(day.weekday).padStart(2, '0')}</span>
                 <label className="working-day-toggle">
                   <input
                     type="checkbox"

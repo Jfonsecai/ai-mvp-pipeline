@@ -1,0 +1,69 @@
+name: vetcare-demo
+
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vetcare_demo
+      POSTGRES_USER: vetcare
+      POSTGRES_PASSWORD: vetcare_demo_only
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - vetcare_demo_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vetcare -d vetcare_demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    environment: &db-env
+      NODE_ENV: development
+      DATABASE_URL_UNPOOLED: postgresql://vetcare:vetcare_demo_only@database:5432/vetcare_demo
+    command: ["npm", "run", "migrate"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+
+  seed:
+    build: .
+    environment:
+      <<: *db-env
+      DEMO_SEED: "true"
+    command: ["node", "scripts/seed-demo.js"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  api:
+    build: .
+    environment:
+      <<: *db-env
+      NODE_ENV: development
+      APP_ORIGIN: http://localhost:5173
+      DATABASE_URL: postgresql://vetcare:vetcare_demo_only@database:5432/vetcare_demo
+      PORT: 3000
+    command: ["node", "scripts/dev-server.js"]
+    ports:
+      - "127.0.0.1:3002:3000"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+
+  web:
+    build: .
+    environment:
+      API_PROXY_TARGET: http://api:3000
+      VITE_DEMO_MODE: "true"
+    command: ["npm", "run", "dev", "--workspace", "client", "--", "--host", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  vetcare_demo_data:

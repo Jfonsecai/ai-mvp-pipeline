@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError, apiFetch } from '../api/client.js';
+import { petPhoto } from '../design-system/demo-images.js';
 
 const emptyPet = { name: '', species: '', breed: '', ageYears: '', weightKg: '', heightCm: '' };
 const speciesLabel = (species) => (species === 'dog' ? 'Perro' : 'Gato');
@@ -23,7 +24,7 @@ function PetForm({ initial, submitLabel, onSubmit, onCancel, error, fieldErrors 
     onSubmit(petPayload(values));
   };
   return <form className="pet-form" onSubmit={submit} noValidate>
-    <h2>{submitLabel === 'Agregar mascota' ? 'Nueva mascota' : 'Editar mascota'}</h2>
+    <h2 id="pet-form-title">{submitLabel === 'Agregar mascota' ? 'Nueva mascota' : 'Editar mascota'}</h2>
     {error && <div className="form-alert" role="alert">{error}</div>}
     <label className="field-label" htmlFor="pet-name">Nombre</label>
     <input id="pet-name" value={values.name} maxLength={80} required aria-invalid={Boolean(fieldErrors.name)} onChange={(event) => update('name', event.target.value)} />
@@ -56,12 +57,27 @@ function PetForm({ initial, submitLabel, onSubmit, onCancel, error, fieldErrors 
 }
 
 export default function OwnerPets() {
+  const petDialogRef = useRef(null);
   const [pets, setPets] = useState([]);
   const [state, setState] = useState('loading');
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    const dialog = petDialogRef.current;
+    if (!dialog) return;
+    if ((adding || editing) && !dialog.open) dialog.showModal();
+    else if (!adding && !editing && dialog.open) dialog.close();
+  }, [adding, editing]);
+
+  function closePetForm() {
+    setAdding(false);
+    setEditing(null);
+    setError('');
+    setFieldErrors({});
+  }
 
   async function loadPets() {
     setState('loading');
@@ -110,10 +126,26 @@ export default function OwnerPets() {
       {state === 'error' && <div className="form-alert" role="alert">{error} <button className="link-button" type="button" onClick={() => void loadPets()}>Reintentar</button></div>}
       {state === 'ready' && !pets.length && <section className="pets-empty"><h2>No tienes mascotas registradas</h2><p>Agrega una mascota para poder elegirla al agendar una cita.</p></section>}
       {state === 'ready' && pets.length > 0 && <ul className="pets-list">{pets.map((pet) => <li className="pet-card" key={pet.id}>
+        <img className="pet-card-photo" src={petPhoto(pet.id)} alt={`${pet.name}, ${speciesLabel(pet.species).toLowerCase()}`} loading="lazy" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
         <h2>{pet.name}</h2><dl className="pet-details"><div><dt>Especie</dt><dd>{speciesLabel(pet.species)}</dd></div><div><dt>Raza</dt><dd>{pet.breed}</dd></div><div><dt>Edad</dt><dd>{pet.ageYears} años</dd></div>{pet.weightKg !== undefined && <div><dt>Peso</dt><dd>{pet.weightKg} kg</dd></div>}{pet.heightCm !== undefined && <div><dt>Altura</dt><dd>{pet.heightCm} cm</dd></div>}</dl>
         <div className="pet-actions"><button className="button-secondary" type="button" onClick={() => { setEditing(pet); setAdding(false); setError(''); }}>Editar</button><button className="link-button" type="button" onClick={() => void removePet(pet)}>Retirar</button></div>
       </li>)}</ul>}
-      {(adding || editing) && <PetForm initial={editing ? { name: editing.name, species: editing.species, breed: editing.breed, ageYears: String(editing.ageYears), weightKg: editing.weightKg === undefined ? '' : String(editing.weightKg), heightCm: editing.heightCm === undefined ? '' : String(editing.heightCm) } : emptyPet} submitLabel={editing ? 'Guardar cambios' : 'Agregar mascota'} error={error} fieldErrors={fieldErrors} onSubmit={(payload) => void savePet(payload, editing?.id)} onCancel={() => { setAdding(false); setEditing(null); setError(''); setFieldErrors({}); }} />}
+      <dialog
+        ref={petDialogRef}
+        className="pet-edit-dialog"
+        aria-labelledby="pet-form-title"
+        onCancel={(event) => { event.preventDefault(); closePetForm(); }}
+        onClick={(event) => { if (event.target === event.currentTarget) closePetForm(); }}
+      >
+        {(adding || editing) && <PetForm
+          initial={editing ? { name: editing.name, species: editing.species, breed: editing.breed, ageYears: String(editing.ageYears), weightKg: editing.weightKg === undefined ? '' : String(editing.weightKg), heightCm: editing.heightCm === undefined ? '' : String(editing.heightCm) } : emptyPet}
+          submitLabel={editing ? 'Guardar cambios' : 'Agregar mascota'}
+          error={error}
+          fieldErrors={fieldErrors}
+          onSubmit={(payload) => void savePet(payload, editing?.id)}
+          onCancel={closePetForm}
+        />}
+      </dialog>
     </section>
   </main>;
 }

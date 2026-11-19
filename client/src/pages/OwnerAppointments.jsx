@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ApiError, apiFetch } from '../api/client.js';
 import ListenButton from '../voice/ListenButton.jsx';
+import { appointmentPhoto } from '../design-system/demo-images.js';
 
 const MSG_NET = 'No pudimos completar la acción. Revisa tu conexión e inténtalo de nuevo.';
 const dateLabel = new Intl.DateTimeFormat('es-CO', {
@@ -68,22 +69,27 @@ function AppointmentCard({ appointment, headingRefs, readingId, setReadingId, on
 
   return <li className="appointment-list-item">
     <article className={`appointment-card ${cancelled ? 'appointment-card-cancelled' : ''}`} aria-labelledby={`appointment-${appointment.id}`}>
-      <h3
-        id={`appointment-${appointment.id}`}
-        ref={(node) => {
-          if (node) headingRefs.current.set(appointment.id, node);
-          else headingRefs.current.delete(appointment.id);
-        }}
-        tabIndex={-1}
-      >
-        {when}
-      </h3>
-      <div className="appointment-badges">
-        <span className={`appointment-badge ${cancelled ? 'appointment-badge-neutral' : 'appointment-badge-success'}`}>
-          {cancelled ? 'Cancelada' : 'Programada'}
-        </span>
-        <span className="appointment-badge appointment-badge-neutral">{modalityLabel(appointment.modality)}</span>
-        <span className="appointment-badge appointment-badge-neutral">{providerTypeLabel(appointment.provider.type)}</span>
+      <div className="appointment-card-head">
+        <img className="appointment-pet-photo" src={appointmentPhoto(appointment.id)} alt={appointment.pet.name} loading="lazy" />
+        <div className="appointment-card-summary">
+          <h3
+            id={`appointment-${appointment.id}`}
+            ref={(node) => {
+              if (node) headingRefs.current.set(appointment.id, node);
+              else headingRefs.current.delete(appointment.id);
+            }}
+            tabIndex={-1}
+          >
+            {when}
+          </h3>
+          <div className="appointment-badges">
+            <span className={`appointment-badge ${cancelled ? 'appointment-badge-cancelled' : 'appointment-badge-success'}`}>
+              {cancelled ? 'Cancelada' : 'Programada'}
+            </span>
+            <span className="appointment-badge appointment-badge-neutral">{modalityLabel(appointment.modality)}</span>
+            <span className="appointment-badge appointment-badge-neutral">{providerTypeLabel(appointment.provider.type)}</span>
+          </div>
+        </div>
       </div>
       <dl className="appointment-details">
         <div><dt>Servicio</dt><dd>{appointment.service.name}</dd></div>

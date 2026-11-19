@@ -31,7 +31,6 @@ export async function resetAppointment() {
 export async function signInAndOpenReschedule(page) {
   const state = await readState();
   await page.goto('/sign-in');
-  await page.getByRole('radio', { name: 'Dueño de mascota' }).check();
   await page.getByLabel('Correo electrónico').fill(state.email);
   await page.getByLabel('Contraseña').fill('incorrect-e2e-password');
   await page.getByRole('button', { name: 'Iniciar sesión' }).click();
