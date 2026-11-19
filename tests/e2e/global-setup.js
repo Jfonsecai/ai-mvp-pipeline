@@ -65,10 +65,11 @@ export default async function globalSetup() {
          VALUES ($1, 'Luna E2E', 'cat', 'Criolla', 2) RETURNING id`,
         [otherOwner.rows[0].id],
       );
+      const providerEmail = `provider-${randomUUID()}@example.test`;
       const provider = await database.query(
         `INSERT INTO account (account_type, name, email, password_hash)
-         VALUES ('provider', 'Veterinaria E2E', $1, 'unused') RETURNING id`,
-        [`provider-${randomUUID()}@example.test`],
+         VALUES ('provider', 'Veterinaria E2E', $1, $2) RETURNING id`,
+        [providerEmail, await argon2.hash('vetcare-e2e-provider-password', { type: argon2.argon2id })],
       );
       const providerId = provider.rows[0].id;
       await database.query(
@@ -79,6 +80,11 @@ export default async function globalSetup() {
       const service = await database.query(
         `INSERT INTO offering (provider_id, provider_type, kind, name, price_cop, species, modality)
          VALUES ($1, 'independent', 'service', 'Consulta E2E', 50000, 'dog', 'home') RETURNING id`,
+        [providerId],
+      );
+      const product = await database.query(
+        `INSERT INTO offering (provider_id, provider_type, kind, name, price_cop, species, available)
+         VALUES ($1, 'independent', 'product', 'Alimento E2E', 85000, 'dog', true) RETURNING id`,
         [providerId],
       );
 
@@ -109,6 +115,11 @@ export default async function globalSetup() {
         schema,
         email,
         password,
+        providerEmail,
+        providerPassword: 'vetcare-e2e-provider-password',
+        providerId,
+        serviceId: service.rows[0].id,
+        productId: product.rows[0].id,
         movingAppointmentId,
         occupiedAppointmentId,
         movingStartsAt,

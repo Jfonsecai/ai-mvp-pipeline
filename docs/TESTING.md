@@ -40,6 +40,16 @@ La suite verifica el inicio de sesión con credenciales inválidas y válidas, l
 
 ## Resultados conocidos
 
+Ejecución local del 2026-11-19 durante la auditoría de frontend (PostgreSQL local, con un esquema temporal aislado):
+
+| Suite | Resultado |
+|---|---|
+| `npm run build` | PASÓ |
+| `npm test` (`tests/*.test.js`) | 301 de 301 aprobadas, 0 omitidas |
+| Suite de QA (`artifacts/07_qa/test_suites`) | 143 de 143 aprobadas, 0 omitidas |
+
+El inicio de sesión, recuperación de sesión y cierre de sesión se probaron además con las cuentas demo de los roles dueño y proveedor. La suite E2E no se ejecutó en esa auditoría.
+
 Resultados ejecutados el 2026-10-14 sobre el commit `8c439b7`, con una base PostgreSQL desechable y `TEST_DATABASE_URL` configurada (fuente: `artifacts/08_deployment/evidence/p08_rerun_ci_local.txt`):
 
 | Suite | Resultado |
