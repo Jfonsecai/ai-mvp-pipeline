@@ -38,9 +38,11 @@ const timeLabel = (iso) => new Intl.DateTimeFormat('es-CO', {
 const modalityLabel = (modality) => (modality === 'home' ? 'A domicilio' : 'En la clínica');
 const firstDayWithSlots = (days) => days.find((day) => day.slots.length > 0)?.date ?? '';
 
-export default function RescheduleAppointment() {
+export default function RescheduleAppointment({ role = 'owner' }) {
   const { appointmentId } = useParams();
   const navigate = useNavigate();
+  const providerMode = role === 'provider';
+  const appointmentsPath = providerMode ? '/provider/appointments' : '/owner/appointments';
   const [context, setContext] = useState(null);
   const [appointment, setAppointment] = useState(null);
   const [state, setState] = useState('loading');
@@ -55,10 +57,10 @@ export default function RescheduleAppointment() {
   const loadContext = useCallback(async (weekStart) => {
     const current = ++requestId.current;
     const query = weekStart ? `?weekStart=${weekStart}` : '';
-    const value = await apiFetch(`/api/owner/appointments/${encodeURIComponent(appointmentId)}/reschedule-context${query}`);
+    const value = await apiFetch(`/api/${providerMode ? 'provider' : 'owner'}/appointments/${encodeURIComponent(appointmentId)}/reschedule-context${query}`);
     if (current !== requestId.current) return null;
     return value;
-  }, [appointmentId]);
+  }, [appointmentId, providerMode]);
 
   const applyContext = useCallback((value) => {
     setContext(value);
@@ -69,7 +71,7 @@ export default function RescheduleAppointment() {
   useEffect(() => {
     let active = true;
     setState('loading');
-    Promise.all([loadContext(), apiFetch('/api/owner/appointments')])
+    Promise.all([loadContext(), apiFetch(`/api/${providerMode ? 'provider' : 'owner'}/appointments`)])
       .then(([value, result]) => {
         if (!active || !value) return;
         const found = result.appointments.find((item) => item.id === appointmentId);
@@ -88,7 +90,7 @@ export default function RescheduleAppointment() {
         else setState('error');
       });
     return () => { active = false; };
-  }, [appointmentId, attempt, loadContext, applyContext]);
+  }, [appointmentId, attempt, loadContext, applyContext, providerMode]);
 
   async function changeWeek(weekStart) {
     setWeekLoading(true);
@@ -114,11 +116,11 @@ export default function RescheduleAppointment() {
     setSaving(true);
     setAlert('');
     try {
-      const saved = await apiFetch(`/api/owner/appointments/${encodeURIComponent(appointmentId)}/reschedule`, {
+      const saved = await apiFetch(`/api/${providerMode ? 'provider' : 'owner'}/appointments/${encodeURIComponent(appointmentId)}/reschedule`, {
         method: 'POST',
         body: { startsAt: slot },
       });
-      navigate('/owner/appointments', { state: { justRescheduledId: saved.id } });
+      navigate(appointmentsPath, { state: { justRescheduledId: saved.id } });
     } catch (error) {
       if (error instanceof ApiError && error.code === 'SLOT_UNAVAILABLE') {
         setAlert(MSG_SLOT_GONE);
@@ -148,21 +150,22 @@ export default function RescheduleAppointment() {
 
   return <main className="page-shell booking-page">
     <section className="booking-card" aria-labelledby="reschedule-title">
-      <Link className="back-link" to="/owner/appointments">Volver a Mis citas</Link>
+      <Link className="back-link" to={appointmentsPath}>{providerMode ? 'Volver a Citas' : 'Volver a Mis citas'}</Link>
       <h1 id="reschedule-title">Reprogramar cita</h1>
       {state === 'loading' && <p role="status">Cargando horarios…</p>}
       {state === 'error' && <div className="form-alert" role="alert">
         {MSG_NET} <button className="link-button" type="button" onClick={() => setAttempt((count) => count + 1)}>Reintentar</button>
       </div>}
       {state === 'not-changeable' && <div className="form-alert" role="alert">
-        Esta cita ya no se puede reprogramar. <Link className="link-button" to="/owner/appointments">Volver a Mis citas</Link>
+        Esta cita ya no se puede reprogramar. <Link className="link-button" to={appointmentsPath}>{providerMode ? 'Volver a Citas' : 'Volver a Mis citas'}</Link>
       </div>}
       {state === 'ready' && context && appointment && <>
         <section className="booking-summary" aria-labelledby="reschedule-summary-title">
           <h2 id="reschedule-summary-title">{appointment.service.name}</h2>
           <dl className="catalog-details">
-            <div><dt>Proveedor</dt><dd>{appointment.provider.name}</dd></div>
-            <div><dt>Mascota</dt><dd>{appointment.pet.name}</dd></div>
+            {providerMode
+              ? <><div><dt>Dueño</dt><dd>{appointment.ownerName}</dd></div><div><dt>Mascota</dt><dd>{appointment.pet.name}</dd></div></>
+              : <><div><dt>Proveedor</dt><dd>{appointment.provider.name}</dd></div><div><dt>Mascota</dt><dd>{appointment.pet.name}</dd></div></>}
             <div><dt>Modalidad</dt><dd>{modalityLabel(appointment.modality)}</dd></div>
             <div><dt>Horario actual</dt><dd>{dateLabel.format(currentDate)} · {timeLabel(appointment.startsAt)}</dd></div>
           </dl>
@@ -207,7 +210,7 @@ export default function RescheduleAppointment() {
               <button className="primary-button" type="submit" disabled={saving || !slot}>
                 {saving ? 'Reprogramando…' : 'Confirmar nuevo horario'}
               </button>
-              <Link className="button-secondary" to="/owner/appointments">Volver</Link>
+              <Link className="button-secondary" to={appointmentsPath}>Volver</Link>
             </div>
           </form>}
       </>}

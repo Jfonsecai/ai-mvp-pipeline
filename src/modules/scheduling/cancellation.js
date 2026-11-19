@@ -51,3 +51,32 @@ export async function cancelOwnerAppointment(db, { ownerId, appointmentId, now }
     return { id: updated.rows[0].id };
   });
 }
+
+/** IF-038: cancels one of the provider's upcoming appointments without deleting its history. */
+export async function cancelProviderAppointment(db, { providerId, appointmentId, now }) {
+  return withTransaction(db, async (client) => {
+    const appointment = await client.query(
+      `SELECT status, starts_at
+         FROM appointment
+        WHERE id = $1 AND provider_id = $2
+        FOR UPDATE`,
+      [appointmentId, providerId],
+    );
+    if (!appointment.rowCount) throw new Outcome('NOT_FOUND');
+
+    const current = appointment.rows[0];
+    if (current.status !== 'scheduled' || new Date(current.starts_at) <= now) {
+      throw new Outcome('APPOINTMENT_NOT_CHANGEABLE');
+    }
+
+    const updated = await client.query(
+      `UPDATE appointment
+          SET status = 'cancelled', cancelled_at = $3
+        WHERE id = $1 AND provider_id = $2 AND status = 'scheduled' AND starts_at > $3
+        RETURNING id`,
+      [appointmentId, providerId, now],
+    );
+    if (!updated.rowCount) throw new Outcome('APPOINTMENT_NOT_CHANGEABLE');
+    return { id: updated.rows[0].id };
+  });
+}
